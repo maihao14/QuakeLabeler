@@ -19,21 +19,21 @@ def find_version(*paths):
 # scripts = [str(x) for x in Path('Scripts').iterdir() if x.is_file()]
 
 setup(
-    name='seiscreator',
-    version=find_version('seiscreator', '__init__.py'),
-    description='Seismic Phase Label Creator',
-    author='Hao Mai',
+    name='QuakeLabeler',
+    version=find_version('quakelabeler', '__init__.py'),
+    description='Seismic Annotation Tools',
+    author='Hao Mai & Pascal Audet',
     author_email='hmai090@uottawa.ca',
-    maintainer='Hao Mai',
+    maintainer='Hao Mai & Pascal Audet',
     maintainer_email='hmai090@uottawa.ca',
-    url='https://github.com/maihao14/SeisLabelCreator',
+    url='https://github.com/maihao14/QuakeLabeler',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9'],
-    install_requires=['numpy', 'obspy', 'scipy'],
+    install_requires=['numpy', 'obspy', 'scipy', 'requests', 're', 'progress'],
     python_requires='>=3.7',
     packages=setuptools.find_packages(),
     include_package_data=True,
@@ -41,5 +41,5 @@ setup(
     #    scripts=scripts)
     entry_points={
         'console_scripts':
-        ['SeisCreator=seiscreator.scripts.SeisCreator:main',
-         'requests_isc=seiscreator.scripts.requests_isc:main']})
+        ['QuakeLabeler=quakelabeler.scripts.QuakeLabeler:main',
+         'requests_isc=quakelabeler.scripts.requests_isc:main']})

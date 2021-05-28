@@ -19,7 +19,7 @@ Author: [`Hao Mai`](https://www.uogeophysics.com/authors/mai/)(Developer and Mai
 
 We recommend creating a custom
 [conda environment](https://conda.io/docs/user-guide/tasks/manage-environments.html)
-where `quakelabeler` can be installed along with its dependencies.
+where `QuakeLabeler` can be installed along with its dependencies.
 
 - Create a environment called `ql` and install `obspy`:
 
@@ -37,7 +37,7 @@ conda activate ql
 
 Download or clone the repository:
 ```bash
-git clone https://github.com/maihao14/SeisLabelCreator.git
+git clone https://github.com/maihao14/QuakeLabeler.git
 cd QuakeLabeler
 ```
 
