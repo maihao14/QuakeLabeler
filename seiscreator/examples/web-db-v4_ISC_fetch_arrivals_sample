@@ -1,0 +1,50 @@
+
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel=stylesheet type=text/css href="/css/searchstyle.css">
+
+</head>
+
+<body text="#000000" bgcolor="#FFFFFF">
+
+<center>
+<div class="header">
+  <h1>
+    International Seismological Centre<br>
+    ISC: Arrivals
+  </h1>
+</div>
+</center>
+
+<p>Any use of data from the ISC <b>should be cited</b>. The correct format for citations may be found on our <a href="/citations/">citation page</a>.</p>
+
+<p>
+<font color="red">
+The ISC Bulletin has now been completely <a href="http://www.isc.ac.uk/projects/rebuild/">rebuilt</a> for the
+period 1964-2010. As a result, the ISC hypocentre solutions and magnitudes for the entire period of 1964-latest
+are based on the ak135 velocity model and the <a href="http://www.isc.ac.uk/iscbulletin/iscloc/">location procedure</a>
+that is currently used in operations. The Bulletin has been cleaned up and a considerable number of previously
+unavailable data of permanent and temporary seismic deployments have been added.
+</font>
+</p>
+
+<table><tr><td><b>Arrival search summary:</b></td><tr><td>Database: ISC Bulletin</td></tr><tr><td>Station search type: Station code</td></tr><tr><td>Stations requested: PRU</td></tr><tr><td>Event search type: Global search</td></tr><tr><td>Start date: 2009-11-01 00:00:00</td></tr><tr><td>End date: 2009-11-03 00:00:00</td></tr><tr><td>Magnitude &gt;= 5</td></tr><tr><td>Arrivals restricted to phases: P</td></tr><tr><td>Arrivals restricted to those with arrival-times</td></tr><tr><td>Arrivals restricted to time-defining phases</td></tr></table><pre>
+</pre>
+<pre>
+
+
+DATA_TYPE ARRIVAL:ASSOCIATED CSV
+--EVENT--|---------------------------------------------------------ARRIVAL DATA----------------------------------------------------------|---------------ORIGIN DATA (PRIME HYPOCENTRE)------------|---EVENT MAGNITUDE--
+EVENTID  ,REPORTER ,STA  ,LAT     ,LON      ,ELEV   ,CHN,DIST  ,BAZ  ,ISCPHASE,REPPHASE,DATE      ,TIME       ,RES  ,TDEF,AMPLITUDE,PER  ,AUTHOR   ,DATE      ,TIME       ,LAT     ,LON      ,DEPTH,AUTHOR   ,TYPE  ,MAG 
+ <a href=/cgi-bin/web-db-v4?event_id=13904359&out_format=IMS1.0&request=COMPREHENSIVE target="_blank">13904359</a>,         ,<a href=/cgi-bin/stations?stacode=PRU target="_blank">PRU</a>  , 49.9883,  14.5417,  302.0,S?Z, 46.84,327.7,P       ,P       ,2009-11-01,20:34:49.80,  0.9,True,         ,     ,<a href=/cgi-bin/agency-get?agency=ISC target="_blank">ISC</a>      ,2009-11-01,20:26:18.72, 14.0692,  51.6566, 10.0,<a href=/cgi-bin/agency-get?agency=MOS target="_blank">MOS</a>      ,mb    , 5.3
+ <a href=/cgi-bin/web-db-v4?event_id=13904359&out_format=IMS1.0&request=COMPREHENSIVE target="_blank">13904359</a>,         ,<a href=/cgi-bin/stations?stacode=PRU target="_blank">PRU</a>  , 49.9883,  14.5417,  302.0,???, 46.84,327.7,P       ,P       ,2009-11-01,20:34:49.80,  0.9,True,         ,     ,<a href=/cgi-bin/agency-get?agency=ISC target="_blank">ISC</a>      ,2009-11-01,20:26:18.72, 14.0692,  51.6566, 10.0,<a href=/cgi-bin/agency-get?agency=MOS target="_blank">MOS</a>      ,mb    , 5.3
+ <a href=/cgi-bin/web-db-v4?event_id=13904360&out_format=IMS1.0&request=COMPREHENSIVE target="_blank">13904360</a>,         ,<a href=/cgi-bin/stations?stacode=PRU target="_blank">PRU</a>  , 49.9883,  14.5417,  302.0,S?Z, 68.30,316.1,P       ,P       ,2009-11-01,21:18:24.00,  4.4,True,         ,     ,<a href=/cgi-bin/agency-get?agency=ISC target="_blank">ISC</a>      ,2009-11-01,21:07:19.53, 25.9169, 100.8260, 17.1,<a href=/cgi-bin/agency-get?agency=BJI target="_blank">BJI</a>      ,Ms    , 5.0
+ <a href=/cgi-bin/web-db-v4?event_id=13904360&out_format=IMS1.0&request=COMPREHENSIVE target="_blank">13904360</a>,         ,<a href=/cgi-bin/stations?stacode=PRU target="_blank">PRU</a>  , 49.9883,  14.5417,  302.0,???, 68.30,316.1,P       ,P       ,2009-11-01,21:18:24.00,  4.4,True,         ,     ,<a href=/cgi-bin/agency-get?agency=ISC target="_blank">ISC</a>      ,2009-11-01,21:07:19.53, 25.9169, 100.8260, 17.1,<a href=/cgi-bin/agency-get?agency=BJI target="_blank">BJI</a>      ,Ms    , 5.0
+ <a href=/cgi-bin/web-db-v4?event_id=13906424&out_format=IMS1.0&request=COMPREHENSIVE target="_blank">13906424</a>,         ,<a href=/cgi-bin/stations?stacode=PRU target="_blank">PRU</a>  , 49.9883,  14.5417,  302.0,S?Z, 72.02,318.3,P       ,P       ,2009-11-02,21:47:08.60,  0.7,True,         ,     ,<a href=/cgi-bin/agency-get?agency=ISC target="_blank">ISC</a>      ,2009-11-02,21:35:46.69, 14.0555,  93.0924, 29.3,<a href=/cgi-bin/agency-get?agency=ISC target="_blank">ISC</a>      ,MS    , 5.1
+ <a href=/cgi-bin/web-db-v4?event_id=13906424&out_format=IMS1.0&request=COMPREHENSIVE target="_blank">13906424</a>,         ,<a href=/cgi-bin/stations?stacode=PRU target="_blank">PRU</a>  , 49.9883,  14.5417,  302.0,??Z, 72.02,318.3,P       ,P       ,2009-11-02,21:47:08.60,  0.7,True,         ,     ,<a href=/cgi-bin/agency-get?agency=ISC target="_blank">ISC</a>      ,2009-11-02,21:35:46.69, 14.0555,  93.0924, 29.3,<a href=/cgi-bin/agency-get?agency=ISC target="_blank">ISC</a>      ,MS    , 5.1
+
+STOP
+<br>International Seismological Centre<br>Pipers Lane, Thatcham, Berkshire<br>United Kingdom RG19 4NS<br>+44 (0)1635 861022, voice; +44 (0)1635 872351, fax<br>admin<img src="/images/staff/at.jpg" height="13"></img>isc.ac.uk, e-mail<br><br></pre>
+</body>
+</html>
