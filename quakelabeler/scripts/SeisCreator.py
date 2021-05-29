@@ -1,5 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# MIT License
+#
+# Copyright (c) 2021 Hao Mai & Pascal Audet
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """Core fuctions of SeisLabelCreator
 Created on Sun Feb 21 20:22:25 2021
 @author: Hao
@@ -11,31 +33,31 @@ from seiscreator import *
 def main():
     r"""command line SeisLabelCreator(slc) tools
     This is all command line modules for slc. Modules rely on previous command
-    line interactive parameters (data retrieved from users on command line). It 
-    might raise errors if you skip some of the modules to direct use the later 
+    line interactive parameters (data retrieved from users on command line). It
+    might raise errors if you skip some of the modules to direct use the later
     ones.
-    
+
     Methods
-    -------    
+    -------
     Interactive()
-        Command line tool for retrieve user's input research region and event 
-    time range. 'Interactive()' also includes interactive module to confirm 
+        Command line tool for retrieve user's input research region and event
+    time range. 'Interactive()' also includes interactive module to confirm
     which modes(beginner/advanced) should slc run in the following functions.
     QueryArrival(**kwargs)
         Fetch arrivals information from ISC website by above user's input research
     region and time range.
     CustomSamples()
         Retrieve cutomized samples options by command line input.
-    SeisCreator(query, custom)  
+    SeisCreator(query, custom)
         Calling sample production functions by above input options. All available
-    samples will be automatically created and save as set format. 
+    samples will be automatically created and save as set format.
     Returns
     -------
     None.
 
-    """        
+    """
 
-  
+
     InteractiveTest = Interactive()
     query = QueryArrival(**InteractiveTest.params)
     #use default options
@@ -43,15 +65,14 @@ def main():
     custom.init()
     creatlabels = SeisCreator(query, custom)
     creatlabels.fetch_all_waveforms(creatlabels.recordings)
-    
 
-    creatlabels.csv_writer() 
-    
-    creatlabels.stats_figure()    
+
+    creatlabels.csv_writer()
+
+    creatlabels.stats_figure()
     #Neither Basemap nor Cartopy could be imported.
 
-#%%    
+#%%
 if __name__ == '__main__':
 
     main()
-

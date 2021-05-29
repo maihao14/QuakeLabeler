@@ -1,5 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# MIT License
+#
+# Copyright (c) 2021 Hao Mai & Pascal Audet
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
 Created on Sun Mar 21 10:00:06 2021
 Query event / station information from ISC website by request package
@@ -23,7 +45,7 @@ def main():
     #    """<arrivals-limits>"""
         'ttime':'on', # arrivals will be only be output if they have an arrival-time.
         'ttres':'on', #  they have a travel-time residual computed.
-        'tdef':'on', # if they are time-defining phases. 
+        'tdef':'on', # if they are time-defining phases.
         'iscreview':'on', # in the Reviewed ISC Bulletin
     #    """station-region"""
         'stnsearch':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
@@ -42,7 +64,7 @@ def main():
         'min_mag':'1.0',
         'req_mag_agcy':'Any',
         'req_mag_type':'Any',
-        }     
+        }
 
     #%%
     params= {
@@ -53,7 +75,7 @@ def main():
     #    """<arrivals-limits>"""
         'ttime':'on', # arrivals will be only be output if they have an arrival-time.
         'ttres':'on', #  they have a travel-time residual computed.
-        'tdef':'on', # if they are time-defining phases. 
+        'tdef':'on', # if they are time-defining phases.
         'iscreview':'on', # in the Reviewed ISC Bulletin
     #    """station-region"""
         'stnsearch':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
@@ -72,9 +94,9 @@ def main():
         'min_mag':'3.0',
         'req_mag_agcy':'Any',
         'req_mag_type':'Any',
-        }  
+        }
     # query1 = QueryArrival(params)
-    # recordings1 = query1.generate_arrival_records()        
+    # recordings1 = query1.generate_arrival_records()
     query = QueryArrival(**params)
 
     #print(query.event_id)

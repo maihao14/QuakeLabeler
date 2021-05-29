@@ -1,4 +1,25 @@
 # -*- coding: utf-8 -*-
+# MIT License
+#
+# Copyright (c) 2021 Hao Mai & Pascal Audet
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 """
 Created on Sun Feb 21 20:22:25 2021
 core fuctions for test
@@ -19,7 +40,7 @@ from scipy.io import savemat
 LOGGER = logging.getLogger(__name__)
 #terminal figure
 import termplotlib as tpl
-#regular expression 
+#regular expression
 import re
 #get arrival information from webpages
 import requests
@@ -29,30 +50,30 @@ from progress.bar import Bar
 import matplotlib.pyplot as plt
 
 class SeisCreator():
-    r""" Automactic earthquake waveforms sampling and labeling tools for machine learning applications. 
+    r""" Automactic earthquake waveforms sampling and labeling tools for machine learning applications.
     This is intended to be the core SeisCreator functionality, without any reference to the GUI layer.
     The original intent was to allow this to run independently, eg. from a script or interactive shell.
-    
+
     Parameters
     ----------
     params : dict
         `params` saves research region and time options in a dictionary, includes: station, event range,
     time range, magnitudes range(optional).
     recordings : dict
-        All founded event-based threads (arrivals) wait for download, note that these arrivals do not gurantee there are 
-    downloadable waveforms from certain data centers. `recordings` includes: event ID, event magnitude, arrival times, 
+        All founded event-based threads (arrivals) wait for download, note that these arrivals do not gurantee there are
+    downloadable waveforms from certain data centers. `recordings` includes: event ID, event magnitude, arrival times,
     orginal time, etc.
     inventory : Obspy object
         Inventory object from class:`obspy.core.inventory.Inventory`. A container for one or more networks.
     network : str
         Network names.
-    
+
     Methods
     -------
         fetch_all_waveforms()
-            Download all available waveforms based on user input options. 
+            Download all available waveforms based on user input options.
         fetch_waveform()
-            Calling single thread request for waveform, retrive data from data centers        
+            Calling single thread request for waveform, retrive data from data centers
         stats_hist()
             Visualize the distribution of the labels (using a histogram).
         add_noise()
@@ -61,12 +82,12 @@ class SeisCreator():
             Compute Signal to Noise Ratio(snr).
         set_sampling_rates()
             Standardize sampling rates (re-sampling).
-    """    
+    """
 
 
     def __init__(self, query , custom ):
         #init
-        self.params = query.param    
+        self.params = query.param
         self.recordings = query.arrival_recordings
         self.custom_dataset = custom.custom_dataset
         self.custom_waveform = custom.custom_waveform
@@ -80,12 +101,12 @@ class SeisCreator():
 
     def search_catalog(self, clientname="IRIS" ):
         r''' Search target catalog
-        Base URL of FDSN web service compatible server (e.g. “http://service.iris.edu”) or 
-        key string for recognized server (one of ‘BGR’, ‘EMSC’, ‘ETH’, ‘GEONET’, ‘GFZ’, ‘ICGC’, ‘INGV’, ‘IPGP’, ‘IRIS’, ‘ISC’, 
-                                          ‘KNMI’, ‘KOERI’, ‘LMU’, ‘NCEDC’, ‘NIEP’, ‘NOA’, ‘ODC’, ‘ORFEUS’, ‘RASPISHAKE’, ‘RESIF’, 
+        Base URL of FDSN web service compatible server (e.g. “http://service.iris.edu”) or
+        key string for recognized server (one of ‘BGR’, ‘EMSC’, ‘ETH’, ‘GEONET’, ‘GFZ’, ‘ICGC’, ‘INGV’, ‘IPGP’, ‘IRIS’, ‘ISC’,
+                                          ‘KNMI’, ‘KOERI’, ‘LMU’, ‘NCEDC’, ‘NIEP’, ‘NOA’, ‘ODC’, ‘ORFEUS’, ‘RASPISHAKE’, ‘RESIF’,
                                           ‘SCEDC’, ‘TEXNET’, ‘USGS’, ‘USP’).
         '''
-        
+
         client = Client(clientname)
         try:
             cat = client.get_events(starttime=self.starttime , endtime=self.endtime, \
@@ -102,11 +123,11 @@ class SeisCreator():
             print("From {0} data center : ".format(clientname))
             print(cat)
             return (cat)
-        
+
 
     def search_stations(self, clientname="IRIS" ):
         r''' Search all available station in the target research region
-        accept: rectangle and circular region 
+        accept: rectangle and circular region
         Parameters
         ----------
         clientname : TYPE, optional
@@ -116,41 +137,41 @@ class SeisCreator():
         -------
         TYPE
             Creates a preview map of all networks/stations in current inventory object:
-            self.inventory.plot 
+            self.inventory.plot
             e.g.:
                 self.inventory.plot(projection="local", label=False,
                                     color_per_network=True, size = 20, outfile = "./image/stationpreview.png")
-                
+
             plot all available stations in a global map
 
         '''
         client = Client(clientname)
         sta_params = {}
         if self.params['stnsearch'] == 'RECT':
-            sta_params['minlatitude'] = self.params['stn_bot_lat'] 
-            sta_params['maxlatitude'] = self.params['stn_top_lat'] 
-            sta_params['minlongitude'] = self.params['stn_left_lon'] 
-            sta_params['maxlongitude'] = self.params['stn_right_lon'] 
+            sta_params['minlatitude'] = self.params['stn_bot_lat']
+            sta_params['maxlatitude'] = self.params['stn_top_lat']
+            sta_params['minlongitude'] = self.params['stn_left_lon']
+            sta_params['maxlongitude'] = self.params['stn_right_lon']
         else:
             if self.params['stnsearch'] == 'CIRC':
-                sta_params['latitude'] = self.params['stn_ctr_lat'] 
+                sta_params['latitude'] = self.params['stn_ctr_lat']
                 sta_params['minlongitude'] = self.params['stn_ctr_lon']
                 if self.params['max_stn_dist_units'] == 'deg':
-                    sta_params['maxradius'] = self.params['stn_radius'] 
+                    sta_params['maxradius'] = self.params['stn_radius']
                 else:
-                    sta_params['maxradius'] = self.params['stn_radius']/111 
+                    sta_params['maxradius'] = self.params['stn_radius']/111
             else:
                 return False
-        sta_params['level'] = "station"         
+        sta_params['level'] = "station"
         inventory = client.get_stations(**sta_params)
         return inventory
-    
+
     def calculate_window(self, event_time, arrivals):
         r"""Calculate the full time window
         Given an event time and a dictionary of arrival times (see Distances below)
-        
+
         """
-        
+
         start_offset = arrivals.get(self.start_phase, 0) - self.start_offset
         end_offset = arrivals.get(self.end_phase, 0) + self.end_offset
         return (
@@ -162,7 +183,7 @@ class SeisCreator():
 
 
     def judge_time_range(self, thread, t1, t2, clientname="IRIS" ):
-        r"""Check time window 
+        r"""Check time window
         This module is to examine if there's available waveform from certain
         data center.
         Returns
@@ -174,17 +195,17 @@ class SeisCreator():
         client = Client(clientname)
         (network, station, location, channel) = self.related_station_info(thread['STA'])
         try:
-            st = client.get_waveforms(network, station, location, channel, t1, t2)      
+            st = client.get_waveforms(network, station, location, channel, t1, t2)
         except Exception as err:
             return False
         else:
-            return st[0]  
-        
+            return st[0]
+
 
     def waveform_timewindow(self, thread, sample_points=50*60 ):
         r"""calculate waveform startime and endtime
         Ensure retrieve enought length waveform.
-        
+
         Parameters
         ----------
         thread : class object
@@ -201,14 +222,14 @@ class SeisCreator():
 
         """
         eventTime = thread['ARRIVAL_DATE'] + 'T' + thread['ARRIVAL_TIME']
-        if self.custom_dataset['fixed_length']:    
+        if self.custom_dataset['fixed_length']:
             # random start time option
             if self.custom_waveform['random_arrival']:
                 #set a random stattime for each event(waveform) default: 10~180 s before first arrival ~ 30~90 s after arrival
-                start = random.randint(10, 180)  
-                starttime = UTCDateTime(eventTime) - start 
+                start = random.randint(10, 180)
+                starttime = UTCDateTime(eventTime) - start
                 end = random.randint(30, 90)
-                endtime = UTCDateTime(eventTime) + end 
+                endtime = UTCDateTime(eventTime) + end
                 trace = self.judge_time_range(thread, starttime, endtime)
                 if not trace == False:
                     try:
@@ -220,13 +241,13 @@ class SeisCreator():
                     #loop: calculate a reasonal starttime
                     while not trace.stats.sampling_rate*(UTCDateTime(eventTime) - starttime) < self.custom_dataset['sample_length']:
                         start = random.randint(1,int(self.custom_dataset['sample_length']/trace.stats.sampling_rate))
-                        starttime = UTCDateTime(eventTime) - start 
+                        starttime = UTCDateTime(eventTime) - start
                         endtime = starttime + int(self.custom_dataset['sample_length']/trace.stats.sampling_rate)
                     else:
-                        endtime = starttime + int(self.custom_dataset['sample_length']/trace.stats.sampling_rate) 
+                        endtime = starttime + int(self.custom_dataset['sample_length']/trace.stats.sampling_rate)
             else:
-                #fixed startime: t1 sec before arrival 
-                #time range might not satisfy fixed npts, need examine and re-crop 
+                #fixed startime: t1 sec before arrival
+                #time range might not satisfy fixed npts, need examine and re-crop
                 starttime = UTCDateTime(eventTime) - self.custom_waveform['start_arrival']
                 endtime =  UTCDateTime(eventTime) + self.custom_waveform['end_arrival']
                 trace = self.judge_time_range(thread, starttime, endtime)
@@ -236,22 +257,22 @@ class SeisCreator():
                     except Exception as e:
                         pass
                     else:
-                        trace.stats.sampling_rate = resample_rate                    
-                    endtime = starttime + int(self.custom_dataset['sample_length']/trace.stats.sampling_rate)                  
+                        trace.stats.sampling_rate = resample_rate
+                    endtime = starttime + int(self.custom_dataset['sample_length']/trace.stats.sampling_rate)
         else:
             # flexible waveform length
             if self.custom_waveform['random_arrival']:
                 #set a random stattime for each event(waveform) default: 10~180 s before first arrival ~ 30~90 s after arrival
-                start = random.randint(10, 90)  
-                starttime = UTCDateTime(eventTime) - start 
+                start = random.randint(10, 90)
+                starttime = UTCDateTime(eventTime) - start
                 end = random.randint(30, 90)
-                endtime = UTCDateTime(eventTime) + end 
+                endtime = UTCDateTime(eventTime) + end
             else:
                 starttime = UTCDateTime(eventTime) - self.custom_waveform['start_arrival']
                 endtime = UTCDateTime(eventTime) + self.custom_waveform['end_arrival']
-        self.eventtime = UTCDateTime(eventTime)    
+        self.eventtime = UTCDateTime(eventTime)
 
-        return (starttime, endtime) 
+        return (starttime, endtime)
 
 
     def search_network(self):
@@ -281,26 +302,26 @@ class SeisCreator():
                 if tr.stats.npts > self.custom_dataset['sample_length']:
                     tr.data = tr.data[:self.custom_dataset['sample_length']]
         return st
-                
+
 
     def fetch_waveform(self, thread, clientname="IRIS" ):
         r"""Retrieve a target stream of waveforms from specific data center
-            The stream can includes mutiple-component seismic traces which from only 
+            The stream can includes mutiple-component seismic traces which from only
         one station with one event.  They can be spilt as single trace mode or keep as
-        a 3-C sample or multiple-component sample. 
+        a 3-C sample or multiple-component sample.
         Note that for now we remove those low-sampling-rate (<1.0Hz) samples which might
-        not help our project. 
-        
+        not help our project.
+
         Parameters
         ----------
-        thread : dict 
-            Waveform information        
-            
+        thread : dict
+            Waveform information
+
         clientname : str, optional
             Name of data center. The default is "IRIS".
-            
+
         ----------
-        
+
         Returns
         -------
         st : Obspy Stream Object
@@ -308,7 +329,7 @@ class SeisCreator():
 
         """
         client= Client(clientname)
-        #calculate startime and endtime, must consider trace length, sampling rate to satisfy custom parameters  
+        #calculate startime and endtime, must consider trace length, sampling rate to satisfy custom parameters
 
         (start_time, end_time) = self.waveform_timewindow(thread)
         #(start_time,end_time) = self.waveform_timewindow(thread)
@@ -316,25 +337,25 @@ class SeisCreator():
         try:
             st = client.get_waveforms(network, station, location, channel, start_time, end_time+10)
             # param attach_response  NEED UPDATE ONE INTERACTIVE PARAMTER HERE
-            
+
         except Exception as err:
 #            return ("No data available for station %s for event %s !" % station, thread['EVENTID'])
             return "No data available for request."
         else:
-            # resample mode    
+            # resample mode
             try:
                 resample_rate = float(self.custom_waveform['sample_rate'])
             except Exception as e:
                 pass
             else:
-                st.resample(resample_rate)          
+                st.resample(resample_rate)
             #filter option
             if self.custom_waveform['filter_type'] == '1':
                 st.filter('lowpass',freq = self.custom_waveform['filter_freqmin'], corners=2, zerophase = True)
             if self.custom_waveform['filter_type'] == '2':
                 st.filter('highpass',freq = self.custom_waveform['filter_freqmax'], zerophase = True)
             if self.custom_waveform['filter_type'] == '3':
-                st.filter('bandpass', freqmin = self.custom_waveform['filter_freqmin'], freqmax = self.custom_waveform['filter_freqmax'])  
+                st.filter('bandpass', freqmin = self.custom_waveform['filter_freqmin'], freqmax = self.custom_waveform['filter_freqmax'])
             # add noise
             # self.custom_waveform['add_noise'] = 1.0
             if self.custom_waveform['add_noise'] != 0 :
@@ -343,7 +364,7 @@ class SeisCreator():
                     length = len(tr.data)
                     amplitude = max(tr.data)
                     noise_arr = amplitude*self.custom_waveform['add_noise']*(-1+2*np.random.rand(length))
-                    tr.data = noise_arr + tr.data             
+                    tr.data = noise_arr + tr.data
             st = self.check_export_stream(st)
             if len(st) == 0:
                 return "No data available for request."
@@ -372,14 +393,14 @@ class SeisCreator():
         '''
         st = str(stream[0].stats.starttime)
         st_name = st[0:13]+st[15:16]+st[18:19]
-        
-        filename = stream[0].stats.network + '.' + stream[0].stats.station 
+
+        filename = stream[0].stats.network + '.' + stream[0].stats.station
         if self.custom_export['single_trace'] == True:
             filename = filename + '.' + stream[0].stats.channel + '.'+st_name
         else:
-            for tr in stream:                
+            for tr in stream:
                 filename = filename + '.'+ tr.stats.channel
-            filename = filename + '.' + st_name  
+            filename = filename + '.' + st_name
         return filename
 
 
@@ -397,14 +418,14 @@ class SeisCreator():
     def output_rect_dist(self, npts, it, window):
         fx = np.zeros(npts)
         fx[it - window//2 : it + window//2] = 1
-        return fx    
+        return fx
 
 
     def single_sample_export(self, st, filename,pick_win = 100, detect_win = 200):
         it = int((self.eventtime - self.starttime) * self.sampling_rate)
         self.arr_point = it
-        
-        #if user need create independent output channel:            
+
+        #if user need create independent output channel:
         if self.custom_export['export_inout']:
             st1 = st
             st1[0].data = self.output_bell_dist(self.npts, it, pick_win)
@@ -413,23 +434,23 @@ class SeisCreator():
 
         if 'SAC' in self.custom_export['export_type']:
             st.write(filename + ".sac", format="SAC")
-                    #if user need create independent output channel:            
+                    #if user need create independent output channel:
             if self.custom_export['export_inout']:
                 st1.write(filename +'out_bell'+ ".sac", format="SAC")
-                st2.write(filename +'out_rect'+ ".sac", format="SAC")             
-        #export as MSEED format        
+                st2.write(filename +'out_rect'+ ".sac", format="SAC")
+        #export as MSEED format
         if 'MSEED' in self.custom_export['export_type']:
             st.write(filename + ".mseed", format="MSEED")
             if self.custom_export['export_inout']:
                 st1.write(filename +'out_bell'+ ".mseed", format="MSEED")
-                st2.write(filename +'out_rect'+ ".mseed", format="MSEED")   
-        #export as SEGY format                 
+                st2.write(filename +'out_rect'+ ".mseed", format="MSEED")
+        #export as SEGY format
         if 'SEGY' in self.custom_export['export_type']:
             st.write(filename + ".sgy", format="SEGY")
             if self.custom_export['export_inout']:
                 st1.write(filename +'out_bell'+ ".sgy", format="SEGY")
-                st2.write(filename +'out_rect'+ ".sgy", format="SEGY")    
-        #export as Python Numpy format        
+                st2.write(filename +'out_rect'+ ".sgy", format="SEGY")
+        #export as Python Numpy format
         if 'NPZ' in self.custom_export['export_type']:
             npzdict = {'data': st[0].data}
             np.savez(filename + ".npz", **npzdict)
@@ -437,21 +458,21 @@ class SeisCreator():
                 npzdict = {'data': st1[0].data}
                 np.savez(filename +'out_bell' + ".npz", **npzdict)
                 npzdict = {'data': st2[0].data}
-                np.savez(filename +'out_rect' + ".npz", **npzdict)  
-        #export as MATLAB format        
+                np.savez(filename +'out_rect' + ".npz", **npzdict)
+        #export as MATLAB format
         if 'MAT' in self.custom_export['export_type']:
             mdic = {st[0].stats.channel : st[0].data}
-            savemat(filename + ".mat", mdic)     
+            savemat(filename + ".mat", mdic)
             if self.custom_export['export_inout']:
                 mdic = {st1[0].stats.channel : st1[0].data}
-                savemat(filename +'out_bell'+ ".mat", mdic) 
+                savemat(filename +'out_bell'+ ".mat", mdic)
                 mdic = {st2[0].stats.channel : st2[0].data}
                 savemat(filename +'out_rect'+ ".mat", mdic)
     def multi_sample_export(self, st, filename,pick_win = 100, detect_win = 200):
         it = int((self.eventtime - self.starttime) * self.sampling_rate)
         self.arr_point = it
-        
-        #if user need create independent output channel:            
+
+        #if user need create independent output channel:
         if self.custom_export['export_inout']:
             st1 = st
             for tr in st1:
@@ -459,22 +480,22 @@ class SeisCreator():
             st2 = st
             for tr in st2:
                 tr.data = self.output_rect_dist(self.npts, it, detect_win)
-            
+
         if 'SAC' in self.custom_export['export_type']:
             st.write(filename + ".sac", format="SAC")
             if self.custom_export['export_inout']:
                 st1.write(filename +'out_bell'+ ".sac", format="SAC")
-                st2.write(filename +'out_rect'+ ".sac", format="SAC")                 
+                st2.write(filename +'out_rect'+ ".sac", format="SAC")
         if 'MSEED' in self.custom_export['export_type']:
             st.write(filename + ".mseed", format="MSEED")
             if self.custom_export['export_inout']:
                 st1.write(filename +'out_bell'+ ".mseed", format="MSEED")
-                st2.write(filename +'out_rect'+ ".mseed", format="MSEED")              
+                st2.write(filename +'out_rect'+ ".mseed", format="MSEED")
         if 'SEGY' in self.custom_export['export_type']:
             st.write(filename + ".sgy", format="SEGY")
             if self.custom_export['export_inout']:
                 st1.write(filename +'out_bell'+ ".sgy", format="SEGY")
-                st2.write(filename +'out_rect'+ ".sgy", format="SEGY")              
+                st2.write(filename +'out_rect'+ ".sgy", format="SEGY")
         if 'NPZ' in self.custom_export['export_type']:
             npzdict = {}
             for tr in st:
@@ -482,26 +503,26 @@ class SeisCreator():
             np.savez(filename + ".npz", **npzdict)
             if self.custom_export['export_inout']:
                 for tr in st1:
-                    npzdict[tr.stats.channel] = tr.data                
+                    npzdict[tr.stats.channel] = tr.data
                 np.savez(filename +'out_bell' + ".npz", **npzdict)
                 for tr in st2:
-                    npzdict[tr.stats.channel] = tr.data                 
-                np.savez(filename +'out_rect' + ".npz", **npzdict)              
+                    npzdict[tr.stats.channel] = tr.data
+                np.savez(filename +'out_rect' + ".npz", **npzdict)
         if 'MAT' in self.custom_export['export_type']:
             for tr in st:
                 mdic = {tr.stats.channel : tr.data}
-            savemat(filename + ".mat", mdic) 
+            savemat(filename + ".mat", mdic)
             if self.custom_export['export_inout']:
                 for tr in st1:
                     mdic = {tr.stats.channel : tr.data}
-                savemat(filename +'out_bell'+ ".mat", mdic) 
+                savemat(filename +'out_bell'+ ".mat", mdic)
                 for tr in st2:
                     mdic = {tr.stats.channel : tr.data}
-                savemat(filename +'out_rect'+ ".mat", mdic) 
+                savemat(filename +'out_rect'+ ".mat", mdic)
 
     def fetch_all_waveforms(self, records, clientname="IRIS"):
         r"""Auto fetch potential waveforms to create samples
-        Manage all potential samples threads. Retrive waveform from specific data centers, revise trace and produce required samples one by one.  
+        Manage all potential samples threads. Retrive waveform from specific data centers, revise trace and produce required samples one by one.
         This function contains:
             1.Load/Import: Make requests to data centers to check available waveforms data
             2.Custom: Receive user's preferrence parameters for create the data sets.
@@ -518,12 +539,12 @@ class SeisCreator():
 
         Returns
         -------
-        available_samples : list 
+        available_samples : list
             Return all finished samples' information.
         """
         print('Initialize samples producer module...')
         #selet user preference
-        
+
         #count loop number, when loop>100 & no available waveform found, break the loop
         loopnum = 0
         if self.custom_export['export_filename'] == '':
@@ -532,15 +553,15 @@ class SeisCreator():
             FileName = 'MyDataset' + str(today)[:-11]  #filename option —— custom class UPDATE
         else:
             FileName = self.custom_export['export_filename']
-        # num: stream(samples) volume    
+        # num: stream(samples) volume
         num = 0
         if not self.custom_dataset['volume'] == 'MAX':
             maxnum = int(self.custom_dataset['volume'])
         else:
             maxnum = len(records)
-        #create a dict save every sample information    
+        #create a dict save every sample information
         self.available_samples = []
-        
+
         if not os.path.exists(FileName):
             os.mkdir(FileName)
         os.chdir(FileName)
@@ -577,14 +598,14 @@ class SeisCreator():
                                 thread['ISCPHASE'] = 'S'
                             else:
                                 thread['ISCPHASE'] = 'P'
-                        self.available_samples.append(thread)                        
+                        self.available_samples.append(thread)
                 else:
                     num += 1
                     bar.next()
                     # detrend (optional)
                     if self.custom_waveform['detrend']:
                         for tr in st:
-                            tr.detrend()        
+                            tr.detrend()
                     multi_filename = self.creatsamplename(st)
                     self.multi_sample_export(st, multi_filename)
                     #add record to csv file
@@ -597,13 +618,13 @@ class SeisCreator():
                             thread['ISCPHASE'] = 'S'
                         else:
                             thread['ISCPHASE'] = 'P'
-                    self.available_samples.append(thread)                    
+                    self.available_samples.append(thread)
                 print("Save to target folder: {0}".format(FileName))
                 print(st)
                 if num >= maxnum:
                     bar.finish()
                     break
-                
+
         print("All available waveforms are ready!")
         print("{0} of event-based samples are successfully downloaded! ".format(num))
         os.chdir('../')
@@ -613,7 +634,7 @@ class SeisCreator():
 
     def csv_writer(self):
         r""" Write in CSV file
-        
+
 
         Returns
         -------
@@ -631,27 +652,27 @@ class SeisCreator():
         with open(CSV_Name, 'w') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=field_names)
             writer.writeheader()
-            writer.writerows(self.available_samples)  
+            writer.writerows(self.available_samples)
 
 
-    #statistical charts   
+    #statistical charts
     def stats_figure(self):
         r""" Output figures
         """
         if not self.custom_export['export_stats']:
-            return        
+            return
         #create image folder
         ImgFolder = 'Image'
         if not os.path.exists(ImgFolder):
             os.mkdir(ImgFolder)
-        os.chdir(ImgFolder)        
-        #terminal plotting 
+        os.chdir(ImgFolder)
+        #terminal plotting
         print("Magnitude Distribution")
         sample_mag = []
         for thread in self.available_samples:
-            sample_mag.append(thread['EVENT_MAG'])        
+            sample_mag.append(thread['EVENT_MAG'])
         bins=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-        counts, bin_edges = np.histogram(sample_mag, bins)         
+        counts, bin_edges = np.histogram(sample_mag, bins)
         fig = tpl.figure()
         fig.hist(counts, bin_edges, orientation="horizontal", force_ascii=False)
         fig.show()
@@ -664,29 +685,29 @@ class SeisCreator():
         plt.title('Magnitude Histogram')
         maxfreq = n.max()
         # Set a clean upper y-axis limit.
-        plt.ylim(ymax=np.ceil(maxfreq / 10) * 10 if maxfreq % 10 else maxfreq + 10)   
+        plt.ylim(ymax=np.ceil(maxfreq / 10) * 10 if maxfreq % 10 else maxfreq + 10)
         plt.savefig('MagDist.jpeg', dpi = 300)
         #station overview
-        # self.inventory.plot(projection="local", label=False, 
-        #     color_per_network=True, size=20, 
+        # self.inventory.plot(projection="local", label=False,
+        #     color_per_network=True, size=20,
         #     outfile="stationpreview.png")
         os.chdir('../')
 
-        
-    
-#%%    
+
+
+#%%
 class Interactive():
-    r""" Arrivals interactive search command line tool 
-    Receive user's arrivals search parameters from command line. Automatic search arrivals associated to 
-    events in the ISC Bulletin at specific stations. 
-    
+    r""" Arrivals interactive search command line tool
+    Receive user's arrivals search parameters from command line. Automatic search arrivals associated to
+    events in the ISC Bulletin at specific stations.
+
     Search includes:
         arrival-times
         orginal-times
         magnitudes
         time-defining phases (only available for events with ISC hypocentres)
-    
-    Refference:    
+
+    Refference:
     ISC Bulletin: arrivals search
     International Seismological Centre (20XX), On-line Event Bibliography, https://doi.org/10.31905/EJ3B5LV6
 
@@ -694,14 +715,14 @@ class Interactive():
     ----------
     params : dict
         `params` saves all customized options which defines the research region and time. `params` contains
-    region latitude and longitude, start time and end time, magnitudes(optional), etc. 
-    
+    region latitude and longitude, start time and end time, magnitudes(optional), etc.
+
     Methods
-    ------- 
-    select_mode() 
+    -------
+    select_mode()
         Selection of run modes.
-    
-    
+
+
     """
     def __init__(self):
         self.welcome() #brief introduction of this tool
@@ -718,21 +739,21 @@ class Interactive():
         Dependent parameters if: stnsearch=STN
         sta_list= <STATION CODE>
         <STATION CODE>	A valid station code. To search for available station codes, please check the station book in the International Registry of Seismograph Stations.
-        
+
         Returns
         -------
         params : dict
 
         """
-        self.params['stnsearch'] = 'STN' 
-        self.params['sta_list'] = input('Please enter the station codes:  \n ') 
-        
+        self.params['stnsearch'] = 'STN'
+        self.params['sta_list'] = input('Please enter the station codes:  \n ')
+
         confirm = input('Input parameters confirm?  [y/n] \n')
         if confirm.lower() == 'y':
             return self.params
         else:
             print('Reset parameters... \n')
-            self.input_stn_stn()       
+            self.input_stn_stn()
 
 
     def input_stn_rect(self):
@@ -757,14 +778,14 @@ class Interactive():
         self.params['stn_left_lon'] = input('Input rectangular left longitude: ')
         self.params['stn_right_lon'] = input('Input rectangular right longitude: ')
         print('The input region is:  \n ')
-        
+
         #print update params
         print('stnsearch: ' + self.params['stnsearch'] + '\n' +  \
         'stn_bot_lat: '+ self.params['stn_bot_lat'] + '\n' + \
         'stn_top_lat: '+ self.params['stn_top_lat'] + '\n' + \
         'stn_left_lon: '+ self.params['stn_left_lon'] + '\n' + \
         'stn_right_lon: '+ self.params['stn_right_lon'] +'\n'  )
-            
+
         confirm = input('Input parameters confirm?  [y/n] \n')
         if confirm.lower() == 'y':
             return self.params
@@ -774,7 +795,7 @@ class Interactive():
 
 
     def input_stn_circ(self):
-        self.params['stnsearch'] = 'CIRC'        
+        self.params['stnsearch'] = 'CIRC'
         print('Please enter the latitude(-90 ~ 90) and longitude(-180 ~ 180) at the central of  the circular region, the unit for max distance and the related radius. \n \
               Note: Acceptable units of distance for a circular search: degrees or kilometres. \n \
               Radius for circular search region: \n \
@@ -795,22 +816,22 @@ class Interactive():
         'stn_ctr_lon: '+ self.params['stn_ctr_lon'] + '\n' + \
         'max_stn_dist_units: '+ self.params['max_stn_dist_units'] + '\n' + \
         'stn_radius: '+ self.params['stn_radius'] +'\n'  )
-            
+
         confirm = input('Input parameters confirm?  [y/n] \n')
         if confirm.lower() == 'y':
             return self.params
         else:
             print('Reset parameters... \n')
-            self.input_stn_circ()    
+            self.input_stn_circ()
 
 
     def input_stn_fe(self):
         """
         Dependent parameters if: stnsearch=FE
-        
+
         Usage:
         Enter parameters for a Flinn-Engdahl search region
-        Parameters save in dictionary: self.params     
+        Parameters save in dictionary: self.params
         stn_srn=	1 to 50	Seismic region number for a Flinn-Engdahl region search
         stn_grn=	1 to 757	Geographic region number for a Flinn-Engdahl region search
 
@@ -819,34 +840,34 @@ class Interactive():
         None.
 
         """
-        self.params['stnsearch'] = 'FE'  
+        self.params['stnsearch'] = 'FE'
         print('Enter parameters for a Flinn-Engdahl search region. \n')
         self.params['stn_srn'] = input('Seismic region number for a Flinn-Engdahl region search, possible value: 1 to 50: ')
-        self.params['stn_grn'] = input('Geographic region number for a Flinn-Engdahl region search possible value: 1 to 757: ')        
+        self.params['stn_grn'] = input('Geographic region number for a Flinn-Engdahl region search possible value: 1 to 757: ')
 
         #print update params
         print('stnsearch: ' + self.params['stnsearch'] + '\n' +  \
         'stn_srn: '+ self.params['stn_srn'] + '\n' + \
         'stn_grn: '+ self.params['stn_grn'] + '\n' )
-            
+
         confirm = input('Input parameters confirm?  [y/n] \n')
         if confirm.lower() == 'y':
             return self.params
         else:
             print('Reset parameters... \n')
-            self.input_stn_fe()   
-    
+            self.input_stn_fe()
+
 
     def input_stn_poly(self):
         """
         Dependent parameters if: stnsearch=POLY
-        
+
         Usage:
         Enter parameters for a POLY search region
         Parameters save in dictionary: self.params
-        
-        stn_coordvals=	lat1,lon1,lat2,lon2,lat3,lon3,lat4,lon4,lat1,lon1	
-        Comma seperated list of coordinates for a desired polygon. Latitude needs to be before longitude. 
+
+        stn_coordvals=	lat1,lon1,lat2,lon2,lat3,lon3,lat4,lon4,lat1,lon1
+        Comma seperated list of coordinates for a desired polygon. Latitude needs to be before longitude.
         Coordinates in the western and southern hemispheres should be negative.
 
         Returns
@@ -861,13 +882,13 @@ class Interactive():
         #print update params
         print('stnsearch: ' + self.params['stnsearch'] + '\n' +  \
         'stn_coordvals: '+ self.params['stn_coordvals'] + '\n' )
-            
+
         confirm = input('Input parameters confirm?  [y/n] \n')
         if confirm.lower() == 'y':
             return self.params
         else:
             print('Reset parameters... \n')
-            self.input_stn_poly()   
+            self.input_stn_poly()
 
 
     def input_time(self):
@@ -907,14 +928,14 @@ class Interactive():
         'end_month: '+ self.params['end_month'] + '\n' + \
         'end_day: '+ self.params['end_day'] + '\n' + \
         'end_time: '+ self.params['end_time'] + '\n'  )
-            
+
         confirm = input('Input parameters confirm?  [y/n] \n')
         if confirm.lower() == 'y':
             return self.params
         else:
             print('Reset parameters... \n')
-            self.input_time()   
-            
+            self.input_time()
+
 
     def input_mag(self):
         """
@@ -922,10 +943,10 @@ class Interactive():
         Parameter name	|  Possible values	             |        Description
         min_mag=	       any float or integer                	Minimum magnitude of events
         max_mag=	       any float or integer	                Maximum magnitude of events.
-        req_mag_type=	<Any>|<MB>|<MS>|<MW>|<ML>|<MD>	   Limit events to specific magnitude types. 
+        req_mag_type=	<Any>|<MB>|<MS>|<MW>|<ML>|<MD>	   Limit events to specific magnitude types.
                                                           Please note: the selected magnitude type will search for all possible magnitudes in that category:
-                                                          E.g. MB will search for mb, mB, Mb, mb1mx, etc        
-                    
+                                                          E.g. MB will search for mb, mB, Mb, mb1mx, etc
+
 
         Returns
         -------
@@ -935,19 +956,19 @@ class Interactive():
         print('Enter event-maginitude limits (optional, enter blankspace for default sets)')
         default = input('Input minmum magnitude (0.0-9.0 or blankspace for skip this set):  \n')
         if not (default.isspace() or default == '\n'):
-            self.params['min_mag'] = default 
-            
+            self.params['min_mag'] = default
+
         default = input('Input maxmum magnitude (0.0-9.0 or blankspace for skip this set):  \n')
         if not (default.isspace() or default == '\n'):
-            self.params['max_mag'] = default     
-            
+            self.params['max_mag'] = default
+
         default = input('Enter specific magnitude types. Please note: the selected magnitude type will search for all possible magnitudes in that category: \n \
                         E.g. MB will search for mb, mB, Mb, mb1mx, etc \n \
                         Availble input: \n \
                         <Any>|<MB>|<MS>|<MW>|<ML>|<MD> or blankspace for skip this set  \n')
         if not (default.isspace() or default == '\n'):
             self.params['req_mag_type'] = default
-       
+
 
     def select_stnsearch(self):
         """
@@ -973,7 +994,7 @@ class Interactive():
         self.params['ttres'] = 'on'
         self.params['tdef'] = 'on'
         self.params['iscreview'] = 'on'
-        
+
 
         mode = input('Please select one : [STN/GLOBAL/RECT/CIRC/FE/POLY] \n \
                         [STN]: Stations are restricted to specific station code(s); \n \
@@ -983,7 +1004,7 @@ class Interactive():
                         [FE]: Flinn-Engdahl region search of stations; \n \
                         [POLY]: Customised polygon search. \n  ')
         if mode.lower() == 'stn':
-            self.input_stn_stn()         
+            self.input_stn_stn()
         elif mode.lower() == 'global':
             self.params['stnsearch'] = 'GLOBAL'
         elif mode.lower() == 'rect':
@@ -994,7 +1015,7 @@ class Interactive():
             self.input_stn_fe()
         elif mode.lower() == 'poly':
             self.input_stn_poly()
-        else: 
+        else:
             error = input('Invalid input, would you like to try input option again?  [y/n]')
             if error.lower() == 'y':
                 self.select_stnsearch
@@ -1025,14 +1046,14 @@ class Interactive():
         self.params['left_lon'] = input('Input rectangular left longitude: ')
         self.params['right_lon'] = input('Input rectangular right longitude: ')
         print('The input region is:  \n ')
-        
+
         #print update params
         print('searchshape: ' + self.params['searchshape'] + '\n' +  \
         'bot_lat: ' + self.params['bot_lat'] + '\n' + \
         'top_lat: ' + self.params['top_lat'] + '\n' + \
         'left_lon: ' + self.params['left_lon'] + '\n' + \
         'right_lon: ' + self.params['right_lon'] +'\n'  )
-            
+
         confirm = input('Input parameters confirm?  [y/n] \n')
         if confirm.lower() == 'y':
             return self.params
@@ -1045,7 +1066,7 @@ class Interactive():
         """
         Event Region Mode: <CIRC>: Rectangular search of Events
         Enter parameters for a circular search region
-        Parameters save in dictionary: self.params 
+        Parameters save in dictionary: self.params
         ctr_lat=	-90 to 90	Central latitude of circular region
         ctr_lon=	-180 to 180	Central longitude of rectangular region
         max_dist_units=	<deg>|<km>	Units of distance for a circular search: degrees or kilometres
@@ -1054,7 +1075,7 @@ class Interactive():
         None.
 
         """
-        self.params['searchshape'] = 'CIRC'        
+        self.params['searchshape'] = 'CIRC'
         print('Please enter the latitude(-90 ~ 90) and longitude(-180 ~ 180) at the central of  the circular region, the unit for max distance and the related radius. \n \
               Note: Acceptable units of distance for a circular search: degrees or kilometres. \n \
               Radius for circular search region: \n \
@@ -1075,22 +1096,22 @@ class Interactive():
         'ctr_lon: ' + self.params['ctr_lon'] + '\n' + \
         'max_dist_units: '+ self.params['max_dist_units'] + '\n' + \
         'radius: ' + self.params['radius'] + '\n'  )
-            
+
         confirm = input('Input parameters confirm?  [y/n] \n')
         if confirm.lower() == 'y':
             return self.params
         else:
             print('Reset parameters... \n')
-            self.input_event_circ()      
-            
+            self.input_event_circ()
+
 
     def input_event_fe(self):
         """
         Dependent parameters if: searchshape=FE
-        
+
         Usage:
         Enter parameters for a Flinn-Engdahl search region
-        Parameters save in dictionary: self.params     
+        Parameters save in dictionary: self.params
         stn_srn=	1 to 50	Seismic region number for a Flinn-Engdahl region search
         stn_grn=	1 to 757	Geographic region number for a Flinn-Engdahl region search
 
@@ -1099,34 +1120,34 @@ class Interactive():
         None.
 
         """
-        self.params['searchshape'] = 'FE'  
+        self.params['searchshape'] = 'FE'
         print('Enter parameters for a Flinn-Engdahl search region. \n')
         self.params['srn'] = input('Seismic region number for a Flinn-Engdahl region search, possible value: 1 to 50: ')
-        self.params['grn'] = input('Geographic region number for a Flinn-Engdahl region search possible value: 1 to 757: ')        
+        self.params['grn'] = input('Geographic region number for a Flinn-Engdahl region search possible value: 1 to 757: ')
 
         #print update params
         print('searchshape: ' + self.params['searchshape'] + '\n' +  \
         'srn: ' + self.params['srn'] + '\n' + \
         'grn: ' + self.params['grn'] + '\n' )
-            
+
         confirm = input('Input parameters confirm?  [y/n] \n')
         if confirm.lower() == 'y':
             return self.params
         else:
             print('Reset parameters... \n')
-            self.input_event_fe()   
-    
+            self.input_event_fe()
+
 
     def input_event_poly(self):
         """
         Dependent parameters if: searchshape=POLY
-        
+
         Usage:
         Enter parameters for a POLY search region
         Parameters save in dictionary: self.params
-        
-        stn_coordvals=	lat1,lon1,lat2,lon2,lat3,lon3,lat4,lon4,lat1,lon1	
-        Comma seperated list of coordinates for a desired polygon. Latitude needs to be before longitude. 
+
+        stn_coordvals=	lat1,lon1,lat2,lon2,lat3,lon3,lat4,lon4,lat1,lon1
+        Comma seperated list of coordinates for a desired polygon. Latitude needs to be before longitude.
         Coordinates in the western and southern hemispheres should be negative.
 
         Returns
@@ -1141,21 +1162,21 @@ class Interactive():
         #print update params
         print('searchshape: ' + self.params['searchshape'] + '\n' +  \
         'coordvals: '+ self.params['coordvals'] + '\n' )
-            
+
         confirm = input('Input parameters confirm?  [y/n] \n')
         if confirm.lower() == 'y':
             return self.params
         else:
             print('Reset parameters... \n')
-            self.input_event_poly()      
-    
-    
+            self.input_event_poly()
+
+
     def select_eventsearch(self):
         """
         Choose mode for event region search:
         Usage:
-            Input paramter: 
-            searchshape =	<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>	
+            Input paramter:
+            searchshape =	<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
             GLOBAL: Events are not restricted by region;
             RECT: Rectangular search of events;
             CIRC: Circular search of events;
@@ -1174,7 +1195,7 @@ class Interactive():
                         [RECT]: Rectangular search of events(recommended); \n \
                         [CIRC]: Circular search of events(recommended); \n \
                         [FE]: Flinn-Engdahl region search of events; \n \
-                        [POLY]: Customised polygon search. \n  ')        
+                        [POLY]: Customised polygon search. \n  ')
         if mode.lower() == 'global':
             self.params['searchshape'] = 'GLOBAL'
         elif mode.lower() == 'rect':
@@ -1185,14 +1206,14 @@ class Interactive():
             self.input_event_fe()
         elif mode.lower() == 'poly':
             self.input_event_poly()
-        else: 
+        else:
             error = input('Invalid input, would you like to try input option again?  [y/n]')
             if error.lower() == 'y':
                 self.select_eventsearch()
             else:
                 print('Exit process...')
-        return self.params        
-            
+        return self.params
+
 
     def beginner_mode(self, field = 1):
         #default params case[1] in Cascadia subduction zone
@@ -1204,7 +1225,7 @@ class Interactive():
         #    """<arrivals-limits>"""
             'ttime':'on', # arrivals will be only be output if they have an arrival-time.
             'ttres':'on', #  they have a travel-time residual computed.
-            'tdef':'on', # if they are time-defining phases. 
+            'tdef':'on', # if they are time-defining phases.
             'iscreview':'on', # in the Reviewed ISC Bulletin
         #    """station-region"""
             'stnsearch':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
@@ -1223,15 +1244,15 @@ class Interactive():
             'min_mag':'3.0',
             'req_mag_agcy':'Any',
             'req_mag_type':'Any',
-            } 
-                    
+            }
+
         print('Initialize Beginner Mode...')
         field = input('Select one of the following sample fields:  [1/2/3/4] \n \
                       [1] 2010 Cascadia subduction zone earthquake activities \n \
                       [2] 2011 Tōhoku earthquake and tsunami \n \
                       [3] 2016 Oklahoma human activity-induced earthquakes \n \
                       [4] 2018 Big quakes in Southern California \n \
-                      [0] Re-direct to Advanced mode. \n  '  )             
+                      [0] Re-direct to Advanced mode. \n  '  )
         # input default parameters for specific case
         if field == '2':
             # 2011 Tōhoku earthquake and tsunami, Japan
@@ -1243,7 +1264,7 @@ class Interactive():
             #    """<arrivals-limits>"""
                 'ttime':'on', # arrivals will be only be output if they have an arrival-time.
                 'ttres':'on', #  they have a travel-time residual computed.
-                'tdef':'on', # if they are time-defining phases. 
+                'tdef':'on', # if they are time-defining phases.
                 'iscreview':'on', # in the Reviewed ISC Bulletin
             #    """station-region"""
                 'stnsearch':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
@@ -1262,8 +1283,8 @@ class Interactive():
                 'min_mag':'1.0',
                 'req_mag_agcy':'Any',
                 'req_mag_type':'Any',
-                }       
-                
+                }
+
         if field == '3':
             #2016 Oklahoma human activity-induced earthquakes
             self.params = {
@@ -1274,7 +1295,7 @@ class Interactive():
             #    """<arrivals-limits>"""
                 'ttime':'on', # arrivals will be only be output if they have an arrival-time.
                 'ttres':'on', #  they have a travel-time residual computed.
-                'tdef':'on', # if they are time-defining phases. 
+                'tdef':'on', # if they are time-defining phases.
                 'iscreview':'on', # in the Reviewed ISC Bulletin
             #    """station-region"""
                 'stnsearch':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
@@ -1293,7 +1314,7 @@ class Interactive():
                 'min_mag':'1.0',
                 'req_mag_agcy':'Any',
                 'req_mag_type':'Any',
-                }      
+                }
         if field == '1':
             #2010 Cascadia subduction zone earthquake activities, NA
             self.params= {
@@ -1304,7 +1325,7 @@ class Interactive():
             #    """<arrivals-limits>"""
                 'ttime':'on', # arrivals will be only be output if they have an arrival-time.
                 'ttres':'on', #  they have a travel-time residual computed.
-                'tdef':'on', # if they are time-defining phases. 
+                'tdef':'on', # if they are time-defining phases.
                 'iscreview':'on', # in the Reviewed ISC Bulletin
             #    """station-region"""
                 'stnsearch':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
@@ -1323,7 +1344,7 @@ class Interactive():
                 'min_mag':'3.0',
                 'req_mag_agcy':'Any',
                 'req_mag_type':'Any',
-                }     
+                }
         if field == '4':
             # 2018 Big quakes in Southern California
             self.params= {
@@ -1334,7 +1355,7 @@ class Interactive():
             #    """<arrivals-limits>"""
                 'ttime':'on', # arrivals will be only be output if they have an arrival-time.
                 'ttres':'on', #  they have a travel-time residual computed.
-                'tdef':'on', # if they are time-defining phases. 
+                'tdef':'on', # if they are time-defining phases.
                 'iscreview':'on', # in the Reviewed ISC Bulletin
             #    """station-region"""
                 'stnsearch':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
@@ -1353,8 +1374,8 @@ class Interactive():
                 'min_mag':'6.5',
                 'req_mag_agcy':'Any',
                 'req_mag_type':'Any',
-                }             
-            
+                }
+
         if field == '0':
             # run advanced mode
             self.params = {}
@@ -1363,10 +1384,10 @@ class Interactive():
 
     def advanced_mode(self):
 
-        print('Initialize Advanced Mode...')    
+        print('Initialize Advanced Mode...')
         print('Alternative region options are provided. Please select your preferred input function: \n ')
-        
-        # 1.select stnsearch mode ;  
+
+        # 1.select stnsearch mode ;
         # 2.input <station-region> params;
         # 3.input <event-region> params (note that station / event region can be different);
         # 4.input <event-time-range> & <event-magnitude-limits> (Optional)
@@ -1374,19 +1395,19 @@ class Interactive():
         self.select_eventsearch()
         self.input_time()
         self.input_mag()
-        
+
 
     def select_mode(self):
         """Running mode selection
         Customized run modes can be selected at each startup.
-        
+
         Returns
         -------
-        beginner_mode : function 
+        beginner_mode : function
             Run beginner mode `self.beginner_mode()` with limited parameters.
         advanced_mode : function
             Run advanced mode `self.advanced_mode()` with various customized parameters.
-        
+
         """
         print('SeisLabelCreator provides multiple modes for different levels of Seismic AI researher \n ')
         print('[Beginner] mode -- well prepared case studies; \n' + \
@@ -1403,15 +1424,15 @@ class Interactive():
                     self.select_mode()
                 else:
                     print('exit the process! ')
-                
-#%%            
+
+#%%
 class CustomSamples():
     r"""Command line interactive tool for custom dataset options
-    Input paratemter to standardize retrived waveform. 
+    Input paratemter to standardize retrived waveform.
     Parameters
     ----------
     default_option : bool
-        if `default_option` is True, apply default options.    
+        if `default_option` is True, apply default options.
     """
     def __init__(self, default_option = False):
 
@@ -1425,14 +1446,14 @@ class CustomSamples():
             self.custom_dataset = {}
             self.custom_waveform = {}
             self.custom_export = {}
-            
-        self.default_option = default_option    
-            
-    def init(self):   
+
+        self.default_option = default_option
+
+    def init(self):
         if not self.default_option:
             self.define_dataset()
             self.define_waveform()
-            self.define_export()  
+            self.define_export()
 
 
     def define_dataset(self):
@@ -1476,31 +1497,31 @@ class CustomSamples():
             self.custom_waveform['label_type'] = False
         else:
             self.custom_waveform['label_type'] = True
-        #set default    
+        #set default
         self.custom_waveform['sample_rate'] = ''
         self.custom_waveform['sample_rate'] = input('Enter a fixed sampling rate(i.e.: 100.0) or skip for keep original sampling rate: ')
-        #set default  
+        #set default
         self.custom_waveform['filter_type'] = '0'
         self.custom_waveform['filter_type'] = input('Select filter function for preprocess? [0/1/2/3]: \n' + \
-                                                    ' [0]: Do not apply filter function; \n ' + 
+                                                    ' [0]: Do not apply filter function; \n ' +
                                                     '[1]: Butterworth-Lowpass; \n ' + \
                                                     '[2]: Butterworth-Highpass; \n ' + \
                                                     '[3]: Butterworth-Bandpass. ')
-            
+
         if self.custom_waveform['filter_type'] == '1':
-            self.custom_waveform['filter_freqmin'] = float(input('Pass band low corner frequency.'))   
+            self.custom_waveform['filter_freqmin'] = float(input('Pass band low corner frequency.'))
         if self.custom_waveform['filter_type'] == '2':
-            self.custom_waveform['filter_freqmax'] = float(input('Pass band high corner frequency.'))                                               
+            self.custom_waveform['filter_freqmax'] = float(input('Pass band high corner frequency.'))
         if self.custom_waveform['filter_type'] == '3':
             self.custom_waveform['filter_freqmin'] = float(input('Pass band low corner frequency.'))
             self.custom_waveform['filter_freqmax'] = float(input('Pass band high corner frequency.'))
-        
+
         detrend = input('Do you want to detrend the waveforms ? [y/n]')
         if detrend == 'y':
             self.custom_waveform['detrend'] = True
         else:
             self.custom_waveform['detrend'] = False
-        
+
         random_arrival = input('Would you like random input? [y/n]')
         if random_arrival == 'y':
             self.custom_waveform['random_arrival'] = True
@@ -1510,29 +1531,29 @@ class CustomSamples():
             #set default
             self.custom_waveform['start_arrival'] = 30.0
             self.custom_waveform['end_arrival'] = 90.0
-            self.custom_waveform['start_arrival'] = input('Input waveforms start at: __ seconds before arrival.') #  set  30/60/90 s before P arrival ~  30/60/90 s after S arrival ; may raise conflict with fixed sample points (i.e.: 5000points for each trace) 
+            self.custom_waveform['start_arrival'] = input('Input waveforms start at: __ seconds before arrival.') #  set  30/60/90 s before P arrival ~  30/60/90 s after S arrival ; may raise conflict with fixed sample points (i.e.: 5000points for each trace)
             self.custom_waveform['start_arrival'] = float(self.custom_waveform['start_arrival'])
-            self.custom_waveform['end_arrival'] = input('Input waveforms end at: __ seconds after arrival.') #  set  30/60/90 s before P arrival ~  30/60/90 s after S arrival ; may raise conflict with fixed sample points (i.e.: 5000points for each trace) 
-            self.custom_waveform['end_arrival'] = float(self.custom_waveform['end_arrival'])            
+            self.custom_waveform['end_arrival'] = input('Input waveforms end at: __ seconds after arrival.') #  set  30/60/90 s before P arrival ~  30/60/90 s after S arrival ; may raise conflict with fixed sample points (i.e.: 5000points for each trace)
+            self.custom_waveform['end_arrival'] = float(self.custom_waveform['end_arrival'])
         add_noise = input('Do you want to add random noise: [y/n] ')
         if add_noise == 'y':
             noiselevel = input('Enter noise level(i.e.: [0.3 /0.5 / 0.8 / 1.0 / 2.0]  ):')
             self.custom_waveform['add_noise'] = float(noiselevel)
         else:
-            self.custom_waveform['add_noise'] = 0 
-        
+            self.custom_waveform['add_noise'] = 0
+
         return self.custom_waveform
-        
+
 
     def define_export(self):
         r""" Export options for dataset
             Receive interactive arguements to choose export format, include:
             export_type: SAC, Mini-Seed, NPZ, MAT, etc.
             export_inout: True/False seperate input / output traces
-            export_out_form: gaussian / peak / rect 
+            export_out_form: gaussian / peak / rect
             export_arrival_csv: True / False save arrival information as a independent csv file
             export_stats: True / False
-        
+
         Returns
         -------
         custom_export : dict
@@ -1546,51 +1567,51 @@ class CustomSamples():
         self.custom_export['export_type'] = self.custom_export['export_type'].upper()
         if 'NPZ' in self.custom_export['export_type'] or 'MAT' in self.custom_export['export_type']:
             warnings.warn('Export to external format might lose traces information! ')
-            
+
         # single trace: 1 sample 1 trace
-        # multiple traces: 1 sample 1 stream 1+ traces (i.e. 3 traces: BHZ,BHE,BHN) 
+        # multiple traces: 1 sample 1 stream 1+ traces (i.e. 3 traces: BHZ,BHE,BHN)
         self.custom_export['single_trace'] = input('Save as single trace or mutiple-component seismic data? [y/n]')
         if self.custom_export['single_trace'].lower() == 'y':
             self.custom_export['single_trace'] = True
         else:
             self.custom_export['single_trace'] = False
-            
+
         in_out = input('Do you want to seperate save traces as input and output? [y/n]')
         if in_out == 'y':
             self.custom_export['export_inout'] = True
         else:
             self.custom_export['export_inout'] = False
-        
+
         # save each label information into csv files for validation
-        # i.e.: arrival time, magnitude, etc. 
+        # i.e.: arrival time, magnitude, etc.
         arrival_csv = input('Do you want to seperate save arrival information as a CSV file? [y/n]')
         if arrival_csv == 'y':
             self.custom_export['export_arrival_csv'] = True
         else:
-            self.custom_export['export_arrival_csv'] = False                
-        
+            self.custom_export['export_arrival_csv'] = False
+
         # filename option
-        self.custom_export['export_filename'] = input('Please input a folder name for your dataset (optional): ')        
-        
-        # export statistical figures       
-        stats = input('Do you want to generate statistical charts after creating the dataset? [y/n]')    
+        self.custom_export['export_filename'] = input('Please input a folder name for your dataset (optional): ')
+
+        # export statistical figures
+        stats = input('Do you want to generate statistical charts after creating the dataset? [y/n]')
         if stats == 'y':
             self.custom_export['export_stats'] = True
         else:
-            self.custom_export['export_stats'] = False    
-            
-        
-        return self.custom_export          
-                
+            self.custom_export['export_stats'] = False
+
+
+        return self.custom_export
+
 
 class QueryArrival():
     r"""Auto retrieve online arrivals information
     This class fetch users's target arrivals from ISC Bulletin website.
-    
+
     References
     ----------
     ..[1] International Seismological Centre (20XX), On-line Bulletin, https://doi.org/10.31905/D808B830
-    
+
     """
     def __init__(self, **kwargs ):
         # ISC Bulletin url
@@ -1600,17 +1621,17 @@ class QueryArrival():
         # save params
         for k in kwargs:
             self.param[k] = kwargs[k]
-        print("Loading time varies on your network connections, search region scale, time range, etc. Please be patient, estimated time: 3 mins ")        
+        print("Loading time varies on your network connections, search region scale, time range, etc. Please be patient, estimated time: 3 mins ")
         self.response = requests.get(url = URL, params=self.param)
         self.page_text = self.response.text
-        
+
         if "No phase data was found." in self.page_text:
             print("Error: No phase data was found. \n")
             exit("Please change your parameters and restart of the tool ... \n")
-            
+
         try:
-            self.find_all_vars(self.page_text, 'EVENTID', 'STA', 'ISCPHASE', 
-            'ARRIVAL_DATE', 'ARRIVAL_TIME', 'ORIGIN_DATE', 'ORIGIN_TIME', 
+            self.find_all_vars(self.page_text, 'EVENTID', 'STA', 'ISCPHASE',
+            'ARRIVAL_DATE', 'ARRIVAL_TIME', 'ORIGIN_DATE', 'ORIGIN_TIME',
             'EVENT_TYPE', 'EVENT_MAG')
         except IndexError:
             print('Please try it later. Request failed.')
@@ -1624,11 +1645,11 @@ class QueryArrival():
         ex = r'MAG (.*) '
         all_variables = re.findall(ex, text, re.S)
         all_vars = re.split(r',', all_variables[0])
-        #find last index 
+        #find last index
         for index in range(len(all_vars) - 1, 0, -1):
             if 'STOP' in all_vars[index]:
                 break
-        # initialization of recording, include all webset information   
+        # initialization of recording, include all webset information
         recordings = {
         'EVENTID' : [] ,
         'STA' : [],
@@ -1639,7 +1660,7 @@ class QueryArrival():
         'ARRIVAL_LON' : [],
         'ARRIVAL_ELEV' : [],
         'ARRIVAL_DIST' : [],
-        'ARRIVAL_BAZ' : [], 
+        'ARRIVAL_BAZ' : [],
         'ARRIVAL_DATE' : [],
         'ARRIVAL_TIME' : [],
         'ORIGIN_LAT' : [],
@@ -1649,7 +1670,7 @@ class QueryArrival():
         'ORIGIN_TIME' : [],
         'EVENT_TYPE' :[],
         'EVENT_MAG' : [] }
-        
+
         for i in range(0, index, 25):
             recordings['EVENTID'].append(int(re.split('\n',all_vars[i])[1]))
             recordings['STA'].append(str.strip(all_vars[i+2]))
@@ -1673,11 +1694,11 @@ class QueryArrival():
                 recordings['EVENT_MAG'].append(float('NaN'))
             else:
                 recordings['EVENT_MAG'].append(float(re.split('\n', all_vars[i+25])[0]))
-        
+
         self.arrival_recordings = []
         for i in range(len(recordings['EVENTID'])):
             tempdict = {}
             for var in args:
-                tempdict[var] = recordings[var][i]   
+                tempdict[var] = recordings[var][i]
             self.arrival_recordings.append(tempdict)
         return self.arrival_recordings
