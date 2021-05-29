@@ -39,7 +39,7 @@ import numpy as np
 from scipy.io import savemat
 LOGGER = logging.getLogger(__name__)
 # terminal figure
-# import termplotlib as tpl
+import termplotlib as tpl
 # regular expression
 import re
 # get arrival information from webpages
