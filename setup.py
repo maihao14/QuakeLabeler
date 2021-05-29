@@ -35,7 +35,7 @@ setup(
         'Programming Language :: Python :: 3.9'],
     install_requires=[
         'numpy', 'obspy', 'scipy', 'requests',
-        're', 'progress', 'matplotlib'],
+        'progress', 'matplotlib'],
     python_requires='>=3.7',
     packages=setuptools.find_packages(),
     include_package_data=True,

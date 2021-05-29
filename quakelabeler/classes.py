@@ -23,7 +23,7 @@
 """
 Created on Sun Feb 21 20:22:25 2021
 core fuctions for test
-@author: Hao
+@author: Hao Mai & Pascal Audet
 """
 from __future__ import (absolute_import, division, print_function)
 
@@ -38,18 +38,18 @@ import random
 import numpy as np
 from scipy.io import savemat
 LOGGER = logging.getLogger(__name__)
-#terminal figure
-import termplotlib as tpl
-#regular expression
+# terminal figure
+# import termplotlib as tpl
+# regular expression
 import re
-#get arrival information from webpages
+# get arrival information from webpages
 import requests
-#command line progress
+# command line progress
 from progress.spinner import Spinner
 from progress.bar import Bar
 import matplotlib.pyplot as plt
 
-class SeisCreator():
+class QuakeLabeler():
     r""" Automactic earthquake waveforms sampling and labeling tools for machine learning applications.
     This is intended to be the core SeisCreator functionality, without any reference to the GUI layer.
     The original intent was to allow this to run independently, eg. from a script or interactive shell.
@@ -730,7 +730,7 @@ class Interactive():
         self.select_mode()
 
     def welcome(self):
-        print("Welcome to SeisLabelCreator----Fast AI Earthquake Dataset Deployment Tool!")
+        print("Welcome to QuakeLabeler----Fast AI Earthquake Dataset Deployment Tool!")
 
 
     def input_stn_stn(self):
@@ -1409,7 +1409,7 @@ class Interactive():
             Run advanced mode `self.advanced_mode()` with various customized parameters.
 
         """
-        print('SeisLabelCreator provides multiple modes for different levels of Seismic AI researher \n ')
+        print('QuakeLabeler provides multiple modes for different levels of Seismic AI researher \n ')
         print('[Beginner] mode -- well prepared case studies; \n' + \
                '[Advanced] mode -- produce earthquake samples based on Customized parameters. \n')
         mode = input("Please select a mode: [1/Beginner/2/Advanced] ")

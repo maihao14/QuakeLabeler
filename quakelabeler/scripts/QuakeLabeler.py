@@ -22,17 +22,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Core fuctions of SeisLabelCreator
+"""Core fuctions of QuakeLabeler
 Created on Sun Feb 21 20:22:25 2021
 @author: Hao
 
 """
 
-from seiscreator import *
+from quakelabeler import *
 
 def main():
-    r"""command line SeisLabelCreator(slc) tools
-    This is all command line modules for slc. Modules rely on previous command
+    r"""command line QuakeLabeler(ql) tools
+    This is all command line modules for ql. Modules rely on previous command
     line interactive parameters (data retrieved from users on command line). It
     might raise errors if you skip some of the modules to direct use the later
     ones.
@@ -42,7 +42,7 @@ def main():
     Interactive()
         Command line tool for retrieve user's input research region and event
     time range. 'Interactive()' also includes interactive module to confirm
-    which modes(beginner/advanced) should slc run in the following functions.
+    which modes(beginner/advanced) should ql run in the following functions.
     QueryArrival(**kwargs)
         Fetch arrivals information from ISC website by above user's input research
     region and time range.
@@ -63,7 +63,7 @@ def main():
     #use default options
     custom = CustomSamples()
     custom.init()
-    creatlabels = SeisCreator(query, custom)
+    creatlabels = QuakeLabeler(query, custom)
     creatlabels.fetch_all_waveforms(creatlabels.recordings)
 
 
