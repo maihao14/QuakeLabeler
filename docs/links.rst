@@ -1,7 +1,7 @@
 GitHub Repositories
 -------------------
 
-* `SeisLabelCreator <https://github.com/maihao14/SeisLabelCreator/>`_
+* `QuakeLabeler <https://github.com/maihao14/QuakeLabeler/>`_
 * `GitHub Pages <https://docs.github.com/en/pages/>`_
 * `Read the Docs <https://readthedocs.org/>`_
 

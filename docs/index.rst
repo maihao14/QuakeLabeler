@@ -1,15 +1,15 @@
-.. SeisLabelCreator documentation master file, created by
+.. QuakeLabeler documentation master file, created by
    sphinx-quickstart on Wed May 26 09:01:10 2021.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-.. image:: /Images/homepage.png
+.. image:: /Images/QuakeLabeler.png
  :align: center
 
-Welcome to SeisLabelCreator's documentation!
+Welcome to QuakeLabeler's documentation!
 ============================================
 
-SeisLabelCreator (SLC) is a package containing Python tools for labelling
+QuakeLabeler (QL) is a package containing Python tools for labelling
 earthquake data (for machine learning applications). Current functionalities
 include retrieving waveforms from data centers, customizing seismic samples,
 auto-preparing datasets for training, testing and validation, preprocessing
@@ -28,7 +28,7 @@ interface with little knowledge of Python.
    :maxdepth: 1
    :caption: Getting Started
 
-   seislabelcreator
+   quakelabeler
 
 .. toctree::
    :maxdepth: 2

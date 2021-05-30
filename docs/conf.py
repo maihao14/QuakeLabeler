@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'SeisLabelCreator'
+project = 'QuakeLabeler'
 copyright = '2021, Hao Mai & Pascal Audet'
 author = 'Hao Mai & Pascal Audet'
 
@@ -29,7 +29,7 @@ release = '0.0.1'
 
 autodoc_member_order = 'bysource'
 
-html_logo = 'Images/homepage.png'
+html_logo = 'Images/QuakeLabeler.png'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom

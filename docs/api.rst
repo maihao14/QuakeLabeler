@@ -1,36 +1,36 @@
 
-.. figure:: Images/slc_logo.png
+.. figure:: Images/QuakeLabeler.png
    :align: center
 
 Classes
 =======
 
-:mod:`~orientpy` defines the following base classes:
+:mod:`~quakelabeler` defines the following base classes:
 
-- :class:`~seiscreator.classes.SeisCreator`
-- :class:`~seiscreator.classes.Interactive`
-- :class:`~seiscreator.classes.CustomSamples`
-- :class:`~seiscreator.classes.QueryArrival`
+- :class:`~quakelabeler.classes.QuakeLabeler`
+- :class:`~quakelabeler.classes.Interactive`
+- :class:`~quakelabeler.classes.CustomSamples`
+- :class:`~quakelabeler.classes.QueryArrival`
 
-SeisCreator
+QuakeLabeler
 -----------
 
-.. autoclass:: seiscreator.classes.SeisCreator
+.. autoclass:: quakelabeler.classes.QuakeLabeler
   :members:
 
 Interactive
 -----------
-.. autoclass:: seiscreator.classes.Interactive
+.. autoclass:: quakelabeler.classes.Interactive
   :members:
 
 CustomSamples
 -------------
 
-.. autoclass:: seiscreator.classes.CustomSamples
+.. autoclass:: quakelabeler.classes.CustomSamples
   :members:
 
 QueryArrival
 ------------
 
-.. autoclass:: seiscreator.classes.QueryArrival
+.. autoclass:: quakelabeler.classes.QueryArrival
   :members:

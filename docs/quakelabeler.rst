@@ -1,5 +1,5 @@
 
-.. figure:: Images/slc_logo.png
+.. figure:: Images/QuakeLabeler.png
    :align: center
 
 Licence
@@ -38,13 +38,13 @@ Also, the following packages are required:
 - `requests <https://github.com/psf/requests/>`_
 
 Required packages (e.g., ``obspy``)
-will be automatically installed by ``SeisLabelCreator``.
+will be automatically installed by ``QuakeLabeler``.
 
 Conda environment
 -----------------
 
 We recommend creating a custom ``conda`` environment
-where ``SeisLabelCreator`` can be installed along with some of its dependencies.
+where ``QuakeLabeler`` can be installed along with some of its dependencies.
 
 .. sourcecode:: bash
 
@@ -69,8 +69,8 @@ Installing from source
 
 .. sourcecode:: bash
 
-   git clone https://github.com/maihao14/SeisLabelCreator.git
-   cd SeisLabelCreator
+   git clone https://github.com/maihao14/QuakeLabeler.git
+   cd QuakeLabeler
 
 
 - Install using pip:
@@ -79,22 +79,19 @@ Installing from source
 
    pip install .
 
-Running the scripts
-===================
-
 Quick Start
------------
+===========
 
 Create a work folder where you will run the scripts that accompany
-``SeisLabelCreator``. For example:
+``QuakeLabeler``. For example:
 
 .. sourcecode:: bash
 
    mkdir ~/WorkFolder
    cd WorkFolder
 
-Run the main script ``SeisCreator`` with default arguments:
+Run the main script ``QuakeLabeler`` with default arguments:
 
 .. sourcecode:: bash
 
-   SeisCreator
+   QuakeLabeler
