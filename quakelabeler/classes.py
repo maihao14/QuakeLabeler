@@ -184,48 +184,48 @@ class QuakeLabeler():
         return inventory
 
     def judge_time_range(self, thread, t1, t2, clientname="IRIS"):
-        r"""Check time window
-        This module is to examine if there's available waveform from certain
+        r"""Check seismograms time window
+        This method is to examine if there's available waveform from target
         data center.
         Returns
         -------
         trace : `Obspy` trace object
         False : bool
-
         """
         client = Client(clientname)
-        (network, station, location, channel) = self.related_station_info(thread['STA'])
+        (network, station, location, channel) = self.related_station_info(
+                                                thread['STA'])
         try:
-            st = client.get_waveforms(network, station, location, channel, t1, t2)
-        except Exception as err:
+            st = client.get_waveforms(
+                                network, station, location, channel, t1, t2)
+        except Exception:
             return False
         else:
             return st[0]
 
-    def waveform_timewindow(self, thread, sample_points=50*60 ):
-        r"""calculate waveform startime and endtime
-        Ensure retrieve enought length waveform.
-
+    def waveform_timewindow(self, thread, sample_points=50*60):
+        r"""Calculate waveform startime and endtime
+        Method to ensure retrieve enought length waveform.
         Parameters
         ----------
-        thread : class object
-            specific waveform information.
+        thread : dict
+            *thread* stores a specific seismogram information.
         sample_points : int, optional
-            waveform length. The default is 50*60.
-
+            Waveform length. The default is 50*60 = 3000.
         Returns
         -------
         starttime : UTCTime
-            Start time for waveform.
+            Start time for this waveform.
         endtime : UTCTime
-            End time for waveform.
-
+            End time for this waveform.
         """
         eventTime = thread['ARRIVAL_DATE'] + 'T' + thread['ARRIVAL_TIME']
         if self.custom_dataset['fixed_length']:
             # random start time option
             if self.custom_waveform['random_arrival']:
-                #set a random stattime for each event(waveform) default: 10~180 s before first arrival ~ 30~90 s after arrival
+                # set a random stattime for each event(waveform)
+                # default: 10~180 s before first arrival
+                #  30~90 s after arrival
                 start = random.randint(10, 180)
                 starttime = UTCDateTime(eventTime) - start
                 end = random.randint(30, 90)
@@ -233,12 +233,13 @@ class QuakeLabeler():
                 trace = self.judge_time_range(thread, starttime, endtime)
                 if not trace == False:
                     try:
-                        resample_rate = int(self.custom_waveform['sample_rate'])
-                    except Exception as e:
+                        resample_rate = int(
+                                self.custom_waveform['sample_rate'])
+                    except Exception:
                         pass
                     else:
                         trace.stats.sampling_rate = resample_rate
-                    #loop: calculate a reasonal starttime
+                    # loop: calculate a reasonal starttime
                     while not trace.stats.sampling_rate*(UTCDateTime(eventTime) - starttime) < self.custom_dataset['sample_length']:
                         start = random.randint(1,int(self.custom_dataset['sample_length']/trace.stats.sampling_rate))
                         starttime = UTCDateTime(eventTime) - start
