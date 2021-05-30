@@ -22,7 +22,7 @@
 # SOFTWARE.
 """
 Created on Sun Feb 21 20:22:25 2021
-core fuctions for test
+core classes
 @author: Hao Mai & Pascal Audet
 """
 from __future__ import (absolute_import, division, print_function)
@@ -50,100 +50,117 @@ from progress.bar import Bar
 import matplotlib.pyplot as plt
 
 class QuakeLabeler():
-    r""" Automactic earthquake waveforms sampling and labeling tools for machine learning applications.
-    This is intended to be the core SeisCreator functionality, without any reference to the GUI layer.
-    The original intent was to allow this to run independently, eg. from a script or interactive shell.
+    r""" A QuakeLabeler object contains Class attributes that design and create
+    seismic datasets by custom settings. QuakeLabeler has a series of methods
+    to automatic finish datasets production:
+
+    #. Initialize research area and time range;
+    #. Retrieve available waveforms from data center;
+    #. Pre-process (optional): detrend, denoise, resampling, filter;
+    #. Transfer waveforms to standard labels;
+    #. Post-process (optional): add noise, seperate input/output channels, crop;
+    #. Save datsets informations as CSV files;
+    #. Export distribution histogram.
+
+    .. note::
+    This is intended to be the core QuakeLabeler functionality, without any
+    reference to the interactive interface. The original intent was to allow
+    this to run independently, eg. from a script or interactive shell.
 
     Parameters
     ----------
     params : dict
-        `params` saves research region and time options in a dictionary, includes: station, event range,
-    time range, magnitudes range(optional).
-    recordings : dict
-        All founded event-based threads (arrivals) wait for download, note that these arrivals do not gurantee there are
-    downloadable waveforms from certain data centers. `recordings` includes: event ID, event magnitude, arrival times,
-    orginal time, etc.
-    inventory : Obspy object
-        Inventory object from class:`obspy.core.inventory.Inventory`. A container for one or more networks.
-    network : str
-        Network names.
+        `params` containing research region and time options in a dictionary
+        which receive from interactive shell or scripts. `params` includes:
 
-    Methods
+        #. station region;
+        #. event time range;
+        #. event magnitude limits(optional);
+        #. arrival limits(optional);
+    recordings : dict
+        All founded event-based records (arrivals). Note that these arrivals
+        do not gurantee they are downloadable from certain data centers.
+        `recordings` includes:
+
+        #. event ID;
+        #. event magnitude;
+        #. phase name;
+        #. arrival time;
+        #. original event time;
+        #. event location (optional).
+    inventory : Obspy object
+        `inventory` is from class:`obspy.core.inventory.Inventory`. A container
+        for one or more networks.
+    network : str
+        Available network names.
+
+    Modules
     -------
         fetch_all_waveforms()
-            Download all available waveforms based on user input options.
+            Method to build datasets -- available seismograms based on custom
+            options will be downloaded and transfer to labeles (training
+            samples).
         fetch_waveform()
-            Calling single thread request for waveform, retrive data from data centers
+            Method to make labels. Calling single thread request to download
+            waveform, process, and create label.
+        csv_writer()
+            Method to export information of the dataset.
         stats_hist()
-            Visualize the distribution of the labels (using a histogram).
-        add_noise()
-            Add noise to original traces.
-        calculate_snr()
-            Compute Signal to Noise Ratio(snr).
-        set_sampling_rates()
-            Standardize sampling rates (re-sampling).
+            Visualize the distribution of the labels.
     """
-
-
-    def __init__(self, query , custom ):
-        #init
+    def __init__(self, query, custom):
+        # init
         self.params = query.param
         self.recordings = query.arrival_recordings
         self.custom_dataset = custom.custom_dataset
         self.custom_waveform = custom.custom_waveform
         self.custom_export = custom.custom_export
-        #target network and station names
+        # target network and station names
         self.inventory = self.search_stations()
         # targe network names
         self.network = "*"
         if not self.inventory == False:
             self.network = self.search_network()
 
-    def search_catalog(self, clientname="IRIS" ):
-        r''' Search target catalog
-        Base URL of FDSN web service compatible server (e.g. “http://service.iris.edu”) or
-        key string for recognized server (one of ‘BGR’, ‘EMSC’, ‘ETH’, ‘GEONET’, ‘GFZ’, ‘ICGC’, ‘INGV’, ‘IPGP’, ‘IRIS’, ‘ISC’,
-                                          ‘KNMI’, ‘KOERI’, ‘LMU’, ‘NCEDC’, ‘NIEP’, ‘NOA’, ‘ODC’, ‘ORFEUS’, ‘RASPISHAKE’, ‘RESIF’,
-                                          ‘SCEDC’, ‘TEXNET’, ‘USGS’, ‘USP’).
+    def search_catalog(self, clientname="IRIS"):
+        r''' Catalog Search
+        If input data center does not have available seismograms, this module
+        will reminder to change data center.
         '''
-
         client = Client(clientname)
         try:
-            cat = client.get_events(starttime=self.starttime , endtime=self.endtime, \
-                                    minmagnitude=self.minmag, maxmagnitude=self.maxmag, \
-                                    minlatitude=self.minlatitude, maxlatitude=self.maxlatitude, \
-                                    minlongitude=self.minlongitude, maxlongitude=self.maxlongitude, \
+            cat = client.get_events(starttime=self.starttime,
+                                    endtime=self.endtime,
+                                    minmagnitude=self.minmag,
+                                    maxmagnitude=self.maxmag,
+                                    minlatitude=self.minlatitude,
+                                    maxlatitude=self.maxlatitude,
+                                    minlongitude=self.minlongitude,
+                                    maxlongitude=self.maxlongitude
                                     )
-        except Exception as err:
-            print("Cannot fetch catalog from {0} ! Please select another data center: ".format(clientname))
-            print(r'"BGR", "EMSC", "ETH", "GEONET", "GFZ", "ICGC", "INGV", "IPGP", "IRIS", "ISC", \
-                                           "KNMI", "KOERI", "LMU", "NCEDC", "NIEP", "NOA", "ODC", "ORFEUS",\
-                                           "RASPISHAKE", "RESIF", "SCEDC", "TEXNET", "USGS", "USP"')
+        except Exception:
+            print("Cannot fetch catalog from {0} ! Please select another data\
+                center: ".format(clientname))
+            print(r'"BGR", "EMSC", "ETH", "GEONET", "GFZ", "ICGC", "INGV",\
+                "IPGP", "IRIS", "ISC", KNMI", "KOERI", "LMU", "NCEDC", "NIEP",\
+                "NOA", "ODC", "ORFEUS", "RASPISHAKE", "RESIF", "SCEDC",\
+                "TEXNET", "USGS", "USP"')
         else:
             print("From {0} data center : ".format(clientname))
             print(cat)
             return (cat)
 
-
-    def search_stations(self, clientname="IRIS" ):
+    def search_stations(self, clientname="IRIS"):
         r''' Search all available station in the target research region
-        accept: rectangle and circular region
+        This method accepts rectangular or circular range options.
         Parameters
         ----------
-        clientname : TYPE, optional
-            DESCRIPTION. The default is "IRIS".
-
+        clientname : str, optional
+            Data center name. The default is "IRIS".
         Returns
         -------
-        TYPE
-            Creates a preview map of all networks/stations in current inventory object:
-            self.inventory.plot
-            e.g.:
-                self.inventory.plot(projection="local", label=False,
-                                    color_per_network=True, size = 20, outfile = "./image/stationpreview.png")
-
-            plot all available stations in a global map
-
+        inventory : Inventory object
+            Return an Inventory object which stored available stations.
         '''
         client = Client(clientname)
         sta_params = {}
@@ -166,23 +183,7 @@ class QuakeLabeler():
         inventory = client.get_stations(**sta_params)
         return inventory
 
-    def calculate_window(self, event_time, arrivals):
-        r"""Calculate the full time window
-        Given an event time and a dictionary of arrival times (see Distances below)
-
-        """
-
-        start_offset = arrivals.get(self.start_phase, 0) - self.start_offset
-        end_offset = arrivals.get(self.end_phase, 0) + self.end_offset
-        return (
-            # Start time
-            UTCDateTime(event_time + start_offset),
-            # End time
-            UTCDateTime(event_time + end_offset),
-        )
-
-
-    def judge_time_range(self, thread, t1, t2, clientname="IRIS" ):
+    def judge_time_range(self, thread, t1, t2, clientname="IRIS"):
         r"""Check time window
         This module is to examine if there's available waveform from certain
         data center.
@@ -200,7 +201,6 @@ class QuakeLabeler():
             return False
         else:
             return st[0]
-
 
     def waveform_timewindow(self, thread, sample_points=50*60 ):
         r"""calculate waveform startime and endtime
