@@ -4,10 +4,40 @@ QuakeLabeler Tutorial
 Overview
 --------
 
-``QuakeLabeler`` (QL) is a Python package containing command-line interactive
+Preparing training dataset is the first step of machine learning. However annotate
+seismic label is a time consuming and tedious work. ``QuakeLabeler (QL) `` is your
+best solution to automatic produce earthquake labels. To save your time for the next
+brilliant AI method.
+
+``QuakeLabeler (QL) `` is a Python package containing command-line interactive
 tools to help you quick deploy your personal seismic datasets. ``QuakeLabeler``
-collects seismograms from online data centres (i.e. IRIS) based on user's input
-options. Then ``QuakeLabeler`` can automatic run a series of signal processing
+provides one-stop service to convert raw seismic data into valuable training datasets
+for machine learning through professional collection and annotation techniques.
+
+Data Collection
+---------------
+
+Artificial intelligence (AI) needs significant amount of high-quality training data.
+In Seismology, we don't lack raw data. While for AI research, proper data can be difficult
+and time-consuming to collect (revise from original seismic traces).
+
+Different from other static seismic datasets, ``QL`` provides flexible tailored data.
+``QL`` first retrieves raw seismic data from online data centres (i.e. IRIS). Then
+transfer these data(seismograms) into standard training samples. Several signal pre-processing
+methods and data augmenting techniques are implemented to ensure the datasets to final
+reach user's demands.
+
+Data Annotation
+---------------
+With annotated data, models learn to handle complex scenarios. The higher the data accuracy, the better the model performance. With our data annotation services and a wide-range of tools, we can release the value of your data.
+The output datasets are purely
+based on user's input options. So you never need worry about the labels format is not
+suitable for your AI models.
+
+Data Annotation
+---------------
+
+Then ``QuakeLabeler`` can automatic run a series of signal processing
 methods and data augmenting techniques also based on user's needs. After that
 raw seismic data will be transformed to acceptable training samples. Finally
 ``QL`` will annotate these samples with manual reviewed event information (arrival time,
@@ -31,7 +61,7 @@ type::
     # get start QuakeLabeler
     QuakeLabeler
 
-``QuakeLabeler`` will initialize and hint you select one of the running mode::
+``QuakeLabeler`` will initialize and notify you select one of the running mode::
 
     (ql) hao@HaodeMacBook-Pro QuakeLabeler % QuakeLabeler
     Welcome to QuakeLabeler----Fast AI Earthquake Dataset Deployment Tool!
@@ -67,7 +97,7 @@ information from default online data center (``IRIS``)::
 
 .. note::
     Request event information (catalog) from online data center needs time.
-    Therefore you need to wait, also the script will hint this::
+    Therefore you need to wait, also the script will notify this::
 
         Loading time varies on your network connections, search region scale, time range, etc. Please be patient, estimated time: 3 mins
         Request completed！！！
@@ -76,7 +106,7 @@ information from default online data center (``IRIS``)::
 Once you are informed the events has been found. The script will run into next step.
 ``QL`` will ask you to input following settings to generate datasets::
 
-    Please define your own expection for Seismic labled samples:
+    Please define your own expectation for Seismic labeled samples:
 
     How many samples do you wish to create? [1- ] (input MAX for all available waveform):
 
