@@ -93,20 +93,6 @@ class QuakeLabeler():
         for one or more networks.
     network : str
         Available network names.
-
-    Modules
-    -------
-        fetch_all_waveforms()
-            Method to build datasets -- available seismograms based on custom
-            options will be downloaded and transfer to labeles (training
-            samples).
-        fetch_waveform()
-            Method to make labels. Calling single thread request to download
-            waveform, process, and create label.
-        csv_writer()
-            Method to export information of the dataset.
-        stats_hist()
-            Visualize the distribution of the labels.
     """
     def __init__(self, query, custom):
         # init
@@ -263,7 +249,7 @@ class QuakeLabeler():
         else:
             # flexible waveform length
             if self.custom_waveform['random_arrival']:
-                #set a random stattime for each event(waveform) default: 10~180 s before first arrival ~ 30~90 s after arrival
+                # set a random stattime for each event(waveform) default: 10~180 s before first arrival ~ 30~90 s after arrival
                 start = random.randint(10, 90)
                 starttime = UTCDateTime(eventTime) - start
                 end = random.randint(30, 90)
@@ -275,25 +261,24 @@ class QuakeLabeler():
 
         return (starttime, endtime)
 
-
     def search_network(self):
-                # collect network names in a research region
+        # collect network names in a research region
         network = ""
         for net in self.inventory:
             network = network + str(net._code) + ","
         network = network[:-1]
         return network
 
-
     def related_station_info(self, sta):
         # search available station / channel for target events
         station = str(sta)
         network = self.network
         location = "*"
-        # all channel codes: https://ds.iris.edu/ds/nodes/dmc/data/formats/seed-channel-naming/
-        channel = "BH?" # drop low sampling rate channels which might not be useful
+        # all channel codes:
+        # https://ds.iris.edu/ds/nodes/dmc/data/formats/seed-channel-naming/
+        channel = "BH?"
+        # drop low sampling rate channels which might not be useful
         return (network, station, location, channel)
-
 
     def check_export_stream(self, st):
         if self.custom_dataset['fixed_length']:
@@ -304,53 +289,46 @@ class QuakeLabeler():
                     tr.data = tr.data[:self.custom_dataset['sample_length']]
         return st
 
-
-    def fetch_waveform(self, thread, clientname="IRIS" ):
+    def fetch_waveform(self, thread, clientname="IRIS"):
         r"""Retrieve a target stream of waveforms from specific data center
-            The stream can includes mutiple-component seismic traces which from only
-        one station with one event.  They can be spilt as single trace mode or keep as
-        a 3-C sample or multiple-component sample.
-        Note that for now we remove those low-sampling-rate (<1.0Hz) samples which might
-        not help our project.
-
+        This stream can includes mutiple-component seismic traces
+        which from only one station with one event.  They can be spilt as
+        single trace mode or keep as a 3-C sample or multiple-component sample.
+        Note that for now we remove those low-sampling-rate (<1.0Hz) samples
+        which might not help our project.
         Parameters
         ----------
         thread : dict
-            Waveform information
-
+            Waveform information recording.
         clientname : str, optional
             Name of data center. The default is "IRIS".
-
-        ----------
-
         Returns
         -------
         st : Obspy Stream Object
-            Downloaded waveform which save as a obspy.stream object. Or failed request warnings.
-
+            Downloaded waveform which save as a obspy.stream object.
+        `No data available for request.` : str
+            Failed request message.
         """
-        client= Client(clientname)
-        #calculate startime and endtime, must consider trace length, sampling rate to satisfy custom parameters
+        client = Client(clientname)
+        # calculate startime and endtime, must consider trace length, sampling rate to satisfy custom parameters
 
         (start_time, end_time) = self.waveform_timewindow(thread)
-        #(start_time,end_time) = self.waveform_timewindow(thread)
+        # (start_time,end_time) = self.waveform_timewindow(thread)
         (network, station, location, channel) = self.related_station_info(thread['STA'])
         try:
             st = client.get_waveforms(network, station, location, channel, start_time, end_time+10)
             # param attach_response  NEED UPDATE ONE INTERACTIVE PARAMTER HERE
-
-        except Exception as err:
-#            return ("No data available for station %s for event %s !" % station, thread['EVENTID'])
+        except Exception:
             return "No data available for request."
         else:
             # resample mode
             try:
                 resample_rate = float(self.custom_waveform['sample_rate'])
-            except Exception as e:
+            except Exception:
                 pass
             else:
                 st.resample(resample_rate)
-            #filter option
+            # filter option
             if self.custom_waveform['filter_type'] == '1':
                 st.filter('lowpass',freq = self.custom_waveform['filter_freqmin'], corners=2, zerophase = True)
             if self.custom_waveform['filter_type'] == '2':
@@ -376,21 +354,17 @@ class QuakeLabeler():
                 self.sampling_rate = st[0].stats.sampling_rate
                 return st
 
-
     def creatsamplename(self, stream):
-        r'''Creat filename
-        Creat a decent filename
-
+        r'''Creat filename for each sample
+        Creat filenames for each available waveform.
         Parameters
         ----------
-        stream : stream object
-            DESCRIPTION.
-
+        stream : Obspy stream object
+            Availble data stream waited to be transferred to label.
         Returns
         -------
         filename : str
-            creat name for this waveform
-
+            creat a name for the waveform.
         '''
         st = str(stream[0].stats.starttime)
         st_name = st[0:13]+st[15:16]+st[18:19]
@@ -400,12 +374,14 @@ class QuakeLabeler():
             filename = filename + '.' + stream[0].stats.channel + '.'+st_name
         else:
             for tr in stream:
-                filename = filename + '.'+ tr.stats.channel
+                filename = filename + '.' + tr.stats.channel
             filename = filename + '.' + st_name
         return filename
 
-
-    def output_bell_dist(self,npts,it,window):
+    def output_bell_dist(self, npts, it, window):
+        r'''Create bell-like output channel
+        Use bell-like (Gaussian) distribution to form output labels.
+        '''
         # npts: sample length
         # it: peak point
         # window:  width
@@ -415,18 +391,23 @@ class QuakeLabeler():
         fx = np.exp(-8*(x - it)**2/(window)**2)
         return fx
 
-
     def output_rect_dist(self, npts, it, window):
+        r'''Create rectangular output channel
+        Use rectangulardistribution to form output labels.
+        The positive data points = 1.0
+        The negative data points = 0.0
+        '''
         fx = np.zeros(npts)
-        fx[it - window//2 : it + window//2] = 1
+        fx[it - window//2: it + window//2] = 1
         return fx
 
-
-    def single_sample_export(self, st, filename,pick_win = 100, detect_win = 200):
+    def single_sample_export(self, st, filename, pick_win=100, detect_win=200):
+        r''' Export sample in single channel mode
+        '''
         it = int((self.eventtime - self.starttime) * self.sampling_rate)
         self.arr_point = it
 
-        #if user need create independent output channel:
+        # if user need create independent output channel:
         if self.custom_export['export_inout']:
             st1 = st
             st1[0].data = self.output_bell_dist(self.npts, it, pick_win)
@@ -435,17 +416,17 @@ class QuakeLabeler():
 
         if 'SAC' in self.custom_export['export_type']:
             st.write(filename + ".sac", format="SAC")
-                    #if user need create independent output channel:
+            # if user need create independent output channel:
             if self.custom_export['export_inout']:
-                st1.write(filename +'out_bell'+ ".sac", format="SAC")
-                st2.write(filename +'out_rect'+ ".sac", format="SAC")
-        #export as MSEED format
+                st1.write(filename + 'out_bell' + ".sac", format="SAC")
+                st2.write(filename + 'out_rect' + ".sac", format="SAC")
+        # export as MSEED format
         if 'MSEED' in self.custom_export['export_type']:
             st.write(filename + ".mseed", format="MSEED")
             if self.custom_export['export_inout']:
                 st1.write(filename +'out_bell'+ ".mseed", format="MSEED")
                 st2.write(filename +'out_rect'+ ".mseed", format="MSEED")
-        #export as SEGY format
+        # export as SEGY format
         if 'SEGY' in self.custom_export['export_type']:
             st.write(filename + ".sgy", format="SEGY")
             if self.custom_export['export_inout']:
@@ -470,10 +451,12 @@ class QuakeLabeler():
                 mdic = {st2[0].stats.channel : st2[0].data}
                 savemat(filename +'out_rect'+ ".mat", mdic)
     def multi_sample_export(self, st, filename,pick_win = 100, detect_win = 200):
+        r''' Export sample in multiple channel mode
+        '''
         it = int((self.eventtime - self.starttime) * self.sampling_rate)
         self.arr_point = it
 
-        #if user need create independent output channel:
+        # if user need create independent output channel:
         if self.custom_export['export_inout']:
             st1 = st
             for tr in st1:
@@ -522,31 +505,35 @@ class QuakeLabeler():
                 savemat(filename +'out_rect'+ ".mat", mdic)
 
     def fetch_all_waveforms(self, records, clientname="IRIS"):
-        r"""Auto fetch potential waveforms to create samples
-        Manage all potential samples threads. Retrive waveform from specific data centers, revise trace and produce required samples one by one.
+        r"""Auto fetch seismograms to produce samples
+        This module manage all potential waveforms as threads. Retrive waveform
+        from specific data centers, revise trace by customized parameters and
+        produce required samples continuous until reach the volume.
+
         This function contains:
-            1.Load/Import: Make requests to data centers to check available waveforms data
-            2.Custom: Receive user's preferrence parameters for create the data sets.
-            3.Reproduce: Preprocess (resample, filter, denoise, add noise) & revise (crop) trace format according to above parameters.
-            4.Label: Annotate arrival time and type to data
-            5.Export: Save samples in specific file format.
+            1. Load/Import: Requests to data centers to find available data;
+            2. Custom: Use user's preferrence parameters to form the samples;
+            3. Process: (resample, filter, denoise, add noise);
+            4. Revise: fix trace format to satify datasets;
+            5. Label: Annotate arrival time and phase name;
+            6. Export: Save samples in certain file format.
 
         Parameters
         ----------
         records : list
-            `records` saves all potential downloadable waveform (includes station, time, arrival informtion)
+            `records` saves all potential downloadable waveform.
         clientname : str, optional
             The default is "IRIS". Specific data center's name.
 
         Returns
         -------
         available_samples : list
-            Return all finished samples' information.
+            Return every samples in the datasets.
         """
         print('Initialize samples producer module...')
-        #selet user preference
+        # selet user preference
 
-        #count loop number, when loop>100 & no available waveform found, break the loop
+        # count loop number, when loop>100 & no available waveform found, break the loop
         loopnum = 0
         if self.custom_export['export_filename'] == '':
             # if user doesn;t have a preffered folder name:
@@ -576,7 +563,6 @@ class QuakeLabeler():
                 if loopnum>50:
                     warnings.warn('50+ continuous failed data requests, please quit process and check your parameters.')
             else:
-#                sample_name = self.creatsamplename(st)
                 loopnum = 0
                 if self.custom_export['single_trace'] == True:
                     num = num+ len(st)
@@ -634,13 +620,7 @@ class QuakeLabeler():
 
 
     def csv_writer(self):
-        r""" Write in CSV file
-
-
-        Returns
-        -------
-        None.
-
+        r""" Method to export information of the dataset.
         """
         if not self.custom_export['export_arrival_csv']:
             return
@@ -655,14 +635,12 @@ class QuakeLabeler():
             writer.writeheader()
             writer.writerows(self.available_samples)
 
-
-    #statistical charts
     def stats_figure(self):
-        r""" Output figures
+        r""" Output statistical figures
         """
         if not self.custom_export['export_stats']:
             return
-        #create image folder
+        # create image folder
         ImgFolder = 'Image'
         if not os.path.exists(ImgFolder):
             os.mkdir(ImgFolder)
@@ -695,35 +673,30 @@ class QuakeLabeler():
         os.chdir('../')
 
 
-
-#%%
 class Interactive():
-    r""" Arrivals interactive search command line tool
-    Receive user's arrivals search parameters from command line. Automatic search arrivals associated to
-    events in the ISC Bulletin at specific stations.
+    r""" Interactive tool for target stations and time range
+    Receive user's interest search options from command line inteface (CLI).
+    Automatic search arrivals associated to events in the ISC Bulletin
+    on the input stations and time range.
 
-    Search includes:
-        arrival-times
-        orginal-times
-        magnitudes
-        time-defining phases (only available for events with ISC hypocentres)
+    Options includes:
+        #. station region
+        #. time range
+        #. magnitude range
+        #. phase names
 
-    Refference:
+    Refference
+    ----------
     ISC Bulletin: arrivals search
-    International Seismological Centre (20XX), On-line Event Bibliography, https://doi.org/10.31905/EJ3B5LV6
+    International Seismological Centre (20XX), On-line Event Bibliography,
+    https://doi.org/10.31905/EJ3B5LV6
 
     Parameters
     ----------
     params : dict
-        `params` saves all customized options which defines the research region and time. `params` contains
-    region latitude and longitude, start time and end time, magnitudes(optional), etc.
-
-    Methods
-    -------
-    select_mode()
-        Selection of run modes.
-
-
+        `params` saves all customized options which defines the research region
+        and time. `params` contains region latitude and longitude, start time
+        and end time, magnitudes(optional), etc.
     """
     def __init__(self):
         self.welcome() #brief introduction of this tool
@@ -736,15 +709,6 @@ class Interactive():
 
     def input_stn_stn(self):
         r"""Station Region Mode: <STN>:
-        Station Region Mode: <STN>: Station codes search for available stations
-        Dependent parameters if: stnsearch=STN
-        sta_list= <STATION CODE>
-        <STATION CODE>	A valid station code. To search for available station codes, please check the station book in the International Registry of Seismograph Stations.
-
-        Returns
-        -------
-        params : dict
-
         """
         self.params['stnsearch'] = 'STN'
         self.params['sta_list'] = input('Please enter the station codes:  \n ')
@@ -759,18 +723,6 @@ class Interactive():
 
     def input_stn_rect(self):
         r"""Input station region in rectangular mode
-        Station Region Mode: <RECT>: Rectangular search of stations
-        Dependent parameters if: self.params['stnsearch'] = 'RECT'
-        stn_bot_lat=	-90 to 90	Bottom latitude of rectangular region
-        stn_top_lat=	-90 to 90	Top latitude of rectangular region
-        stn_left_lon=	-180 to 180	Left longitude of rectangular region
-        stn_right_lon=	-180 to 180	Right longitude of rectangular region
-        Returns
-        self.params
-        -------
-        TYPE
-            DESCRIPTION.
-
         """
         self.params['stnsearch'] = 'RECT'
         print('Please enter the latitudes(-90 ~ 90) at the bottom and top, the longitudes(-180 ~ 180) on the left and the right of the rectangular boundary. \n ')
@@ -796,6 +748,8 @@ class Interactive():
 
 
     def input_stn_circ(self):
+        r"""Input station region in circular mode
+        """
         self.params['stnsearch'] = 'CIRC'
         print('Please enter the latitude(-90 ~ 90) and longitude(-180 ~ 180) at the central of  the circular region, the unit for max distance and the related radius. \n \
               Note: Acceptable units of distance for a circular search: degrees or kilometres. \n \
@@ -825,22 +779,7 @@ class Interactive():
             print('Reset parameters... \n')
             self.input_stn_circ()
 
-
     def input_stn_fe(self):
-        """
-        Dependent parameters if: stnsearch=FE
-
-        Usage:
-        Enter parameters for a Flinn-Engdahl search region
-        Parameters save in dictionary: self.params
-        stn_srn=	1 to 50	Seismic region number for a Flinn-Engdahl region search
-        stn_grn=	1 to 757	Geographic region number for a Flinn-Engdahl region search
-
-        Returns
-        -------
-        None.
-
-        """
         self.params['stnsearch'] = 'FE'
         print('Enter parameters for a Flinn-Engdahl search region. \n')
         self.params['stn_srn'] = input('Seismic region number for a Flinn-Engdahl region search, possible value: 1 to 50: ')
@@ -858,24 +797,7 @@ class Interactive():
             print('Reset parameters... \n')
             self.input_stn_fe()
 
-
     def input_stn_poly(self):
-        """
-        Dependent parameters if: stnsearch=POLY
-
-        Usage:
-        Enter parameters for a POLY search region
-        Parameters save in dictionary: self.params
-
-        stn_coordvals=	lat1,lon1,lat2,lon2,lat3,lon3,lat4,lon4,lat1,lon1
-        Comma seperated list of coordinates for a desired polygon. Latitude needs to be before longitude.
-        Coordinates in the western and southern hemispheres should be negative.
-
-        Returns
-        -------
-        None.
-
-        """
         self.params['stnsearch'] = 'POLY'
         self.params['stn_coordvals'] = input('please enter [lat1,lon1,lat2,lon2,lat3,lon3,lat4,lon4,lat1,lon1]: \n \
                                              Comma seperated list of coordinates for a desired polygon. Latitude needs to be before longitude. Coordinates in the western and southern hemispheres should be negative.')
@@ -891,25 +813,8 @@ class Interactive():
             print('Reset parameters... \n')
             self.input_stn_poly()
 
-
     def input_time(self):
-        """
-        Input <event-time-range> params
-        Parameter name  |	Possible values |	Description
-        start_year=	         1900 to 2021	    Starting year for events
-        start_month=	     1 to 12	        Starting month for events
-        start_day=	         1 to 31	        Starting day for events
-        start_time=    	00:00:00 to 23:59:59	Starting time for events (HH:MM:SS)
-        end_year=	         1900 to 2021	    Ending year for events
-        end_month=	         1 to 12	        Ending month for events
-        end_day=	         1 to 31	        Ending day for events
-        end_time=	    00:00:00 to 23:59:59	Ending time for events (HH:MM:SS)
-
-        Returns
-        -------
-        TYPE
-            DESCRIPTION.
-
+        r"""Input <event-time-range> params
         """
         print('Please enter time range: \n')
         self.params['start_year'] = input('Input start year (1900-):  \n')
@@ -937,22 +842,8 @@ class Interactive():
             print('Reset parameters... \n')
             self.input_time()
 
-
     def input_mag(self):
-        """
-        Input <event-magnitude-limits> (Optional) params
-        Parameter name	|  Possible values	             |        Description
-        min_mag=	       any float or integer                	Minimum magnitude of events
-        max_mag=	       any float or integer	                Maximum magnitude of events.
-        req_mag_type=	<Any>|<MB>|<MS>|<MW>|<ML>|<MD>	   Limit events to specific magnitude types.
-                                                          Please note: the selected magnitude type will search for all possible magnitudes in that category:
-                                                          E.g. MB will search for mb, mB, Mb, mb1mx, etc
-
-
-        Returns
-        -------
-        None.
-
+        r"""Input <event-magnitude-limits> (Optional) params
         """
         print('Enter event-maginitude limits (optional, enter blankspace for default sets)')
         default = input('Input minmum magnitude (0.0-9.0 or blankspace for skip this set):  \n')
@@ -970,23 +861,8 @@ class Interactive():
         if not (default.isspace() or default == '\n'):
             self.params['req_mag_type'] = default
 
-
     def select_stnsearch(self):
-        """
-        Choose mode for station region search:
-            stnsearch=<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
-                        STN: Stations are restricted to specific station code(s);
-                        GLOBAL: Stations are not restricted by region (i.e. all available stations);
-                        RECT: Rectangular search of stations;
-                        CIRC: Circular search of stations;
-                        FE: Flinn-Engdahl region search of stations;
-                        POLY: Customised polygon search.
-        Parameters save in dictionary: self.params['stnsearch']
-
-        Returns
-        -------
-        None.
-
+        r"""Choose mode for station region search
         """
         # default <request-type> & <arrivals-limits> (http://www.isc.ac.uk/iscbulletin/search/webservices/arrivals/)
         self.params['out_format'] = 'CSV'
@@ -1026,19 +902,7 @@ class Interactive():
 
 
     def input_event_rect(self):
-        """
-        Event Region Mode: <RECT>: Rectangular search of stations
-        Dependent parameters if: self.params['searchshape'] = 'RECT'
-        bot_lat=	-90 to 90	Bottom latitude of rectangular region
-        top_lat=	-90 to 90	Top latitude of rectangular region
-        left_lon=	-180 to 180	Left longitude of rectangular region
-        right_lon=	-180 to 180	Right longitude of rectangular region
-        Returns
-        self.params
-        -------
-        TYPE
-            DESCRIPTION.
-
+        r"""Event Region Mode: <RECT>: Rectangular search of stations
         """
         self.params['searchshape'] = 'RECT'
         print('Please enter the latitudes(-90 ~ 90) at the bottom and top, the longitudes(-180 ~ 180) on the left and the right of the rectangular boundary. \n ')
@@ -1064,17 +928,7 @@ class Interactive():
 
 
     def input_event_circ(self):
-        """
-        Event Region Mode: <CIRC>: Rectangular search of Events
-        Enter parameters for a circular search region
-        Parameters save in dictionary: self.params
-        ctr_lat=	-90 to 90	Central latitude of circular region
-        ctr_lon=	-180 to 180	Central longitude of rectangular region
-        max_dist_units=	<deg>|<km>	Units of distance for a circular search: degrees or kilometres
-        Returns
-        -------
-        None.
-
+        r"""Event Region Mode: <CIRC>: Rectangular search of Events
         """
         self.params['searchshape'] = 'CIRC'
         print('Please enter the latitude(-90 ~ 90) and longitude(-180 ~ 180) at the central of  the circular region, the unit for max distance and the related radius. \n \
@@ -1105,22 +959,7 @@ class Interactive():
             print('Reset parameters... \n')
             self.input_event_circ()
 
-
     def input_event_fe(self):
-        """
-        Dependent parameters if: searchshape=FE
-
-        Usage:
-        Enter parameters for a Flinn-Engdahl search region
-        Parameters save in dictionary: self.params
-        stn_srn=	1 to 50	Seismic region number for a Flinn-Engdahl region search
-        stn_grn=	1 to 757	Geographic region number for a Flinn-Engdahl region search
-
-        Returns
-        -------
-        None.
-
-        """
         self.params['searchshape'] = 'FE'
         print('Enter parameters for a Flinn-Engdahl search region. \n')
         self.params['srn'] = input('Seismic region number for a Flinn-Engdahl region search, possible value: 1 to 50: ')
@@ -1140,22 +979,6 @@ class Interactive():
 
 
     def input_event_poly(self):
-        """
-        Dependent parameters if: searchshape=POLY
-
-        Usage:
-        Enter parameters for a POLY search region
-        Parameters save in dictionary: self.params
-
-        stn_coordvals=	lat1,lon1,lat2,lon2,lat3,lon3,lat4,lon4,lat1,lon1
-        Comma seperated list of coordinates for a desired polygon. Latitude needs to be before longitude.
-        Coordinates in the western and southern hemispheres should be negative.
-
-        Returns
-        -------
-        None.
-
-        """
         self.params['searchshape'] = 'POLY'
         self.params['coordvals'] = input('please enter [lat1,lon1,lat2,lon2,lat3,lon3,lat4,lon4,lat1,lon1]: \n \
                                           Comma seperated list of coordinates for a desired polygon. Latitude needs to be before longitude. Coordinates in the western and southern hemispheres should be negative.')
@@ -1173,23 +996,6 @@ class Interactive():
 
 
     def select_eventsearch(self):
-        """
-        Choose mode for event region search:
-        Usage:
-            Input paramter:
-            searchshape =	<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
-            GLOBAL: Events are not restricted by region;
-            RECT: Rectangular search of events;
-            CIRC: Circular search of events;
-            FE: Flinn-Engdahl region search of events;
-            POLY: Customised polygon search.
-        Parameters save in dictionary: self.params['searchshape']
-
-        Returns
-        -------
-        None.
-
-        """
         print('Enter event region parameters: \n ')
         mode = input('Please select one : [GLOBAL/RECT/CIRC/FE/POLY] \n \
                         [GLOBAL]: Events are not restricted by region; \n \
@@ -1215,11 +1021,12 @@ class Interactive():
                 print('Exit process...')
         return self.params
 
-
-    def beginner_mode(self, field = 1):
-        #default params case[1] in Cascadia subduction zone
-        self.params= {
-        #    """<output-format>"""
+    def beginner_mode(self, field=1):
+        r"""Run beginner mode
+        User can use this method to select one example region to create dataset
+        """
+        # default params case[1] in Cascadia subduction zone
+        self.params = {
             'out_format':'CSV',  #<QuakeML>|<CSV>|<IMS1.0>
         #    """<request-type>"""
             'request':'STNARRIVALS', #Specifies that the ISC Bulletin should be searched for arrivals.
@@ -1384,7 +1191,10 @@ class Interactive():
 
 
     def advanced_mode(self):
-
+        r"""Run advanced mode
+        This method is to run a command line interactive module to let user to
+        design their own research region and time range settings.
+        """
         print('Initialize Advanced Mode...')
         print('Alternative region options are provided. Please select your preferred input function: \n ')
 
@@ -1397,21 +1207,19 @@ class Interactive():
         self.input_time()
         self.input_mag()
 
-
     def select_mode(self):
-        """Running mode selection
-        Customized run modes can be selected at each startup.
-
+        r"""Mode selection
         Returns
         -------
         beginner_mode : function
-            Run beginner mode `self.beginner_mode()` with limited parameters.
+            Run beginner mode `self.beginner_mode()` with default parameters.
         advanced_mode : function
-            Run advanced mode `self.advanced_mode()` with various customized parameters.
+            Run advanced mode `self.advanced_mode()` with various customized
+            options.
 
         """
         print('QuakeLabeler provides multiple modes for different levels of Seismic AI researher \n ')
-        print('[Beginner] mode -- well prepared case studies; \n' + \
+        print('[Beginner] mode -- well prepared case studies; \n' +\
                '[Advanced] mode -- produce earthquake samples based on Customized parameters. \n')
         mode = input("Please select a mode: [1/Beginner/2/Advanced] ")
         if (mode == '1') or (mode.lower() == 'beginner'):
@@ -1456,15 +1264,13 @@ class CustomSamples():
             self.define_waveform()
             self.define_export()
 
-
     def define_dataset(self):
         r"""Dataset options
 
         Returns
         -------
         custom_dataset : dict
-            `custom_dataset` returns a dictionary which saves all dataset related options.
-
+            `custom_dataset` returns a dict which saves all dataset options.
         """
         # set default volume
         self.custom_dataset['volume'] = '5'
@@ -1481,7 +1287,6 @@ class CustomSamples():
             self.custom_dataset['fixed_length'] = False
         return self.custom_dataset
 
-
     def define_waveform(self):
         r"""Waveform options
         Receive waveform format
@@ -1489,7 +1294,7 @@ class CustomSamples():
         Returns
         -------
         custom_waveform : dict
-            Returns a dictionary which saves all waveform options
+            Returns a dictionary which saves all waveform options.
 
         """
         label_type = input('Select label type: [simple/specific]? \n' + \
@@ -1549,11 +1354,12 @@ class CustomSamples():
     def define_export(self):
         r""" Export options for dataset
             Receive interactive arguements to choose export format, include:
-            export_type: SAC, Mini-Seed, NPZ, MAT, etc.
-            export_inout: True/False seperate input / output traces
-            export_out_form: gaussian / peak / rect
-            export_arrival_csv: True / False save arrival information as a independent csv file
-            export_stats: True / False
+                #. export_type: SAC, Mini-Seed, NPZ, MAT, etc.
+                #. export_inout: True/False seperate input / output traces
+                #. export_out_form: gaussian / peak / rect
+                #. export_arrival_csv: True / False
+                save arrival information as a independent csv file
+                #. export_stats: True / False
 
         Returns
         -------
@@ -1606,12 +1412,13 @@ class CustomSamples():
 
 
 class QueryArrival():
-    r"""Auto retrieve online arrivals information
+    r"""Auto request online arrivals catalog
     This class fetch users's target arrivals from ISC Bulletin website.
 
     References
     ----------
-    ..[1] International Seismological Centre (20XX), On-line Bulletin, https://doi.org/10.31905/D808B830
+    [1] International Seismological Centre (20XX), On-line Bulletin,
+    https://doi.org/10.31905/D808B830
 
     """
     def __init__(self, **kwargs ):
@@ -1642,7 +1449,18 @@ class QueryArrival():
 
 
     def find_all_vars(self, text, *args):
-        #EVENTID  ,REPORTER ,STA  ,LAT     ,LON      ,ELEV   ,CHN,DIST  ,BAZ  ,ISCPHASE,REPPHASE,DATE      ,TIME       ,RES  ,TDEF,AMPLITUDE,PER  ,AUTHOR   ,DATE      ,TIME       ,LAT     ,LON      ,DEPTH,AUTHOR   ,TYPE  ,MAG
+        r"""Store all arrival information
+        This method save all fetched information into `recordings`:
+            #. EVENTID
+            #. STA
+            #. PHASE NAME
+            #. ARRIVAL DATE
+            #. ARRIVAL TIME
+            #. ORIGIN DATE
+            #. ORIGIN TIME
+            #. EVENT TYPE
+            #. EVENT MAG
+        """
         ex = r'MAG (.*) '
         all_variables = re.findall(ex, text, re.S)
         all_vars = re.split(r',', all_variables[0])
