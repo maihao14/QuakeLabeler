@@ -5,11 +5,21 @@ Overview
 --------
 
 Preparing training dataset is the first step of machine learning. However annotate
-seismic label is a time consuming and tedious work. ``QuakeLabeler (QL) `` is your
+seismic label is a time consuming and tedious work. ``QuakeLabeler`` ``(QL)`` is your
 best solution to automatic produce earthquake labels. To save your time for the next
 brilliant AI method.
 
-``QuakeLabeler (QL) `` is a Python package containing command-line interactive
+``QuakeLabeler`` runs in a very human way and it can help researchers to create
+training data with little experience of making labels. The rendered datasets
+is mainly prepared for the training procedure of subsequent machine learning
+(deep learning) applications. For example:
+    #. Earthquake detection;
+    #. Phase picking;
+    #. Waveform classification;
+    #. Magnitude prediction.
+    #. Earthquake location.
+
+``QuakeLabeler`` is a Python package containing command-line interactive
 tools to help you quick deploy your personal seismic datasets. ``QuakeLabeler``
 provides one-stop service to convert raw seismic data into valuable training datasets
 for machine learning through professional collection and annotation techniques.
@@ -24,38 +34,35 @@ and time-consuming to collect (revise from original seismic traces).
 Different from other static seismic datasets, ``QL`` provides flexible tailored data.
 ``QL`` first retrieves raw seismic data from online data centres (i.e. IRIS). Then
 transfer these data(seismograms) into standard training samples. Several signal pre-processing
-methods and data augmenting techniques are implemented to ensure the datasets to final
-reach user's demands.
+methods are implemented to ensure the datasets to final reach user's demands.
 
 Data Annotation
 ---------------
-With annotated data, models learn to handle complex scenarios. The higher the data accuracy, the better the model performance. With our data annotation services and a wide-range of tools, we can release the value of your data.
-The output datasets are purely
-based on user's input options. So you never need worry about the labels format is not
-suitable for your AI models.
+With annotated data, models learn to handle complex scenarios. The higher the data accuracy,
+the better the model performance. With a wide-range of data annotation tools, ``QL`` can
+automatic create seismic labels according to user's input options. So you never need worry about
+the export data format have trouble with your AI models.
 
-Data Annotation
----------------
+Workflow
+--------
+``QuakeLabeler`` has a tight pipeline of functions. It automatically builds required seismic
+datasets. Here are the main steps of the producing procedure:
+    #. Define research region and time range
+    #. Design dataset
 
-Then ``QuakeLabeler`` can automatic run a series of signal processing
-methods and data augmenting techniques also based on user's needs. After that
-raw seismic data will be transformed to acceptable training samples. Finally
-``QL`` will annotate these samples with manual reviewed event information (arrival time,
-phase name, magnitude, etc), generate datasets and statistical figures.
+        - Custom waveform formats
+        - Custom dataset formats
+        - Custom export formats
 
-``QuakeLabeler`` runs in a very human way and it can help researchers to create
-training data with little experience of making labels. The rendered datasets
-is mainly prepared for the training procedure of subsequent machine learning
-(deep learning) applications. For example:
-    #. Earthquake detection;
-    #. Phase picking;
-    #. Waveform classification;
-    #. Magnitude prediction.
-    #. Earthquake location.
+    #. Request data from online data center
+    #. Signal processing
+    #. Annotation
+    #. Make dataset
+    #. Export statistical results
 
 Usage
 -----
-Start ``QuakeLabeler`` in any of your interactive shell (eg. in ``MAC OS``, open ``terminal``),
+Start ``QuakeLabeler`` in any of your interactive shell (eg. in ``macOS``, open ``terminal``),
 type::
 
     # get start QuakeLabeler
@@ -72,7 +79,10 @@ type::
 
     Please select a mode: [1/Beginner/2/Advanced]
 
-If you have little knowledge of how to create training dataset, ``[Beginner]``
+Beginner mode
+-------------
+
+If you have little knowledge of how to create training dataset, ``Beginner``
 mode is best for you to quick start::
 
     # you can also input: 1 or beginner for simplify.
@@ -150,8 +160,8 @@ It's worth to mention that here are 2 different formats to generate sample segme
     #. Input waveform start at __ seconds before arrival.
 
 For other questions, you can leave them all blank to use ``default`` parameters, or
-input the ``key words`` which fit your preference. Note that for some question, you
-can input multiple key words (i.e., `SACMAT` or ``MAT_MiniSeed``) ::
+input the `key words which fit your preference. Note that for some question, you
+can input multiple key words (e.g., `SACMAT` or `MAT_MiniSeed) ::
 
     # Leave blank if you wish to apply default options
     Do you want to add random noise: [y/n] n
@@ -161,7 +171,8 @@ can input multiple key words (i.e., `SACMAT` or ``MAT_MiniSeed``) ::
     Do you want to separate save arrival information as a CSV file? [y/n]
     Please input a folder name for your dataset (optional):
     Do you want to generate statistical charts after creating the dataset? [y/n]
-
+.. tip ::
+    As a beginner, feel free to skip the option you do not know how to select y
 Once the questions are done, ``QL`` will automatic deploy customized dataset::
 
     Processing |################################| 5/5Save to target folder: MyDataset2021-05-31T10:06
@@ -175,3 +186,113 @@ Once the questions are done, ``QL`` will automatic deploy customized dataset::
 
     All available waveforms are ready!
     5 of event-based samples are successfully downloaded!
+
+.. note ::
+    If you use ``n`` option for `multiple-component seismic data`, then every ``Stream``
+    will hold all available components from one station at the event time. See the above
+    print information, the last Stream object has 6 available Trace(s) as one rendered sample.
+
+
+Advanced mode
+-------------
+
+If you are already an expert in machine learning. You can apply ``advanced`` mode to fill in
+all customized options for your search fields. As simple as `beginner` mode, you can start in
+your interactive shell with command::
+
+    QuakeLabeler
+
+Select ``2`` or ``Advanced`` to enter::
+
+    # type 2 also works
+    Advanced
+
+``QL`` will initiate advanced mode once it received valid input::
+
+    Initialize Advanced Mode...
+    Alternative region options are provided. Please select your preferred input function:
+
+    Please select one :  [STN/GLOBAL/RECT/CIRC/FE/POLY]
+                         [STN]: Stations are restricted to specific station code(s);
+                         [GLOBAL]: Stations are not restricted by region (i.e. all available stations);
+                         [RECT]: Rectangular search of stations (recommended);
+                         [CIRC]: Circular search of stations(recommended);
+                         [FE]: Flinn-Engdahl region search of stations;
+                         [POLY]: Customized polygon search.
+.. note ::
+
+    ``QL`` provides multiple ways to select your research region. You can select one best fit your
+    study case. In general, we will use ``RECT`` to search in a rectangular region or use ``STN``
+    to input certain stations which you concerned. Note that large region usually need long time for
+    computing.
+
+Once you enter a specific mode, ``QL`` will run related function to ask you input your regional parameters.
+Let's take ``RECT`` function for instance, ``QL`` will request 4 parameters of the rectangular region::
+
+    Please enter the latitudes(-90 ~ 90) at the bottom and top, the longitudes(-180 ~ 180) on the left and the right of the rectangular boundary.
+
+    Input rectangular bottom latitude: 31
+    Input rectangular top latitude: 46
+    Input rectangular left longitude: -128
+    Input rectangular right longitude: -114
+
+When you finish input, ``QL`` will display you input parameters to confirm there is no type-in error::
+
+    The input region is:
+    searchshape: RECT
+    bot_lat: 31
+    top_lat: 46
+    left_lon: -128
+    right_lon: -114
+
+    Input parameters confirm?  [y/n]
+    y
+
+Once you setup research region, you can set time range in the same way::
+
+    Please enter time range:
+
+    Input start year (1900-):
+    2010
+    Input start month(1-12):
+    1
+    Input start day (1-31):
+    7
+    Input start time(00:00:00-23:59:59):
+    01:00:00
+    Input end year (1900-):
+    2010
+    Input end month(1-12):
+    1
+    Input end day (1-31):
+    10
+    Input end time(00:00:00-23:59:59):
+    03:00:00
+    start_year: 2010
+    start_month: 1
+    start_day: 7
+    start_time: 01:00:00
+    end_year: 2010
+    end_month: 1
+    end_day: 10
+    end_time: 03:00:00
+
+    Input parameters confirm?  [y/n]
+    y
+
+Apart from research region and time range, the following input are optional,
+e.g., you can select magnitude range or specific
+magnitude type which you interest in. You can skip these questions, ``QL`` will
+use default options::
+
+    Enter event-maginitude limits (optional, enter blankspace for default sets)
+    Input minmum magnitude (0.0-9.0 or blankspace for skip this set):
+
+    Input maxmum magnitude (0.0-9.0 or blankspace for skip this set):
+
+    Enter specific magnitude types. Please note: the selected magnitude type will search for all possible magnitudes in that category:
+                       E.g. MB will search for mb, mB, Mb, mb1mx, etc
+                       Availble input:
+                       <Any>|<MB>|<MS>|<MW>|<ML>|<MD> or blankspace for skip this set
+
+After 

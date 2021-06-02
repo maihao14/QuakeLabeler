@@ -58,7 +58,7 @@ class QuakeLabeler():
     #. Retrieve available waveforms from data center;
     #. Pre-process (optional): detrend, denoise, resampling, filter;
     #. Transfer waveforms to standard labels;
-    #. Post-process (optional): add noise, seperate input/output channels, crop;
+    #. Post-process (optional): add noise, separate input/output channels, crop;
     #. Save datsets informations as CSV files;
     #. Export distribution histogram.
 
@@ -291,7 +291,7 @@ class QuakeLabeler():
 
     def fetch_waveform(self, thread, clientname="IRIS"):
         r"""Retrieve a target stream of waveforms from specific data center
-        This stream can includes mutiple-component seismic traces
+        This stream can includes multiple-component seismic traces
         which from only one station with one event.  They can be spilt as
         single trace mode or keep as a 3-C sample or multiple-component sample.
         Note that for now we remove those low-sampling-rate (<1.0Hz) samples
@@ -800,7 +800,7 @@ class Interactive():
     def input_stn_poly(self):
         self.params['stnsearch'] = 'POLY'
         self.params['stn_coordvals'] = input('please enter [lat1,lon1,lat2,lon2,lat3,lon3,lat4,lon4,lat1,lon1]: \n \
-                                             Comma seperated list of coordinates for a desired polygon. Latitude needs to be before longitude. Coordinates in the western and southern hemispheres should be negative.')
+                                             Comma separated list of coordinates for a desired polygon. Latitude needs to be before longitude. Coordinates in the western and southern hemispheres should be negative.')
 
         #print update params
         print('stnsearch: ' + self.params['stnsearch'] + '\n' +  \
@@ -981,7 +981,7 @@ class Interactive():
     def input_event_poly(self):
         self.params['searchshape'] = 'POLY'
         self.params['coordvals'] = input('please enter [lat1,lon1,lat2,lon2,lat3,lon3,lat4,lon4,lat1,lon1]: \n \
-                                          Comma seperated list of coordinates for a desired polygon. Latitude needs to be before longitude. Coordinates in the western and southern hemispheres should be negative.')
+                                          Comma separated list of coordinates for a desired polygon. Latitude needs to be before longitude. Coordinates in the western and southern hemispheres should be negative.')
 
         #print update params
         print('searchshape: ' + self.params['searchshape'] + '\n' +  \
@@ -1355,7 +1355,7 @@ class CustomSamples():
         r""" Export options for dataset
             Receive interactive arguements to choose export format, include:
                 #. export_type: SAC, Mini-Seed, NPZ, MAT, etc.
-                #. export_inout: True/False seperate input / output traces
+                #. export_inout: True/False separate input / output traces
                 #. export_out_form: gaussian / peak / rect
                 #. export_arrival_csv: True / False
                 save arrival information as a independent csv file
@@ -1367,7 +1367,7 @@ class CustomSamples():
             Export options for dataset.
 
         """
-        # seperate dataset as: input and output trace
+        # separate dataset as: input and output trace
         # input: Original trace
         # output: Probability density function
         self.custom_export['export_type'] = input('Select export file format: [SAC/MSEED/SEGY/NPZ/MAT]')
@@ -1377,13 +1377,13 @@ class CustomSamples():
 
         # single trace: 1 sample 1 trace
         # multiple traces: 1 sample 1 stream 1+ traces (i.e. 3 traces: BHZ,BHE,BHN)
-        self.custom_export['single_trace'] = input('Save as single trace or mutiple-component seismic data? [y/n]')
+        self.custom_export['single_trace'] = input('Save as single trace or multiple-component seismic data? [y/n]')
         if self.custom_export['single_trace'].lower() == 'y':
             self.custom_export['single_trace'] = True
         else:
             self.custom_export['single_trace'] = False
 
-        in_out = input('Do you want to seperate save traces as input and output? [y/n]')
+        in_out = input('Do you want to separate save traces as input and output? [y/n]')
         if in_out == 'y':
             self.custom_export['export_inout'] = True
         else:
@@ -1391,7 +1391,7 @@ class CustomSamples():
 
         # save each label information into csv files for validation
         # i.e.: arrival time, magnitude, etc.
-        arrival_csv = input('Do you want to seperate save arrival information as a CSV file? [y/n]')
+        arrival_csv = input('Do you want to separate save arrival information as a CSV file? [y/n]')
         if arrival_csv == 'y':
             self.custom_export['export_arrival_csv'] = True
         else:

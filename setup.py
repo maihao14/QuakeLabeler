@@ -21,12 +21,14 @@ def find_version(*paths):
 setup(
     name='QuakeLabeler',
     version=find_version('quakelabeler', '__init__.py'),
-    description='Seismic Annotation Tools',
-    author='Hao Mai & Pascal Audet',
-    author_email='hmai090@uottawa.ca',
+    description='Fast AI Seismic Annotation Tools',
+    author='Hao Mai, Pascal Audet',
+    author_email='hmai090@uottawa.ca, pascal.audet@uottawa.ca',
     maintainer='Hao Mai & Pascal Audet',
     maintainer_email='hmai090@uottawa.ca',
     url='https://github.com/maihao14/QuakeLabeler',
+    download_url='https://github.com/maihao14/QuakeLabeler/archive/refs/tags/v0.0.1.tar.gz',
+    keywords=['AI', 'seismic', 'label', 'dataset'],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
