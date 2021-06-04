@@ -9,14 +9,14 @@
 Welcome to QuakeLabeler's documentation!
 ============================================
 
-QuakeLabeler (QL) is a package containing Python tools for labelling
-earthquake data (for machine learning applications). Current functionalities
-include retrieving waveforms from data centers, customizing seismic samples,
-auto-preparing datasets for training, testing and validation, preprocessing
-and augmenting techniques, and visualizing data distribution. The code helps
-all levels of AI developers and researchers for querying and building their
-own earthquake datasets and can be used through an interactive command-line
-interface with little knowledge of Python.
+Quake Labeler (QL) Python package enables you to label ground truth for various
+seismic machine learning applications. Current functionalities include
+retrieving raw waveforms from online data centers, customizing automation modules,
+processing and augmenting data, annotating by online reviewed catalog, and
+visualizing data distribution. The code helps all levels of AI developers and
+researchers for building their own machine learning earthquake datasets. Currently
+Quake Labeler runs on an interactive command-line interface so that you can create
+dataset with little knowledge of programming.
 
 .. toctree::
    :maxdepth: 1

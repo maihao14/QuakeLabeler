@@ -25,7 +25,7 @@ provides one-stop service to convert raw seismic data into valuable training dat
 for machine learning through professional collection and annotation techniques.
 
 Data Collection
----------------
++++++++++++++++
 
 Artificial intelligence (AI) needs significant amount of high-quality training data.
 In Seismology, we don't lack raw data. While for AI research, proper data can be difficult
@@ -37,7 +37,7 @@ transfer these data(seismograms) into standard training samples. Several signal 
 methods are implemented to ensure the datasets to final reach user's demands.
 
 Data Annotation
----------------
++++++++++++++++
 With annotated data, models learn to handle complex scenarios. The higher the data accuracy,
 the better the model performance. With a wide-range of data annotation tools, ``QL`` can
 automatic create seismic labels according to user's input options. So you never need worry about
@@ -79,7 +79,7 @@ type::
 
     Please select a mode: [1/Beginner/2/Advanced]
 
-Beginner mode
+Beginner Mode
 -------------
 
 If you have little knowledge of how to create training dataset, ``Beginner``
@@ -193,7 +193,7 @@ Once the questions are done, ``QL`` will automatic deploy customized dataset::
     print information, the last Stream object has 6 available Trace(s) as one rendered sample.
 
 
-Advanced mode
+Advanced Mode
 -------------
 
 If you are already an expert in machine learning. You can apply ``advanced`` mode to fill in
@@ -285,14 +285,43 @@ e.g., you can select magnitude range or specific
 magnitude type which you interest in. You can skip these questions, ``QL`` will
 use default options::
 
-    Enter event-maginitude limits (optional, enter blankspace for default sets)
-    Input minmum magnitude (0.0-9.0 or blankspace for skip this set):
+    Enter event magnitude limits (optional, enter blank space for default sets)
+    Input minimum magnitude (0.0-9.0 or blank space for skip this set):
 
-    Input maxmum magnitude (0.0-9.0 or blankspace for skip this set):
+    Input maximum magnitude (0.0-9.0 or blank space for skip this set):
 
     Enter specific magnitude types. Please note: the selected magnitude type will search for all possible magnitudes in that category:
                        E.g. MB will search for mb, mB, Mb, mb1mx, etc
-                       Availble input:
-                       <Any>|<MB>|<MS>|<MW>|<ML>|<MD> or blankspace for skip this set
+                       Available input:
+                       <Any>|<MB>|<MS>|<MW>|<ML>|<MD> or blank space for skip this set
 
-After 
+After the above specific definitions, subsequent options are same as ``beginner`` mode.
+User will go through all questions to define their dataset ::
+
+    How many samples do you wish to create? [1- ] (input MAX for all available waveform):5000
+    Do you want fixed sample length? [y/n] (default: y):y
+    Enter sample length (how many sample points do you wish in a trace)?(default 5000): 5000
+    Select label type: [simple/specific]?
+    [simple]: P/S;
+    [specific]: P/Pn/Pb/S/Sn, etc.
+    specific
+    Enter a fixed sampling rate(i.e.: 100.0) or skip for keep original sampling rate:
+    Select filter function for preprocess? [0/1/2/3]:
+    [0]: Do not apply filter function;
+    [1]: Butterworth-Lowpass;
+    [2]: Butterworth-Highpass;
+    [3]: Butterworth-Bandpass. 0
+    Do you want to detrend the waveforms ? [y/n]n
+    Would you like random input? [y/n]y
+    Do you want to add random noise: [y/n] n
+    Select export file format: [SAC/MSEED/SEGY/NPZ/MAT]SAC
+    Save as single trace or multiple-component seismic data? [y/n]y
+    Do you want to separate save traces as input and output? [y/n]y
+    Do you want to separate save arrival information as a CSV file? [y/n]y
+    Please input a folder name for your dataset (optional): NewDataset
+    Do you want to generate statistical charts after creating the dataset? [y/n]y
+
+.. note ::
+
+    - Time varies based on the dataset volume.
+    - Only use pre-processing options if it's necessary.
