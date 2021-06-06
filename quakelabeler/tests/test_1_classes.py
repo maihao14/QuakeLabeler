@@ -39,6 +39,11 @@ params= {
     'stn_top_lat':'55.00',  #-90 to 90  #Top latitude of rectangular region
     'stn_left_lon': '-130.00',  #-180 to 180    Left longitude of rectangular region
     'stn_right_lon':'-120.00',  #-180 to 180    Right longitude of rectangular region
+    'searchshape':'RECT',
+    'bot_lat':'40.00', #    -90 to 90   #Bottom latitude of rectangular region
+    'top_lat':'55.00',  #-90 to 90  #Top latitude of rectangular region
+    'left_lon': '-130.00',  #-180 to 180    Left longitude of rectangular region
+    'right_lon':'-120.00',  #-180 to 180    Right longitude of rectangular region    
     'start_year':'2010',
     'start_month':'9',
     'start_day':'7',
