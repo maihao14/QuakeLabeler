@@ -29,6 +29,7 @@ from __future__ import (absolute_import, division, print_function)
 
 # dependent packages
 import os
+import shutil
 import logging
 import csv
 from obspy.core.utcdatetime import UTCDateTime
@@ -425,18 +426,20 @@ class QuakeLabeler():
                 st2.write(filename +'out_rect'+ ".mseed", format="MSEED")
         # export as SEGY format
         if 'SEGY' in self.custom_export['export_type']:
+            pass
+            # SEGY output is not stable
             # require float32
-            for tr in st:
-                tr.data = np.require(tr.data, dtype=np.float32)
-            for tr in st1:
-                tr.data = np.require(tr.data, dtype=np.float32)
-            for tr in st2:
-                tr.data = np.require(tr.data, dtype=np.float32)
-            data = np.require(data, dtype=np.float32)
-            st.write(filename + ".sgy", format="SEGY")
-            if self.custom_export['export_inout']:
-                st1.write(filename +'out_bell'+ ".sgy", format="SEGY")
-                st2.write(filename +'out_rect'+ ".sgy", format="SEGY")
+            # for tr in st:
+            #     tr.data = np.require(tr.data, dtype=np.float32)
+            # for tr in st1:
+            #     tr.data = np.require(tr.data, dtype=np.float32)
+            # for tr in st2:
+            #     tr.data = np.require(tr.data, dtype=np.float32)
+            # data = np.require(data, dtype=np.float32)
+            # st.write(filename + ".sgy", format="SEGY")
+            # if self.custom_export['export_inout']:
+            #     st1.write(filename +'out_bell'+ ".sgy", format="SEGY")
+            #     st2.write(filename +'out_rect'+ ".sgy", format="SEGY")
         #export as Python Numpy format
         if 'NPZ' in self.custom_export['export_type']:
             npzdict = {'data': st[0].data}
@@ -481,20 +484,19 @@ class QuakeLabeler():
                 st1.write(filename +'out_bell'+ ".mseed", format="MSEED")
                 st2.write(filename +'out_rect'+ ".mseed", format="MSEED")
         if 'SEGY' in self.custom_export['export_type']:
+            pass
+            # SEGY output is not stable
             # require float32
-            for tr in st:
-                tr.data = np.require(tr.data, dtype=np.float32)
-            for tr in st1:
-                tr.data = np.require(tr.data, dtype=np.float32)
-            for tr in st2:
-                tr.data = np.require(tr.data, dtype=np.float32)
-            st.write(filename + ".sgy", format="SEGY")
-            if self.custom_export['export_inout']:
-                st1.write(filename +'out_bell'+ ".sgy", format="SEGY")
-                st2.write(filename +'out_rect'+ ".sgy", format="SEGY")
-            if self.custom_export['export_inout']:
-                st1.write(filename +'out_bell'+ ".sgy", format="SEGY")
-                st2.write(filename +'out_rect'+ ".sgy", format="SEGY")
+            # for tr in st:
+            #     tr.data = np.require(tr.data, dtype=np.float32)
+            # for tr in st1:
+            #     tr.data = np.require(tr.data, dtype=np.float32)
+            # for tr in st2:
+            #     tr.data = np.require(tr.data, dtype=np.float32)
+            # st.write(filename + ".sgy", format="SEGY")
+            # if self.custom_export['export_inout']:
+            #     st1.write(filename +'out_bell'+ ".sgy", format="SEGY")
+            #     st2.write(filename +'out_rect'+ ".sgy", format="SEGY")
         if 'NPZ' in self.custom_export['export_type']:
             npzdict = {}
             for tr in st:
@@ -564,7 +566,7 @@ class QuakeLabeler():
             maxnum = len(records)
         #create a dict save every sample information
         self.available_samples = []
-
+        self.custom_export['folder_name'] = FileName
         if not os.path.exists(FileName):
             os.mkdir(FileName)
         os.chdir(FileName)
@@ -632,8 +634,32 @@ class QuakeLabeler():
         os.chdir('../')
         self.FolderName = FileName
         return self.available_samples
-
-
+    def subfolder(self, trainratio=0.8):
+        r"""Split dataset
+        Divide dataset as a training dataset(80%) and a validation dataset(20%)
+        """
+        FileName = self.custom_export['folder_name']
+        orgin_path = FileName
+        os.chdir(orgin_path)
+        if not os.path.exists('Training'):
+            os.mkdir('Training')
+        moved_path = "Training"
+        dir_files = os.listdir()
+        filessum = len(dir_files)
+        trainnum = int(filessum * trainratio)
+        for file in dir_files[:trainnum]:
+            #file_path = os.path.join(orgin_path, file)
+            if os.path.isfile(file):
+                shutil.move(file, moved_path)
+        if not os.path.exists('Validation'):
+            os.mkdir('Validation')
+        moved_path = "Validation"
+        for file in dir_files[trainnum:]:
+            #file_path = os.path.join(orgin_path, file)
+            if os.path.isfile(file):
+                shutil.move(file, moved_path)
+        print("Training set and validation set completed!")
+        os.chdir('../')
     def csv_writer(self):
         r""" Method to export information of the dataset.
         """
@@ -750,16 +776,17 @@ class Interactive():
                 the rectangular boundary. \n ')
         print('Example: \n Default region (Cascadia subduction zone, NA): \n')
         #set default params
-        print('stnsearch: ' + self.params['stnsearch'] + '\n' +  \
-        'stn_bot_lat: '+ self.params['stn_bot_lat'] + '\n' + \
-        'stn_top_lat: '+ self.params['stn_top_lat'] + '\n' + \
-        'stn_left_lon: '+ self.params['stn_left_lon'] + '\n' + \
-        'stn_right_lon: '+ self.params['stn_right_lon'] +'\n'  )
         # set default params
         self.params['stn_bot_lat'] = '40.00'
         self.params['stn_top_lat'] = '55.00'
         self.params['stn_left_lon'] = '-130.00'
         self.params['stn_right_lon'] = '-120.00'
+        print('stnsearch: ' + self.params['stnsearch'] + '\n' +  \
+        'stn_bot_lat: '+ self.params['stn_bot_lat'] + '\n' + \
+        'stn_top_lat: '+ self.params['stn_top_lat'] + '\n' + \
+        'stn_left_lon: '+ self.params['stn_left_lon'] + '\n' + \
+        'stn_right_lon: '+ self.params['stn_right_lon'] +'\n'  )
+
         # input from interative shell
         self.params['stn_bot_lat'] = input('Input rectangular bottom latitude: ')
         if self.params['stn_bot_lat'] == '':
@@ -1186,23 +1213,23 @@ class Interactive():
                 'tdef':'on', # if they are time-defining phases.
                 'iscreview':'on', # in the Reviewed ISC Bulletin
                 'stnsearch':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
-                'stn_bot_lat':'33.0', #  -90 to 90   #Bottom latitude of rectangular region
-                'stn_top_lat':'36.0',    #-90 to 90  #Top latitude of rectangular region
-                'stn_left_lon': '-100.0', #-180 to 180    Left longitude of rectangular region
-                'stn_right_lon':'-95.0',     #-180 to 180    Right longitude of rectangular region
+                'stn_bot_lat':'30', #  -90 to 90   #Bottom latitude of rectangular region
+                'stn_top_lat':'40',    #-90 to 90  #Top latitude of rectangular region
+                'stn_left_lon': '-100', #-180 to 180    Left longitude of rectangular region
+                'stn_right_lon':'-95',     #-180 to 180    Right longitude of rectangular region
                 'searchshape':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
-                'bot_lat':'33.0', #  -90 to 90   #Bottom latitude of rectangular region
-                'top_lat':'36.0',    #-90 to 90  #Top latitude of rectangular region
-                'left_lon': '-100.0', #-180 to 180    Left longitude of rectangular region
-                'right_lon':'-95.0',     #-180 to 180    Right longitude of rectangular region
+                'bot_lat':'30', #  -90 to 90   #Bottom latitude of rectangular region
+                'top_lat':'40',    #-90 to 90  #Top latitude of rectangular region
+                'left_lon':'-100', #-180 to 180    Left longitude of rectangular region
+                'right_lon':'-95',     #-180 to 180    Right longitude of rectangular region
                 'start_month':'7',
                 'start_day':'1',
-                'start_time':'08:00:00',
+                'start_time':'00:00:00',
                 'end_year':'2016',
                 'end_month':'7',
                 'end_day':'30',
-                'end_time':'23:00:00',
-                'min_mag':'1.0',
+                'end_time':'00:00:00',
+#                'min_mag':'1.0',
                 'req_mag_agcy':'Any',
                 'req_mag_type':'Any',
                 }
@@ -1467,9 +1494,10 @@ class CustomSamples():
         print('Example: \n')
         print('    · Single export format: SAC (default) ')
         print('    · Multiple export formats: SACMSEEDNPZ | SEGY/NPZ/MAT | npzsacmseed ')
-        # default
-        self.custom_export['export_type'] = 'SAC'
         self.custom_export['export_type'] = input('Select export file format: [SAC/MSEED/SEGY/NPZ/MAT]')
+        # default
+        if self.custom_export['export_type'] == '':
+             self.custom_export['export_type'] = 'SAC'
         self.custom_export['export_type'] = self.custom_export['export_type'].upper()
         if 'NPZ' in self.custom_export['export_type'] or 'MAT' in self.custom_export['export_type']:
             warnings.warn('Export to external format might lose traces information! ')

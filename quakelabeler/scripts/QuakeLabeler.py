@@ -68,8 +68,8 @@ def main():
 
 
     creatlabels.csv_writer()
-
     creatlabels.stats_figure()
+    creatlabels.subfolder()
     #Neither Basemap nor Cartopy could be imported.
 
 #%%
