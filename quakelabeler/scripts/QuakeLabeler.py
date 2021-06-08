@@ -65,8 +65,7 @@ def main():
     custom.init()
     creatlabels = QuakeLabeler(query, custom)
     creatlabels.fetch_all_waveforms(creatlabels.recordings)
-
-
+    creatlabels.waveform_display()
     creatlabels.csv_writer()
     creatlabels.stats_figure()
     creatlabels.subfolder()

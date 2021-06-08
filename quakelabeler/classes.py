@@ -365,7 +365,7 @@ class QuakeLabeler():
             creat a name for the waveform.
         '''
         st = str(stream[0].stats.starttime)
-        st_name = st[0:13]+st[15:16]+st[18:19]
+        st_name = st[0:13]+st[14:16]+st[17:19]
 
         filename = stream[0].stats.network + '.' + stream[0].stats.station
         if self.custom_export['single_trace'] == True:
@@ -708,6 +708,7 @@ class QuakeLabeler():
         # Set a clean upper y-axis limit.
         plt.ylim(ymax=np.ceil(maxfreq / 10) * 10 if maxfreq % 10 else maxfreq + 10)
         plt.savefig('MagDist.jpeg', dpi = 300)
+        plt.show()
         #station overview
         # self.inventory.plot(projection="local", label=False,
         #     color_per_network=True, size=20,
@@ -718,7 +719,32 @@ class QuakeLabeler():
         Method to display generated seismic label case to show how the label
         looks like.
         """
-
+        sample = self.available_samples[-1]
+        st = self.fetch_waveform(sample )
+        print(st)
+        plt.figure(figsize=(8, 7.5))
+        num = len(st)
+        arr = sample['arr_point']
+        for j in np.arange(num):
+            plt.subplot(num+2,1,j+1)
+            plt.plot(st[j].data, 'k')
+            plt.axvline(arr,label=sample['ISCPHASE'],color='blue',linestyle="-")
+            plt.legend()
+            plt.ylabel(st[j].stats.channel)
+        bell_dist = self.output_bell_dist(st[j].stats.npts, arr, 100)
+        rect_dist = self.output_rect_dist(st[j].stats.npts, arr, 200)
+        plt.subplot(num+2,1,j+2)
+        plt.plot(bell_dist,label="Phase Probability",color='blue',linestyle="--")
+        plt.ylabel('Out: Phase Pick')
+        plt.legend()
+        plt.subplot(num+2,1,j+3)
+        plt.plot(rect_dist,label="Signal Probability",color='red',linestyle="--")
+        plt.legend()
+        plt.ylabel('Out: Signal Detection')
+        plt.suptitle("This is a Sample")
+        plt.xlabel('Points')
+        plt.savefig(sample['filename']+'.jpg', dpi=300)
+        plt.show()
 
 class Interactive():
     r""" Interactive tool for target stations and time range
