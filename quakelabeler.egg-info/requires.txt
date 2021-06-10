@@ -1,0 +1,7 @@
+numpy
+obspy
+scipy
+requests
+progress
+matplotlib
+termplotlib

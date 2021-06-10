@@ -1,0 +1,715 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Classes &mdash; QuakeLabeler 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="QuakeLabeler Tutorial" href="tutorials.html" />
+    <link rel="prev" title="Licence" href="quakelabeler.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> QuakeLabeler
+          
+
+          
+            
+            <img src="_static/QuakeLabeler.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Quick Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="links.html">GitHub Repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="links.html#references">References</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="quakelabeler.html">Licence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quakelabeler.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quakelabeler.html#quick-start">Quick Start</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API DOCUMENTATION</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Classes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#quakelabeler">QuakeLabeler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#interactive">Interactive</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#customsamples">CustomSamples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#queryarrival">QueryArrival</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">QuakeLabeler Tutorial</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">QuakeLabeler</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Classes</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="figure align-center">
+<img alt="_images/QuakeLabeler.png" src="_images/QuakeLabeler.png" />
+</div>
+<div class="section" id="classes">
+<h1>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h1>
+<p><code class="xref py py-mod docutils literal notranslate"><span class="pre">quakelabeler</span></code> defines the following classes:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#quakelabeler.classes.QuakeLabeler" title="quakelabeler.classes.QuakeLabeler"><code class="xref py py-class docutils literal notranslate"><span class="pre">QuakeLabeler</span></code></a></p></li>
+<li><p><a class="reference internal" href="#quakelabeler.classes.Interactive" title="quakelabeler.classes.Interactive"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interactive</span></code></a></p></li>
+<li><p><a class="reference internal" href="#quakelabeler.classes.CustomSamples" title="quakelabeler.classes.CustomSamples"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomSamples</span></code></a></p></li>
+<li><p><a class="reference internal" href="#quakelabeler.classes.QueryArrival" title="quakelabeler.classes.QueryArrival"><code class="xref py py-class docutils literal notranslate"><span class="pre">QueryArrival</span></code></a></p></li>
+</ul>
+<div class="section" id="quakelabeler">
+<h2>QuakeLabeler<a class="headerlink" href="#quakelabeler" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="quakelabeler.classes.QuakeLabeler">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">quakelabeler.classes.</span></span><span class="sig-name descname"><span class="pre">QuakeLabeler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QuakeLabeler" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">Quake</span> <span class="pre">Labeler</span></code> class enables to automatically label ground truth.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">QuakeLabeler</span></code> object contains Class attributes that design and create
+seismic datasets by custom settings. QuakeLabeler runs a series of methods
+to automatic generate datasets:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Define research region and time range</p></li>
+<li><p>Define automation dataset options</p></li>
+<li><p>Retrieve seismograms from data center</p></li>
+<li><p>Pre-process (optional): detrend, denoise, resampling, filter</p></li>
+<li><p>Transfer waveforms to standard labels (Annotation)</p></li>
+<li><p>Post-process (optional): crop, add noise, generate input/output channels</p></li>
+<li><p>Save label recordings as independent CSV files</p></li>
+<li><p>Export distribution histogram</p></li>
+</ol>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is intended to be the core QuakeLabeler functionality, without any
+reference to the command line interface. The original intent was to allow
+this to run independently, eg. from a script or interactive shell.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>dict</em>) – <p><cite>params</cite> containing research region and time range options in a
+dictionary which receive from interactive shell or scripts.
+<cite>params</cite> options include:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>station region</p></li>
+<li><p>event time range</p></li>
+<li><p>event magnitude limits(optional)</p></li>
+<li><p>arrival limits(optional)</p></li>
+</ol>
+</div></blockquote>
+</p></li>
+<li><p><strong>recordings</strong> (<em>dict</em>) – <p>Event-based records (i.e., arrival information) request from <a class="reference external" href="http://www.isc.ac.uk/iscbulletin/search/webservices/">ISC
+bulletin</a>. Note
+that these recordings do not gurantee they are downloadable from
+certain data centers.
+<cite>recordings</cite> includes:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>event ID</p></li>
+<li><p>event magnitude</p></li>
+<li><p>phase name</p></li>
+<li><p>arrival time</p></li>
+<li><p>original event time</p></li>
+<li><p>event location (optional)</p></li>
+</ol>
+</div></blockquote>
+</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.QuakeLabeler.search_catalog">
+<span class="sig-name descname"><span class="pre">search_catalog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clientname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'IRIS'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QuakeLabeler.search_catalog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Availble data source check for data centers.
+If the desired data center does not have available seismograms, this
+module will reminder user to change data center.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.QuakeLabeler.search_stations">
+<span class="sig-name descname"><span class="pre">search_stations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clientname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'IRIS'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QuakeLabeler.search_stations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search all available station in the target research region.
+This method accepts rectangular or circular range options.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>clientname</strong> (<em>str</em><em>, </em><em>optional</em>) – Data center name. The default is “IRIS”.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>inventory</strong> – Return an Inventory object which stored available stations.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Inventory object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.QuakeLabeler.judge_time_range">
+<span class="sig-name descname"><span class="pre">judge_time_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">thread</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clientname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'IRIS'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QuakeLabeler.judge_time_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check specific seismogram’s time window.
+Method to examine if there’s available waveform from certain
+data center for download in the target time range.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.QuakeLabeler.waveform_timewindow">
+<span class="sig-name descname"><span class="pre">waveform_timewindow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">thread</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QuakeLabeler.waveform_timewindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate sample’s startime and endtime. Method to ensure retrieve
+enough time length waveform.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>thread</strong> (<em>dict</em>) – <em>thread</em> stores a specific seismogram information.</p></li>
+<li><p><strong>sample_points</strong> (<em>int</em><em>, </em><em>optional</em>) – Waveform length. The default is 50*60 = 3000.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>starttime</strong> (<em>UTCTime</em>) – Start time for this waveform.</p></li>
+<li><p><strong>endtime</strong> (<em>UTCTime</em>) – End time for this waveform.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.QuakeLabeler.fetch_waveform">
+<span class="sig-name descname"><span class="pre">fetch_waveform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">thread</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clientname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'IRIS'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QuakeLabeler.fetch_waveform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a target stream of waveforms from specific data center.</p>
+<p>This stream can includes multiple-component seismic traces
+which from only one station with one event.  They can be spilt as
+single trace mode or keep as a 3-C sample or multiple-component sample.
+Note that for now we remove those low-sampling-rate (&lt;1.0Hz) samples
+which might not help our project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>thread</strong> (<em>dict</em>) – Waveform information recording.</p></li>
+<li><p><strong>clientname</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of data center. The default is “IRIS”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>st</strong> (<em>Obspy Stream Object</em>) – Downloaded waveform which save as a obspy.stream object.</p></li>
+<li><p><strong>`No data available for request.`</strong> (<em>str</em>) – Failed request message.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.QuakeLabeler.creatsamplename">
+<span class="sig-name descname"><span class="pre">creatsamplename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stream</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QuakeLabeler.creatsamplename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create filename for each sample.</p>
+<p>Create filenames for each available waveform.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>stream</strong> (<em>Obspy stream object</em>) – Availble data stream waited to be transferred to label.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>filename</strong> – creat a name for the waveform.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.QuakeLabeler.output_bell_dist">
+<span class="sig-name descname"><span class="pre">output_bell_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">npts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">it</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QuakeLabeler.output_bell_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create bell-like output channel</p>
+<p>Use bell-like (Gaussian) distribution to form output labels.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.QuakeLabeler.output_rect_dist">
+<span class="sig-name descname"><span class="pre">output_rect_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">npts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">it</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QuakeLabeler.output_rect_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create rectangular output channel</p>
+<p>Use rectangulardistribution to form output labels.
+The positive data points = 1.0
+The negative data points = 0.0</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.QuakeLabeler.single_sample_export">
+<span class="sig-name descname"><span class="pre">single_sample_export</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">st</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pick_win</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detect_win</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QuakeLabeler.single_sample_export" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export sample in single channel mode</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.QuakeLabeler.multi_sample_export">
+<span class="sig-name descname"><span class="pre">multi_sample_export</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">st</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pick_win</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detect_win</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QuakeLabeler.multi_sample_export" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export sample in multiple channel mode</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.QuakeLabeler.fetch_all_waveforms">
+<span class="sig-name descname"><span class="pre">fetch_all_waveforms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">records</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clientname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'IRIS'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QuakeLabeler.fetch_all_waveforms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Auto fetch seismograms to produce samples.</p>
+<p>This module manage all potential waveforms as threads. Retrive waveform
+from specific data centers, revise trace by customized parameters and
+produce required samples continuous until reach the volume.</p>
+<dl class="simple">
+<dt>This function contains:</dt><dd><ol class="arabic simple">
+<li><p>Load/Import: Requests to data centers to find available data;</p></li>
+<li><p>Custom: Use user’s preferrence parameters to form the samples;</p></li>
+<li><p>Process: (resample, filter, denoise, add noise);</p></li>
+<li><p>Revise: fix trace format to satify datasets;</p></li>
+<li><p>Label: Annotate arrival time and phase name;</p></li>
+<li><p>Export: Save samples in certain file format.</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>records</strong> (<em>list</em>) – <cite>records</cite> saves all potential downloadable waveform.</p></li>
+<li><p><strong>clientname</strong> (<em>str</em><em>, </em><em>optional</em>) – The default is “IRIS”. Specific data center’s name.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>available_samples</strong> – Return every samples in the datasets.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.QuakeLabeler.subfolder">
+<span class="sig-name descname"><span class="pre">subfolder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QuakeLabeler.subfolder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split dataset
+Divide dataset as a training dataset(80%) and a validation dataset(20%)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.QuakeLabeler.csv_writer">
+<span class="sig-name descname"><span class="pre">csv_writer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QuakeLabeler.csv_writer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to export information of the dataset.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.QuakeLabeler.stats_figure">
+<span class="sig-name descname"><span class="pre">stats_figure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QuakeLabeler.stats_figure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output statistical figures.
+Method to plot magnitude distribution.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.QuakeLabeler.waveform_display">
+<span class="sig-name descname"><span class="pre">waveform_display</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QuakeLabeler.waveform_display" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot generated seismic label.
+Method to display generated seismic label case to show how the label
+looks like.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="interactive">
+<h2>Interactive<a class="headerlink" href="#interactive" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="quakelabeler.classes.Interactive">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">quakelabeler.classes.</span></span><span class="sig-name descname"><span class="pre">Interactive</span></span><a class="headerlink" href="#quakelabeler.classes.Interactive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interactive tool for target stations and time range.</p>
+<p>Receive user’s interest search options from command line inteface (CLI).
+Automatic search arrivals associated to events in the ISC Bulletin
+on the input stations and time range.</p>
+<dl class="simple">
+<dt>Options includes:</dt><dd><ol class="arabic simple">
+<li><p>station region</p></li>
+<li><p>time range</p></li>
+<li><p>magnitude range</p></li>
+<li><p>phase names</p></li>
+</ol>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>ISC Bulletin: arrivals search
+International Seismological Centre (20XX), On-line Event Bibliography,
+<a class="reference external" href="https://doi.org/10.31905/EJ3B5LV6">https://doi.org/10.31905/EJ3B5LV6</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>dict</em>) – <cite>params</cite> saves all customized options which defines the research region
+and time. <cite>params</cite> contains region latitude and longitude, start time
+and end time, magnitudes(optional), etc.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.Interactive.input_stn_stn">
+<span class="sig-name descname"><span class="pre">input_stn_stn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.Interactive.input_stn_stn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Station Region Mode: &lt;STN&gt;:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.Interactive.input_stn_rect">
+<span class="sig-name descname"><span class="pre">input_stn_rect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.Interactive.input_stn_rect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Input station region in rectangular mode</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.Interactive.input_stn_circ">
+<span class="sig-name descname"><span class="pre">input_stn_circ</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.Interactive.input_stn_circ" title="Permalink to this definition">¶</a></dt>
+<dd><p>Input station region in circular mode</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.Interactive.input_time">
+<span class="sig-name descname"><span class="pre">input_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.Interactive.input_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Input &lt;event-time-range&gt; params</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.Interactive.input_mag">
+<span class="sig-name descname"><span class="pre">input_mag</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.Interactive.input_mag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Input &lt;event-magnitude-limits&gt; (Optional) params</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.Interactive.select_stnsearch">
+<span class="sig-name descname"><span class="pre">select_stnsearch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.Interactive.select_stnsearch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Choose mode for station region search</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.Interactive.input_event_rect">
+<span class="sig-name descname"><span class="pre">input_event_rect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.Interactive.input_event_rect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event Region Mode: &lt;RECT&gt;: Rectangular search of stations</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.Interactive.input_event_circ">
+<span class="sig-name descname"><span class="pre">input_event_circ</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.Interactive.input_event_circ" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event Region Mode: &lt;CIRC&gt;: Rectangular search of Events</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.Interactive.beginner_mode">
+<span class="sig-name descname"><span class="pre">beginner_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.Interactive.beginner_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run beginner mode
+User can use this method to select one example region to create dataset</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.Interactive.advanced_mode">
+<span class="sig-name descname"><span class="pre">advanced_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.Interactive.advanced_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run advanced mode.</p>
+<p>This method is to run a command line interactive module to let user to
+design their own research region and time range settings.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.Interactive.select_mode">
+<span class="sig-name descname"><span class="pre">select_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.Interactive.select_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mode selection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>beginner_mode</strong> (<em>function</em>) – Run beginner mode <cite>self.beginner_mode()</cite> with default parameters.</p></li>
+<li><p><strong>advanced_mode</strong> (<em>function</em>) – Run advanced mode <cite>self.advanced_mode()</cite> with various customized
+options.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="customsamples">
+<h2>CustomSamples<a class="headerlink" href="#customsamples" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="quakelabeler.classes.CustomSamples">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">quakelabeler.classes.</span></span><span class="sig-name descname"><span class="pre">CustomSamples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_option</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.CustomSamples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Command line interactive tool for custom dataset options.</p>
+<p>Input paratemter to standardize retrived waveform.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>default_option</strong> (<em>bool</em>) – if <cite>default_option</cite> is True, apply default options.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.CustomSamples.define_dataset">
+<span class="sig-name descname"><span class="pre">define_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.CustomSamples.define_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataset options</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>custom_dataset</strong> – <cite>custom_dataset</cite> returns a dict which saves all dataset options.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.CustomSamples.define_waveform">
+<span class="sig-name descname"><span class="pre">define_waveform</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.CustomSamples.define_waveform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Waveform options.</p>
+<p>Receive waveform format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>custom_waveform</strong> – Returns a dictionary which saves all waveform options.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.CustomSamples.define_export">
+<span class="sig-name descname"><span class="pre">define_export</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.CustomSamples.define_export" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export options for dataset.</p>
+<dl class="simple">
+<dt>Receive interactive arguements to choose export format, include:</dt><dd><ol class="arabic simple">
+<li><p>export_type: SAC, Mini-Seed, NPZ, MAT, etc.</p></li>
+<li><p>export_inout: True/False separate input / output traces</p></li>
+<li><p>export_out_form: gaussian / peak / rect</p></li>
+<li><p>export_arrival_csv: True / False</p></li>
+</ol>
+</dd>
+<dt>Save arrival information as a separate csv file</dt><dd><ol class="arabic simple">
+<li><p>export_stats: True / False</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>custom_export</strong> – Export options for dataset.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="queryarrival">
+<h2>QueryArrival<a class="headerlink" href="#queryarrival" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="quakelabeler.classes.QueryArrival">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">quakelabeler.classes.</span></span><span class="sig-name descname"><span class="pre">QueryArrival</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QueryArrival" title="Permalink to this definition">¶</a></dt>
+<dd><p>Auto request online arrivals catalog.</p>
+<p>This class fetch users’s target arrivals from ISC Bulletin website.</p>
+<p class="rubric">References</p>
+<p>[1] International Seismological Centre (20XX), On-line Bulletin,
+<a class="reference external" href="https://doi.org/10.31905/D808B830">https://doi.org/10.31905/D808B830</a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="quakelabeler.classes.QueryArrival.find_all_vars">
+<span class="sig-name descname"><span class="pre">find_all_vars</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QueryArrival.find_all_vars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Store all arrival information.</p>
+<dl class="simple">
+<dt>This method save all fetched information into <cite>recordings</cite>:</dt><dd><ol class="arabic simple">
+<li><p>EVENTID</p></li>
+<li><p>STA</p></li>
+<li><p>PHASE NAME</p></li>
+<li><p>ARRIVAL DATE</p></li>
+<li><p>ARRIVAL TIME</p></li>
+<li><p>ORIGIN DATE</p></li>
+<li><p>ORIGIN TIME</p></li>
+<li><p>EVENT TYPE</p></li>
+<li><p>EVENT MAG</p></li>
+</ol>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="tutorials.html" class="btn btn-neutral float-right" title="QuakeLabeler Tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="quakelabeler.html" class="btn btn-neutral float-left" title="Licence" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Hao Mai &amp; Pascal Audet.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
