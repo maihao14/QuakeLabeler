@@ -207,7 +207,7 @@ SOFTWARE.</p>
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
-<p>The current version has been tested using <strong>Python3.7 and 3.8</strong> Also, the following packages are required:</p>
+<p>The current version has been tested using <strong>Python &gt; 3.7</strong> Also, the following packages are required:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/obspy/obspy/">obspy</a></p></li>
 <li><p><a class="reference external" href="https://github.com/psf/requests/">requests</a></p></li>
@@ -219,11 +219,11 @@ will be automatically installed by <code class="docutils literal notranslate"><s
 <h2>Conda environment<a class="headerlink" href="#conda-environment" title="Permalink to this headline">¶</a></h2>
 <p>We recommend creating a custom <code class="docutils literal notranslate"><span class="pre">conda</span></code> environment
 where <code class="docutils literal notranslate"><span class="pre">QuakeLabeler</span></code> can be installed along with some of its dependencies.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda create -n slc <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.8 obspy -c conda-forge
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda create -n ql <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.8 obspy -c conda-forge
 </pre></div>
 </div>
 <p>Activate the newly created environment:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda activate slc
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda activate ql
 </pre></div>
 </div>
 </div>

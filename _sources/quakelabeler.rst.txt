@@ -31,7 +31,7 @@ Installation
 Dependencies
 ------------
 
-The current version has been tested using **Python3.7 and 3.8** \
+The current version has been tested using **Python > 3.7** \
 Also, the following packages are required:
 
 - `obspy <https://github.com/obspy/obspy/>`_
@@ -48,13 +48,13 @@ where ``QuakeLabeler`` can be installed along with some of its dependencies.
 
 .. sourcecode:: bash
 
-   conda create -n slc python=3.8 obspy -c conda-forge
+   conda create -n ql python=3.8 obspy -c conda-forge
 
 Activate the newly created environment:
 
 .. sourcecode:: bash
 
-   conda activate slc
+   conda activate ql
 
 
 Installing from Pypi

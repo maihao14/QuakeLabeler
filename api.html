@@ -186,7 +186,7 @@
 </div>
 <div class="section" id="classes">
 <h1>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h1>
-<p><code class="xref py py-mod docutils literal notranslate"><span class="pre">quakelabeler</span></code> defines the following base classes:</p>
+<p><code class="xref py py-mod docutils literal notranslate"><span class="pre">quakelabeler</span></code> defines the following classes:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#quakelabeler.classes.QuakeLabeler" title="quakelabeler.classes.QuakeLabeler"><code class="xref py py-class docutils literal notranslate"><span class="pre">QuakeLabeler</span></code></a></p></li>
 <li><p><a class="reference internal" href="#quakelabeler.classes.Interactive" title="quakelabeler.classes.Interactive"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interactive</span></code></a></p></li>
@@ -198,8 +198,8 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="quakelabeler.classes.QuakeLabeler">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">quakelabeler.classes.</span></span><span class="sig-name descname"><span class="pre">QuakeLabeler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QuakeLabeler" title="Permalink to this definition">¶</a></dt>
-<dd><p><code class="docutils literal notranslate"><span class="pre">Quake</span> <span class="pre">Labeler</span></code> class enables to automatically label ground truth.
-A <code class="docutils literal notranslate"><span class="pre">QuakeLabeler</span></code> object contains Class attributes that design and create
+<dd><p><code class="docutils literal notranslate"><span class="pre">Quake</span> <span class="pre">Labeler</span></code> class enables to automatically label ground truth.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">QuakeLabeler</span></code> object contains Class attributes that design and create
 seismic datasets by custom settings. QuakeLabeler runs a series of methods
 to automatic generate datasets:</p>
 <blockquote>
@@ -214,9 +214,12 @@ to automatic generate datasets:</p>
 <li><p>Export distribution histogram</p></li>
 </ol>
 </div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>This is intended to be the core QuakeLabeler functionality, without any
 reference to the command line interface. The original intent was to allow
 this to run independently, eg. from a script or interactive shell.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -288,15 +291,17 @@ data center for download in the target time range.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="quakelabeler.classes.QuakeLabeler.waveform_timewindow">
 <span class="sig-name descname"><span class="pre">waveform_timewindow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">thread</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QuakeLabeler.waveform_timewindow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate sample’s startime and endtime.
-Method to ensure retrieve enough time length waveform.
-:param thread: <em>thread</em> stores a specific seismogram information.
-:type thread: dict
-:param sample_points: Waveform length. The default is 50*60 = 3000.
-:type sample_points: int, optional</p>
+<dd><p>Calculate sample’s startime and endtime. Method to ensure retrieve
+enough time length waveform.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><ul class="simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>thread</strong> (<em>dict</em>) – <em>thread</em> stores a specific seismogram information.</p></li>
+<li><p><strong>sample_points</strong> (<em>int</em><em>, </em><em>optional</em>) – Waveform length. The default is 50*60 = 3000.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
 <li><p><strong>starttime</strong> (<em>UTCTime</em>) – Start time for this waveform.</p></li>
 <li><p><strong>endtime</strong> (<em>UTCTime</em>) – End time for this waveform.</p></li>
 </ul>
@@ -308,19 +313,21 @@ Method to ensure retrieve enough time length waveform.
 <dl class="py method">
 <dt class="sig sig-object py" id="quakelabeler.classes.QuakeLabeler.fetch_waveform">
 <span class="sig-name descname"><span class="pre">fetch_waveform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">thread</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clientname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'IRIS'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QuakeLabeler.fetch_waveform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve a target stream of waveforms from specific data center.
-This stream can includes multiple-component seismic traces
+<dd><p>Retrieve a target stream of waveforms from specific data center.</p>
+<p>This stream can includes multiple-component seismic traces
 which from only one station with one event.  They can be spilt as
 single trace mode or keep as a 3-C sample or multiple-component sample.
 Note that for now we remove those low-sampling-rate (&lt;1.0Hz) samples
-which might not help our project.
-:param thread: Waveform information recording.
-:type thread: dict
-:param clientname: Name of data center. The default is “IRIS”.
-:type clientname: str, optional</p>
+which might not help our project.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><ul class="simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>thread</strong> (<em>dict</em>) – Waveform information recording.</p></li>
+<li><p><strong>clientname</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of data center. The default is “IRIS”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
 <li><p><strong>st</strong> (<em>Obspy Stream Object</em>) – Downloaded waveform which save as a obspy.stream object.</p></li>
 <li><p><strong>`No data available for request.`</strong> (<em>str</em>) – Failed request message.</p></li>
 </ul>
@@ -332,16 +339,17 @@ which might not help our project.
 <dl class="py method">
 <dt class="sig sig-object py" id="quakelabeler.classes.QuakeLabeler.creatsamplename">
 <span class="sig-name descname"><span class="pre">creatsamplename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stream</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QuakeLabeler.creatsamplename" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creat filename for each sample
-Creat filenames for each available waveform.
-:param stream: Availble data stream waited to be transferred to label.
-:type stream: Obspy stream object</p>
+<dd><p>Create filename for each sample.</p>
+<p>Create filenames for each available waveform.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><strong>filename</strong> – creat a name for the waveform.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>stream</strong> (<em>Obspy stream object</em>) – Availble data stream waited to be transferred to label.</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>str</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>filename</strong> – creat a name for the waveform.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -349,15 +357,15 @@ Creat filenames for each available waveform.
 <dl class="py method">
 <dt class="sig sig-object py" id="quakelabeler.classes.QuakeLabeler.output_bell_dist">
 <span class="sig-name descname"><span class="pre">output_bell_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">npts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">it</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QuakeLabeler.output_bell_dist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create bell-like output channel
-Use bell-like (Gaussian) distribution to form output labels.</p>
+<dd><p>Create bell-like output channel</p>
+<p>Use bell-like (Gaussian) distribution to form output labels.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="quakelabeler.classes.QuakeLabeler.output_rect_dist">
 <span class="sig-name descname"><span class="pre">output_rect_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">npts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">it</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QuakeLabeler.output_rect_dist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create rectangular output channel
-Use rectangulardistribution to form output labels.
+<dd><p>Create rectangular output channel</p>
+<p>Use rectangulardistribution to form output labels.
 The positive data points = 1.0
 The negative data points = 0.0</p>
 </dd></dl>
@@ -377,8 +385,8 @@ The negative data points = 0.0</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="quakelabeler.classes.QuakeLabeler.fetch_all_waveforms">
 <span class="sig-name descname"><span class="pre">fetch_all_waveforms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">records</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clientname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'IRIS'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QuakeLabeler.fetch_all_waveforms" title="Permalink to this definition">¶</a></dt>
-<dd><p>Auto fetch seismograms to produce samples
-This module manage all potential waveforms as threads. Retrive waveform
+<dd><p>Auto fetch seismograms to produce samples.</p>
+<p>This module manage all potential waveforms as threads. Retrive waveform
 from specific data centers, revise trace by customized parameters and
 produce required samples continuous until reach the volume.</p>
 <dl class="simple">
@@ -444,8 +452,8 @@ looks like.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="quakelabeler.classes.Interactive">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">quakelabeler.classes.</span></span><span class="sig-name descname"><span class="pre">Interactive</span></span><a class="headerlink" href="#quakelabeler.classes.Interactive" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interactive tool for target stations and time range
-Receive user’s interest search options from command line inteface (CLI).
+<dd><p>Interactive tool for target stations and time range.</p>
+<p>Receive user’s interest search options from command line inteface (CLI).
 Automatic search arrivals associated to events in the ISC Bulletin
 on the input stations and time range.</p>
 <dl class="simple">
@@ -457,6 +465,7 @@ on the input stations and time range.</p>
 </ol>
 </dd>
 </dl>
+<p class="rubric">References</p>
 <p>ISC Bulletin: arrivals search
 International Seismological Centre (20XX), On-line Event Bibliography,
 <a class="reference external" href="https://doi.org/10.31905/EJ3B5LV6">https://doi.org/10.31905/EJ3B5LV6</a></p>
@@ -525,22 +534,25 @@ User can use this method to select one example region to create dataset</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="quakelabeler.classes.Interactive.advanced_mode">
 <span class="sig-name descname"><span class="pre">advanced_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.Interactive.advanced_mode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run advanced mode
-This method is to run a command line interactive module to let user to
+<dd><p>Run advanced mode.</p>
+<p>This method is to run a command line interactive module to let user to
 design their own research region and time range settings.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="quakelabeler.classes.Interactive.select_mode">
 <span class="sig-name descname"><span class="pre">select_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.Interactive.select_mode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Mode selection
-:returns: * <strong>beginner_mode</strong> (<em>function</em>) – Run beginner mode <cite>self.beginner_mode()</cite> with default parameters.</p>
-<blockquote>
-<div><ul class="simple">
+<dd><p>Mode selection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>beginner_mode</strong> (<em>function</em>) – Run beginner mode <cite>self.beginner_mode()</cite> with default parameters.</p></li>
 <li><p><strong>advanced_mode</strong> (<em>function</em>) – Run advanced mode <cite>self.advanced_mode()</cite> with various customized
 options.</p></li>
 </ul>
-</div></blockquote>
+</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -551,10 +563,13 @@ options.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="quakelabeler.classes.CustomSamples">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">quakelabeler.classes.</span></span><span class="sig-name descname"><span class="pre">CustomSamples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_option</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.CustomSamples" title="Permalink to this definition">¶</a></dt>
-<dd><p>Command line interactive tool for custom dataset options
-Input paratemter to standardize retrived waveform.
-:param default_option: if <cite>default_option</cite> is True, apply default options.
-:type default_option: bool</p>
+<dd><p>Command line interactive tool for custom dataset options.</p>
+<p>Input paratemter to standardize retrived waveform.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>default_option</strong> (<em>bool</em>) – if <cite>default_option</cite> is True, apply default options.</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="quakelabeler.classes.CustomSamples.define_dataset">
 <span class="sig-name descname"><span class="pre">define_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.CustomSamples.define_dataset" title="Permalink to this definition">¶</a></dt>
@@ -572,8 +587,8 @@ Input paratemter to standardize retrived waveform.
 <dl class="py method">
 <dt class="sig sig-object py" id="quakelabeler.classes.CustomSamples.define_waveform">
 <span class="sig-name descname"><span class="pre">define_waveform</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.CustomSamples.define_waveform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Waveform options
-Receive waveform format</p>
+<dd><p>Waveform options.</p>
+<p>Receive waveform format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><strong>custom_waveform</strong> – Returns a dictionary which saves all waveform options.</p>
@@ -587,18 +602,18 @@ Receive waveform format</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="quakelabeler.classes.CustomSamples.define_export">
 <span class="sig-name descname"><span class="pre">define_export</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.CustomSamples.define_export" title="Permalink to this definition">¶</a></dt>
-<dd><dl>
-<dt>Export options for dataset</dt><dd><dl>
+<dd><p>Export options for dataset.</p>
+<dl class="simple">
 <dt>Receive interactive arguements to choose export format, include:</dt><dd><ol class="arabic simple">
 <li><p>export_type: SAC, Mini-Seed, NPZ, MAT, etc.</p></li>
 <li><p>export_inout: True/False separate input / output traces</p></li>
 <li><p>export_out_form: gaussian / peak / rect</p></li>
+<li><p>export_arrival_csv: True / False</p></li>
 </ol>
-<p>#. export_arrival_csv: True / False
-save arrival information as a independent csv file
-#. export_stats: True / False</p>
 </dd>
-</dl>
+<dt>Save arrival information as a separate csv file</dt><dd><ol class="arabic simple">
+<li><p>export_stats: True / False</p></li>
+</ol>
 </dd>
 </dl>
 <dl class="field-list simple">
@@ -619,18 +634,17 @@ save arrival information as a independent csv file
 <dl class="py class">
 <dt class="sig sig-object py" id="quakelabeler.classes.QueryArrival">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">quakelabeler.classes.</span></span><span class="sig-name descname"><span class="pre">QueryArrival</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QueryArrival" title="Permalink to this definition">¶</a></dt>
-<dd><p>Auto request online arrivals catalog
-This class fetch users’s target arrivals from ISC Bulletin website.</p>
+<dd><p>Auto request online arrivals catalog.</p>
+<p>This class fetch users’s target arrivals from ISC Bulletin website.</p>
 <p class="rubric">References</p>
 <p>[1] International Seismological Centre (20XX), On-line Bulletin,
 <a class="reference external" href="https://doi.org/10.31905/D808B830">https://doi.org/10.31905/D808B830</a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="quakelabeler.classes.QueryArrival.find_all_vars">
 <span class="sig-name descname"><span class="pre">find_all_vars</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quakelabeler.classes.QueryArrival.find_all_vars" title="Permalink to this definition">¶</a></dt>
-<dd><p>Store all arrival information
-This method save all fetched information into <cite>recordings</cite>:</p>
-<blockquote>
-<div><ol class="arabic simple">
+<dd><p>Store all arrival information.</p>
+<dl class="simple">
+<dt>This method save all fetched information into <cite>recordings</cite>:</dt><dd><ol class="arabic simple">
 <li><p>EVENTID</p></li>
 <li><p>STA</p></li>
 <li><p>PHASE NAME</p></li>
@@ -641,7 +655,8 @@ This method save all fetched information into <cite>recordings</cite>:</p>
 <li><p>EVENT TYPE</p></li>
 <li><p>EVENT MAG</p></li>
 </ol>
-</div></blockquote>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
