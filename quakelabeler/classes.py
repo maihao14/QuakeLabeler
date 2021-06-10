@@ -52,6 +52,7 @@ import matplotlib.pyplot as plt
 
 class QuakeLabeler():
     r""" ``Quake Labeler`` class enables to automatically label ground truth.
+
     A ``QuakeLabeler`` object contains Class attributes that design and create
     seismic datasets by custom settings. QuakeLabeler runs a series of methods
     to automatic generate datasets:
@@ -65,7 +66,9 @@ class QuakeLabeler():
         #. Save label recordings as independent CSV files
         #. Export distribution histogram
 
-    .. note::
+    Note
+    ----
+
     This is intended to be the core QuakeLabeler functionality, without any
     reference to the command line interface. The original intent was to allow
     this to run independently, eg. from a script or interactive shell.
@@ -95,6 +98,7 @@ class QuakeLabeler():
             #. original event time
             #. event location (optional)
     """
+
     def __init__(self, query, custom):
         # init
         self.params = query.param
@@ -110,10 +114,12 @@ class QuakeLabeler():
             self.network = self.search_network()
 
     def search_catalog(self, clientname="IRIS"):
-        r''' Availble data source check for data centers.
+        r""" 
+        Availble data source check for data centers.
         If the desired data center does not have available seismograms, this
         module will reminder user to change data center.
-        '''
+        """
+
         client = Client(clientname)
         try:
             cat = client.get_events(starttime=self.starttime,
@@ -138,18 +144,21 @@ class QuakeLabeler():
             return (cat)
 
     def search_stations(self, clientname="IRIS"):
-        r''' Search all available station in the target research region.
+        r""" 
+        Search all available station in the target research region.
         This method accepts rectangular or circular range options.
 
         Parameters
         ----------
         clientname : str, optional
             Data center name. The default is "IRIS".
+
         Returns
         -------
         inventory : Inventory object
             Return an Inventory object which stored available stations.
-        '''
+        """
+
         client = Client(clientname)
         sta_params = {}
         if self.params['stnsearch'] == 'RECT':
@@ -176,6 +185,7 @@ class QuakeLabeler():
         Method to examine if there's available waveform from certain
         data center for download in the target time range.
         """
+
         client = Client(clientname)
         (network, station, location, channel) = self.related_station_info(
                                                 thread['STA'])
@@ -188,21 +198,26 @@ class QuakeLabeler():
             return st[0]
 
     def waveform_timewindow(self, thread, sample_points=50*60):
-        r"""Calculate sample's startime and endtime.
-        Method to ensure retrieve enough time length waveform.
+        r"""
+        Calculate sample's startime and endtime. Method to ensure retrieve 
+        enough time length waveform.
+        
         Parameters
         ----------
         thread : dict
             *thread* stores a specific seismogram information.
         sample_points : int, optional
             Waveform length. The default is 50*60 = 3000.
+
         Returns
         -------
         starttime : UTCTime
             Start time for this waveform.
         endtime : UTCTime
             End time for this waveform.
+
         """
+
         eventTime = thread['ARRIVAL_DATE'] + 'T' + thread['ARRIVAL_TIME']
         if self.custom_dataset['fixed_length']:
             # random start time option
@@ -289,17 +304,20 @@ class QuakeLabeler():
 
     def fetch_waveform(self, thread, clientname="IRIS"):
         r"""Retrieve a target stream of waveforms from specific data center.
+
         This stream can includes multiple-component seismic traces
         which from only one station with one event.  They can be spilt as
         single trace mode or keep as a 3-C sample or multiple-component sample.
         Note that for now we remove those low-sampling-rate (<1.0Hz) samples
         which might not help our project.
+
         Parameters
         ----------
         thread : dict
             Waveform information recording.
         clientname : str, optional
             Name of data center. The default is "IRIS".
+
         Returns
         -------
         st : Obspy Stream Object
@@ -307,6 +325,7 @@ class QuakeLabeler():
         `No data available for request.` : str
             Failed request message.
         """
+
         client = Client(clientname)
         # calculate startime and endtime, must consider trace length, sampling rate to satisfy custom parameters
 
@@ -353,17 +372,20 @@ class QuakeLabeler():
                 return st
 
     def creatsamplename(self, stream):
-        r'''Creat filename for each sample
-        Creat filenames for each available waveform.
+        r"""Create filename for each sample.
+
+        Create filenames for each available waveform.
+
         Parameters
         ----------
         stream : Obspy stream object
             Availble data stream waited to be transferred to label.
+
         Returns
         -------
         filename : str
             creat a name for the waveform.
-        '''
+        """
         st = str(stream[0].stats.starttime)
         st_name = st[0:13]+st[14:16]+st[17:19]
 
@@ -377,9 +399,10 @@ class QuakeLabeler():
         return filename
 
     def output_bell_dist(self, npts, it, window):
-        r'''Create bell-like output channel
+        r"""Create bell-like output channel
+
         Use bell-like (Gaussian) distribution to form output labels.
-        '''
+        """
         # npts: sample length
         # it: peak point
         # window:  width
@@ -390,18 +413,19 @@ class QuakeLabeler():
         return fx
 
     def output_rect_dist(self, npts, it, window):
-        r'''Create rectangular output channel
+        r"""Create rectangular output channel
+
         Use rectangulardistribution to form output labels.
         The positive data points = 1.0
         The negative data points = 0.0
-        '''
+        """
         fx = np.zeros(npts)
         fx[it - window//2: it + window//2] = 1
         return fx
 
     def single_sample_export(self, st, filename, pick_win=100, detect_win=200):
-        r''' Export sample in single channel mode
-        '''
+        r""" Export sample in single channel mode
+        """
         it = int((self.eventtime - self.starttime) * self.sampling_rate)
         self.arr_point = it
 
@@ -459,8 +483,8 @@ class QuakeLabeler():
                 mdic = {st2[0].stats.channel : st2[0].data}
                 savemat(filename +'out_rect'+ ".mat", mdic)
     def multi_sample_export(self, st, filename,pick_win = 100, detect_win = 200):
-        r''' Export sample in multiple channel mode
-        '''
+        r""" Export sample in multiple channel mode
+        """
         it = int((self.eventtime - self.starttime) * self.sampling_rate)
         self.arr_point = it
 
@@ -522,7 +546,8 @@ class QuakeLabeler():
                 savemat(filename +'out_rect'+ ".mat", mdic)
 
     def fetch_all_waveforms(self, records, clientname="IRIS"):
-        r"""Auto fetch seismograms to produce samples
+        r"""Auto fetch seismograms to produce samples.
+
         This module manage all potential waveforms as threads. Retrive waveform
         from specific data centers, revise trace by customized parameters and
         produce required samples continuous until reach the volume.
@@ -547,7 +572,7 @@ class QuakeLabeler():
         available_samples : list
             Return every samples in the datasets.
         """
-        print('Initialize samples producer module...')
+        print('Initializing samples producer module...')
         # selet user preference
 
         # count loop number, when loop>100 & no available waveform found, break the loop
@@ -634,6 +659,7 @@ class QuakeLabeler():
         os.chdir('../')
         self.FolderName = FileName
         return self.available_samples
+
     def subfolder(self, trainratio=0.8):
         r"""Split dataset
         Divide dataset as a training dataset(80%) and a validation dataset(20%)
@@ -660,6 +686,7 @@ class QuakeLabeler():
                 shutil.move(file, moved_path)
         print("Training set and validation set completed!")
         os.chdir('../')
+
     def csv_writer(self):
         r""" Method to export information of the dataset.
         """
@@ -714,6 +741,7 @@ class QuakeLabeler():
         #     color_per_network=True, size=20,
         #     outfile="stationpreview.png")
         os.chdir('../')
+
     def waveform_display(self):
         r"""Plot generated seismic label.
         Method to display generated seismic label case to show how the label
@@ -747,7 +775,8 @@ class QuakeLabeler():
         plt.show()
 
 class Interactive():
-    r""" Interactive tool for target stations and time range
+    r""" Interactive tool for target stations and time range.
+
     Receive user's interest search options from command line inteface (CLI).
     Automatic search arrivals associated to events in the ISC Bulletin
     on the input stations and time range.
@@ -758,7 +787,7 @@ class Interactive():
         #. magnitude range
         #. phase names
 
-    Refference
+    References
     ----------
     ISC Bulletin: arrivals search
     International Seismological Centre (20XX), On-line Event Bibliography,
@@ -771,6 +800,7 @@ class Interactive():
         and time. `params` contains region latitude and longitude, start time
         and end time, magnitudes(optional), etc.
     """
+
     def __init__(self):
         self.welcome() #brief introduction of this tool
         self.params = {} #save params as a dictionary; send to following classes
@@ -786,20 +816,20 @@ class Interactive():
         self.params['stnsearch'] = 'STN'
         self.params['sta_list'] = input('Please enter the station codes:  \n ')
 
-        confirm = input('Input parameters confirm?  ([y]/n) \n')
+        confirm = input('Confirm input parameters?  ([y]/n) \n')
         if confirm.lower() == 'y':
             return self.params
         else:
-            print('Reset parameters... \n')
+            print('Resetting parameters... \n')
             self.input_stn_stn()
 
     def input_stn_rect(self):
         r"""Input station region in rectangular mode
         """
         self.params['stnsearch'] = 'RECT'
-        print('Please enter the latitudes(-90 ~ 90) at the bottom and top, the \
-                longitudes(-180 ~ 180) on the left and the right of \
-                the rectangular boundary. \n ')
+        print('Please enter the latitudes (-90 ~ 90) at the bottom and top, the \
+                longitudes (-180 ~ 180) at the left and right of \
+                a rectangular boundary. \n ')
         print('Example: \n Default region (Cascadia subduction zone, NA): \n')
         #set default params
         # set default params
@@ -834,7 +864,7 @@ class Interactive():
         'stn_left_lon: '+ self.params['stn_left_lon'] + '\n' + \
         'stn_right_lon: '+ self.params['stn_right_lon'] +'\n'  )
 
-        confirm = input('Input parameters confirm?  ([y]/n) \n')
+        confirm = input('Confirm input parameters?  ([y]/n) \n')
         if confirm.lower() == 'y':
             return self.params
         else:
@@ -846,7 +876,7 @@ class Interactive():
         r"""Input station region in circular mode
         """
         self.params['stnsearch'] = 'CIRC'
-        print('Please enter the latitude(-90 ~ 90) and longitude(-180 ~ 180) at the central of  the circular region, the unit for max distance and the related radius. \n \
+        print('Please enter the latitude (-90 ~ 90) and longitude (-180 ~ 180) at the center of the circular region, the unit for max distance and the related radius. \n \
               Note: Acceptable units of distance for a circular search: degrees or kilometres. \n \
               Radius for circular search region: \n \
               0 to 180 if max_dist_units=deg  \n \
@@ -867,7 +897,7 @@ class Interactive():
         'max_stn_dist_units: '+ self.params['max_stn_dist_units'] + '\n' + \
         'stn_radius: '+ self.params['stn_radius'] +'\n'  )
 
-        confirm = input('Input parameters confirm?  ([y]/n) \n')
+        confirm = input('Confirm input parameters?  ([y]/n) \n')
         if confirm.lower() == 'y':
             return self.params
         else:
@@ -885,7 +915,7 @@ class Interactive():
         'stn_srn: '+ self.params['stn_srn'] + '\n' + \
         'stn_grn: '+ self.params['stn_grn'] + '\n' )
 
-        confirm = input('Input parameters confirm?  ([y]/n) \n')
+        confirm = input('Confirm input parameters?  ([y]/n) \n')
         if confirm.lower() == 'y':
             return self.params
         else:
@@ -894,14 +924,14 @@ class Interactive():
 
     def input_stn_poly(self):
         self.params['stnsearch'] = 'POLY'
-        self.params['stn_coordvals'] = input('please enter [lat1,lon1,lat2,lon2,lat3,lon3,lat4,lon4,lat1,lon1]: \n \
-                                             Comma separated list of coordinates for a desired polygon. Latitude needs to be before longitude. Coordinates in the western and southern hemispheres should be negative.')
+        self.params['stn_coordvals'] = input('Please enter [lat1,lon1,lat2,lon2,lat3,lon3,lat4,lon4,lat1,lon1]: \n \
+                                             Comma separated list of coordinates for a desired polygon. Latitude needs to be enterted before longitude. Coordinates in the western and southern hemispheres should be negative.')
 
         #print update params
         print('stnsearch: ' + self.params['stnsearch'] + '\n' +  \
         'stn_coordvals: '+ self.params['stn_coordvals'] + '\n' )
 
-        confirm = input('Input parameters confirm?  ([y]/n) \n')
+        confirm = input('Confirm input parameters?  ([y]/n) \n')
         if confirm.lower() == 'y':
             return self.params
         else:
@@ -933,13 +963,13 @@ class Interactive():
         'end_time: '+ self.params['end_time'] + '\n')
 
         self.params['start_year'] = input('Input start year (1900-):  \n')
-        self.params['start_month'] = input('Input start month(1-12): \n')
+        self.params['start_month'] = input('Input start month (1-12): \n')
         self.params['start_day'] = input('Input start day (1-31):  \n')
-        self.params['start_time'] = input('Input start time(00:00:00-23:59:59): \n')
+        self.params['start_time'] = input('Input start time (00:00:00-23:59:59): \n')
         self.params['end_year'] = input('Input end year (1900-):  \n')
-        self.params['end_month'] = input('Input end month(1-12): \n')
+        self.params['end_month'] = input('Input end month (1-12): \n')
         self.params['end_day'] = input('Input end day (1-31):  \n')
-        self.params['end_time'] = input('Input end time(00:00:00-23:59:59): \n')
+        self.params['end_time'] = input('Input end time (00:00:00-23:59:59): \n')
         #print update params
         print('start_year: ' + self.params['start_year'] + '\n' +  \
         'start_month: '+ self.params['start_month'] + '\n' + \
@@ -950,7 +980,7 @@ class Interactive():
         'end_day: '+ self.params['end_day'] + '\n' + \
         'end_time: '+ self.params['end_time'] + '\n'  )
 
-        confirm = input('Input parameters confirm?  ([y]/n) \n')
+        confirm = input('Confirm input parameters?  ([y]/n) \n')
         if confirm.lower() == 'y':
             return self.params
         else:
@@ -960,19 +990,19 @@ class Interactive():
     def input_mag(self):
         r"""Input <event-magnitude-limits> (Optional) params
         """
-        print('Enter event-maginitude limits (optional, enter blankspace to skip)')
-        default = input('Input minmum magnitude (0.0-9.0 or blankspace for skip this set):  \n')
+        print('Enter event-maginitude limits (optional, enter blank space to skip)')
+        default = input('Input minmum magnitude (0.0-9.0 or blank space to skip this set):  \n')
         if not (default.isspace() or default == '\n'):
             self.params['min_mag'] = default
 
-        default = input('Input maxmum magnitude (0.0-9.0 or blankspace to skip): \n')
+        default = input('Input maxmum magnitude (0.0-9.0 or blank space to skip): \n')
         if not (default.isspace() or default == '\n'):
             self.params['max_mag'] = default
 
         default = input('Enter specific magnitude types. Please note: the selected magnitude type will search for all possible magnitudes in that category: \n \
                         E.g. MB will search for mb, mB, Mb, mb1mx, etc \n \
                         Availble input: \n \
-                        <Any>|<MB>|<MS>|<MW>|<ML>|<MD> or blankspace for skip this set  \n')
+                        <Any>|<MB>|<MS>|<MW>|<ML>|<MD> or blank space to skip this set  \n')
         if not (default.isspace() or default == '\n'):
             self.params['req_mag_type'] = default
 
@@ -1028,7 +1058,7 @@ class Interactive():
         self.params['left_lon'] = '-130.00'
         self.params['right_lon'] = '-120.00'
 
-        print('Please enter the latitudes(-90 ~ 90) at the bottom and top, the longitudes(-180 ~ 180) on the left and the right of the rectangular boundary. \n ')
+        print('Please enter the latitudes (-90 ~ 90) at the bottom and top, the longitudes (-180 ~ 180) at the left and the right of the rectangular boundary. \n ')
         self.params['bot_lat'] = input('Input rectangular bottom latitude: ')
         self.params['top_lat'] = input('Input rectangular top latitude: ')
         self.params['left_lon'] = input('Input rectangular left longitude: ')
@@ -1042,7 +1072,7 @@ class Interactive():
         'left_lon: ' + self.params['left_lon'] + '\n' + \
         'right_lon: ' + self.params['right_lon'] +'\n'  )
 
-        confirm = input('Input parameters confirm?  ([y]/n) \n')
+        confirm = input('Confirm input parameters?  ([y]/n) \n')
         if confirm.lower() == 'y':
             return self.params
         else:
@@ -1054,7 +1084,7 @@ class Interactive():
         r"""Event Region Mode: <CIRC>: Rectangular search of Events
         """
         self.params['searchshape'] = 'CIRC'
-        print('Please enter the latitude(-90 ~ 90) and longitude(-180 ~ 180) at the central of  the circular region, the unit for max distance and the related radius. \n \
+        print('Please enter the latitude (-90 ~ 90) and longitude (-180 ~ 180) at the center of  the circular region, the unit for max distance and the related radius. \n \
               Note: Acceptable units of distance for a circular search: degrees or kilometres. \n \
               Radius for circular search region: \n \
               0 to 180 if max_dist_units=deg  \n \
@@ -1075,7 +1105,7 @@ class Interactive():
         'max_dist_units: '+ self.params['max_dist_units'] + '\n' + \
         'radius: ' + self.params['radius'] + '\n'  )
 
-        confirm = input('Input parameters confirm?  ([y]/n) \n')
+        confirm = input('Confirm input parameters?  ([y]/n) \n')
         if confirm.lower() == 'y':
             return self.params
         else:
@@ -1093,7 +1123,7 @@ class Interactive():
         'srn: ' + self.params['srn'] + '\n' + \
         'grn: ' + self.params['grn'] + '\n' )
 
-        confirm = input('Input parameters confirm?  ([y]/n) \n')
+        confirm = input('Confirm input parameters?  ([y]/n) \n')
         if confirm.lower() == 'y':
             return self.params
         else:
@@ -1103,14 +1133,14 @@ class Interactive():
 
     def input_event_poly(self):
         self.params['searchshape'] = 'POLY'
-        self.params['coordvals'] = input('please enter [lat1,lon1,lat2,lon2,lat3,lon3,lat4,lon4,lat1,lon1]: \n \
+        self.params['coordvals'] = input('Please enter [lat1,lon1,lat2,lon2,lat3,lon3,lat4,lon4,lat1,lon1]: \n \
                                           Comma separated list of coordinates for a desired polygon. Latitude needs to be before longitude. Coordinates in the western and southern hemispheres should be negative.')
 
         #print update params
         print('searchshape: ' + self.params['searchshape'] + '\n' +  \
         'coordvals: '+ self.params['coordvals'] + '\n' )
 
-        confirm = input('Input parameters confirm?  ([y]/n) \n')
+        confirm = input('Confirm input parameters?  ([y]/n) \n')
         if confirm.lower() == 'y':
             return self.params
         else:
@@ -1122,8 +1152,8 @@ class Interactive():
         print('Enter event region parameters: \n ')
         mode = input('Please select one : [GLOBAL/RECT/CIRC/FE/POLY] \n \
                         [GLOBAL]: Events are not restricted by region; \n \
-                        [RECT]: Rectangular search of events(recommended); \n \
-                        [CIRC]: Circular search of events(recommended); \n \
+                        [RECT]: Rectangular search of events (recommended); \n \
+                        [CIRC]: Circular search of events (recommended); \n \
                         [FE]: Flinn-Engdahl region search of events; \n \
                         [POLY]: Customised polygon search. \n  ')
         if mode.lower() == 'global':
@@ -1182,12 +1212,12 @@ class Interactive():
             'req_mag_type':'Any',
             }
 
-        print('Initialize Beginner Mode...')
-        field = input('Select one of the following sample fields:  [1/2/3/4] \n \
-                      [1] 2010 Cascadia subduction zone earthquake activities \n \
+        print('Initializing Beginner Mode...')
+        field = input('Select one of the following cases:  [1/2/3/4] \n \
+                      [1] 2010 Cascadia subduction zone seismicity \n \
                       [2] 2011 Tōhoku earthquake and tsunami \n \
-                      [3] 2016 Oklahoma human activity-induced earthquakes \n \
-                      [4] 2018 Big quakes in Southern California \n \
+                      [3] 2016 Oklahoma induced earthquakes \n \
+                      [4] 2018 Earthquakes in Southern California \n \
                       [0] Re-direct to Advanced mode. \n  '  )
         # input default parameters for specific case
         if field == '2':
@@ -1337,12 +1367,13 @@ class Interactive():
 
 
     def advanced_mode(self):
-        r"""Run advanced mode
+        r"""Run advanced mode.
+
         This method is to run a command line interactive module to let user to
         design their own research region and time range settings.
         """
-        print('Initialize Advanced Mode...')
-        print('Alternative region options are provided. Please select your preferred input function: \n ')
+        print('Initializing Advanced Mode...')
+        print('Alternative spatial search options are available. Please select your preferred search method: \n ')
 
         # 1.select stnsearch mode ;
         # 2.input <station-region> params;
@@ -1355,6 +1386,7 @@ class Interactive():
 
     def select_mode(self):
         r"""Mode selection
+
         Returns
         -------
         beginner_mode : function
@@ -1382,13 +1414,16 @@ class Interactive():
 
 #%%
 class CustomSamples():
-    r"""Command line interactive tool for custom dataset options
+    r"""Command line interactive tool for custom dataset options.
+
     Input paratemter to standardize retrived waveform.
+
     Parameters
     ----------
     default_option : bool
         if `default_option` is True, apply default options.
     """
+
     def __init__(self, default_option = False):
 
         print('Please define your own expection for Seismic labled samples: \n')
@@ -1418,13 +1453,14 @@ class CustomSamples():
         custom_dataset : dict
             `custom_dataset` returns a dict which saves all dataset options.
         """
+
         # set default volume
         self.custom_dataset['volume'] = '5'
         self.custom_dataset['volume'] = input('How many samples do you wish to create? [1- ] (input MAX for all available waveform):')
         default = input('Do you want fixed sample length? ([y]/n) (default: y):')
         if not default.lower() == 'n':
             self.custom_dataset['fixed_length'] = True
-            length = input('Enter sample length (how many sample points do you wish in a trace)?(default 5000): ')
+            length = input('Enter sample length (how many sample points do you wish in a trace)? (default 5000): ')
             try:
                 self.custom_dataset['sample_length'] = int(length)
             except Exception:
@@ -1434,15 +1470,16 @@ class CustomSamples():
         return self.custom_dataset
 
     def define_waveform(self):
-        r"""Waveform options
+        r"""Waveform options.
+
         Receive waveform format
 
         Returns
         -------
         custom_waveform : dict
             Returns a dictionary which saves all waveform options.
-
         """
+
         label_type = input('Select label type: (simple/[specific])? \n' + \
                            '[simple]: P/S; \n'+'[specific]: P/Pn/Pb/S/Sn,etc. \n ')
         if label_type.lower() == 'simple':
@@ -1451,14 +1488,14 @@ class CustomSamples():
             self.custom_waveform['label_type'] = True
         # set default
         self.custom_waveform['sample_rate'] = ''
-        self.custom_waveform['sample_rate'] = input('Enter a fixed sampling rate(i.e.: 100.0) or skip for keep original sampling rate: ')
+        self.custom_waveform['sample_rate'] = input('Enter a fixed sampling rate (e.g.: 100.0) or skip to keep original sampling rate: ')
         # set default
         self.custom_waveform['filter_type'] = '0'
-        self.custom_waveform['filter_type'] = input('Select filter function for preprocess? [0/1/2/3]: \n' + \
-                                                    ' [0]: Do not apply filter function; \n ' +
-                                                    '[1]: Butterworth-Lowpass; \n ' + \
-                                                    '[2]: Butterworth-Highpass; \n ' + \
-                                                    '[3]: Butterworth-Bandpass. ')
+        self.custom_waveform['filter_type'] = input('Select filter for preprocessing [0/1/2/3]: \n' + \
+                                                    '[0]: Do not apply filter; \n ' +
+                                                    '[1]: Butterworth Lowpass; \n ' + \
+                                                    '[2]: Butterworth Highpass; \n ' + \
+                                                    '[3]: Butterworth Bandpass. ')
 
         if self.custom_waveform['filter_type'] == '1':
             self.custom_waveform['filter_freqmin'] = float(input('Pass band low corner frequency.'))
@@ -1468,7 +1505,7 @@ class CustomSamples():
             self.custom_waveform['filter_freqmin'] = float(input('Pass band low corner frequency.'))
             self.custom_waveform['filter_freqmax'] = float(input('Pass band high corner frequency.'))
 
-        detrend = input('Do you want to detrend the waveforms ? (y/[n])')
+        detrend = input('Do you want to detrend the waveforms? (y/[n])')
         if detrend == 'y':
             self.custom_waveform['detrend'] = True
         else:
@@ -1498,14 +1535,15 @@ class CustomSamples():
 
 
     def define_export(self):
-        r""" Export options for dataset
-            Receive interactive arguements to choose export format, include:
-                #. export_type: SAC, Mini-Seed, NPZ, MAT, etc.
-                #. export_inout: True/False separate input / output traces
-                #. export_out_form: gaussian / peak / rect
-                #. export_arrival_csv: True / False
-                save arrival information as a independent csv file
-                #. export_stats: True / False
+        r""" Export options for dataset.
+
+        Receive interactive arguements to choose export format, include:
+            #. export_type: SAC, Mini-Seed, NPZ, MAT, etc.
+            #. export_inout: True/False separate input / output traces
+            #. export_out_form: gaussian / peak / rect
+            #. export_arrival_csv: True / False
+        Save arrival information as a separate csv file
+            #. export_stats: True / False
 
         Returns
         -------
@@ -1513,6 +1551,7 @@ class CustomSamples():
             Export options for dataset.
 
         """
+
         # separate dataset as: input and output trace
         # input: Original trace
         # output: Probability density function
@@ -1535,7 +1574,7 @@ class CustomSamples():
             self.custom_export['single_trace'] = True
         else:
             self.custom_export['single_trace'] = False
-        in_out = input('Do you want to separate save traces as input and output? (y/[n])')
+        in_out = input('Do you want to separately save traces as input and output? (y/[n])')
         if in_out == 'y':
             self.custom_export['export_inout'] = True
         else:
@@ -1543,7 +1582,7 @@ class CustomSamples():
 
         # save each label information into csv files for validation
         # i.e.: arrival time, magnitude, etc.
-        arrival_csv = input('Do you want to separate save arrival information as a CSV file? ([y]/n)')
+        arrival_csv = input('Do you want to separately save arrival information as a CSV file? ([y]/n)')
         if arrival_csv == 'n':
             self.custom_export['export_arrival_csv'] = False
         else:
@@ -1563,7 +1602,8 @@ class CustomSamples():
 
 
 class QueryArrival():
-    r"""Auto request online arrivals catalog
+    r"""Auto request online arrivals catalog.
+
     This class fetch users's target arrivals from ISC Bulletin website.
 
     References
@@ -1580,13 +1620,13 @@ class QueryArrival():
         # save params
         for k in kwargs:
             self.param[k] = kwargs[k]
-        print("Loading time varies on your network connections, search region scale, time range, etc. Please be patient, estimated time: 3 mins ")
+        print("Loading time varies based on your network connection, search region scale, time range, etc. Please be patient, estimated time: 3 mins ")
         self.response = requests.get(url = URL, params=self.param)
         self.page_text = self.response.text
 
         if "No phase data was found." in self.page_text:
             print("Error: No phase data was found. \n")
-            exit("Please change your parameters and restart of the tool ... \n")
+            exit("Please change your parameters and restart ... \n")
 
         try:
             self.find_all_vars(self.page_text, 'EVENTID', 'STA', 'ISCPHASE',
@@ -1595,12 +1635,13 @@ class QueryArrival():
         except IndexError:
             print('Please try it later. Request failed.')
         else:
-            print('Request completed！！！')
-            print("%d events have been found!"% len(self.arrival_recordings))
+            print('Request completed!')
+            print("%d events have been found"% len(self.arrival_recordings))
 
 
     def find_all_vars(self, text, *args):
-        r"""Store all arrival information
+        r"""Store all arrival information.
+
         This method save all fetched information into `recordings`:
             #. EVENTID
             #. STA
@@ -1612,6 +1653,7 @@ class QueryArrival():
             #. EVENT TYPE
             #. EVENT MAG
         """
+
         ex = r'MAG (.*) '
         all_variables = re.findall(ex, text, re.S)
         all_vars = re.split(r',', all_variables[0])
