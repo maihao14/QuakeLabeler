@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>QuakeLabeler Tutorial &mdash; QuakeLabeler 0.0.1 documentation</title>
@@ -185,9 +186,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="quakelabeler-tutorial">
+  <section id="quakelabeler-tutorial">
 <h1>QuakeLabeler Tutorial<a class="headerlink" href="#quakelabeler-tutorial" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="overview">
+<section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>Preparing a training dataset is the first step of any machine learning application. In earthquake
 seismology, the training dataset often times takes the form of seismic phase labels (e.g., P wave, S wave, etc.). However, labeling seismic waveforms is a time-consuming and tedious task. <code class="docutils literal notranslate"><span class="pre">QuakeLabeler</span></code> <code class="docutils literal notranslate"><span class="pre">(QL)</span></code> is your best solution to automatically generate seismic waveform labels from large datasets. To save your time for the next brilliant AI method.</p>
@@ -202,18 +203,18 @@ seismology, the training dataset often times takes the form of seismic phase lab
 </ol>
 </div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">QuakeLabeler</span></code> is a Python package containing command-line interactive tools to help you quickly generate your personal seismic datasets. <code class="docutils literal notranslate"><span class="pre">QuakeLabeler</span></code> provides a one-stop service to convert raw seismic data into valuable training datasets for machine learning through professional collection and annotation techniques.</p>
-<div class="section" id="data-collection">
+<section id="data-collection">
 <h3>Data Collection<a class="headerlink" href="#data-collection" title="Permalink to this headline">¶</a></h3>
 <p>Artificial intelligence (AI) techniques require large amounts of high-quality training data. In seismology, we don’t lack raw data. However, turning raw waveform data into labels can be difficult
 and time-consuming.</p>
 <p>In contrast to other static seismic datasets, <code class="docutils literal notranslate"><span class="pre">QL</span></code> provides flexible and tailored training data. <code class="docutils literal notranslate"><span class="pre">QL</span></code> first retrieves raw seismic waveforms from online data centres (i.e. IRIS DMC) and saves them to disk, then converts these data (seismograms) into standard training samples. Several signal pre-processing methods are available to ensure the datasets meet users’ requirements.</p>
-</div>
-<div class="section" id="data-annotation">
+</section>
+<section id="data-annotation">
 <h3>Data Annotation<a class="headerlink" href="#data-annotation" title="Permalink to this headline">¶</a></h3>
 <p>With labeled data, models learn to handle complex scenarios. The higher the data accuracy, the better the model performance. With a wide range of data labeling tools, <code class="docutils literal notranslate"><span class="pre">QL</span></code> can automatically create seismic labels according to users’ input options. So you never need to worry about data formatting problems with your AI models.</p>
-</div>
-</div>
-<div class="section" id="workflow">
+</section>
+</section>
+<section id="workflow">
 <h2>Workflow<a class="headerlink" href="#workflow" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">QuakeLabeler</span></code> has a tight pipeline of functions. It automatically builds required seismic datasets. Here are the main steps of the procedure:</p>
 <blockquote>
@@ -235,8 +236,8 @@ and time-consuming.</p>
 <li><p>Export results and statistics</p></li>
 </ol>
 </div></blockquote>
-</div>
-<div class="section" id="usage">
+</section>
+<section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <p>Start <code class="docutils literal notranslate"><span class="pre">QuakeLabeler</span></code> in any interactive shell of your choice (eg. in <code class="docutils literal notranslate"><span class="pre">macOS</span></code>, open <code class="docutils literal notranslate"><span class="pre">terminal</span></code>),
 type:</p>
@@ -255,8 +256,8 @@ QuakeLabeler provides multiple modes for different levels of Seismic AI researhe
 Please select a mode: [1/Beginner/2/Advanced]
 </pre></div>
 </div>
-</div>
-<div class="section" id="beginner-mode">
+</section>
+<section id="beginner-mode">
 <h2>Beginner Mode<a class="headerlink" href="#beginner-mode" title="Permalink to this headline">¶</a></h2>
 <p>If you have little knowledge of how to create a training dataset, select the <code class="docutils literal notranslate"><span class="pre">Beginner</span></code> mode</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># you can either input: 1 or beginner.</span>
@@ -366,8 +367,8 @@ All available waveforms are ready!
 will hold all available components from one station at the event time. See the above
 print information, the last Stream object has 6 available Trace(s) as one rendered sample.</p>
 </div>
-</div>
-<div class="section" id="advanced-mode">
+</section>
+<section id="advanced-mode">
 <h2>Advanced Mode<a class="headerlink" href="#advanced-mode" title="Permalink to this headline">¶</a></h2>
 <p>If you are already an expert in machine learning, you can select the <code class="docutils literal notranslate"><span class="pre">Advanced</span></code> mode to fill in all customized options for your search fields:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QuakeLabeler</span>
@@ -488,8 +489,8 @@ Do you want to generate statistical charts after creating the dataset? [y/n]y
 <li><p>Only use pre-processing options if necessary.</p></li>
 </ul>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
