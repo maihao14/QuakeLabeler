@@ -40,6 +40,7 @@ jobs:
           conda info
           conda config --add channels conda-forge
           conda install obspy
+          pip install -e .
 
       - name: Make docs
         if: matrix.python-version == '3.8'
