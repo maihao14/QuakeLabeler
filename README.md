@@ -8,7 +8,7 @@ QuakeLabeler is a Python package to create and manage your seismic training data
 QuakeLabeler (QL) is a package containing Python tools for customizing your own earthquake datasets for machine learning applications. Current functionalities include retrieving waveforms from data centers, customizing seismic samples, auto-building datasets, preprocessing and augmenting for labels, and visualizing data distribution. The code helps all levels of AI developers and seismology researchers for querying and building their own earthquake datasets and can be used through an interactive command-line interface with little knowledge of Python.
 
 Installation, Usage, API documentation and scripts are described at
-*TBD*.
+*https://maihao14.github.io/QuakeLabeler/*.
 
 Author: [`Hao Mai`](https://www.uogeophysics.com/authors/mai/)(Developer and Maintainer)
  & [`Pascal Audet`](https://www.uogeophysics.com/authors/admin/) (Developer and Maintainer)
