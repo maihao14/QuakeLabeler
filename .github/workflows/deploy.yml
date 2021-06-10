@@ -41,7 +41,7 @@ jobs:
           conda config --add channels conda-forge
           conda install obspy
           pip install -e .
-
+          
       - name: Make docs
         if: matrix.python-version == '3.8'
         shell: bash -l {0}
@@ -52,7 +52,8 @@ jobs:
           make html
           touch _build/html/.nojekyll
           cd ..
-
+          
+          
       - name: Deploy 🚀
         if: matrix.python-version == '3.8'
         uses: JamesIves/github-pages-deploy-action@3.7.1

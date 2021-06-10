@@ -25,8 +25,7 @@ author = 'Hao Mai & Pascal Audet'
 # -- General configuration ---------------------------------------------------
 
 # The full version, including alpha/beta/rc tags
-# release = '0.0.1'
-from quakelabeler import __version__ as release
+release = '0.0.1'
 
 autodoc_member_order = 'bysource'
 

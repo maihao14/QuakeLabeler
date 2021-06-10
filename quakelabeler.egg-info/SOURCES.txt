@@ -1,0 +1,17 @@
+README.md
+setup.cfg
+setup.py
+QuakeLabeler.egg-info/PKG-INFO
+QuakeLabeler.egg-info/SOURCES.txt
+QuakeLabeler.egg-info/dependency_links.txt
+QuakeLabeler.egg-info/entry_points.txt
+QuakeLabeler.egg-info/requires.txt
+QuakeLabeler.egg-info/top_level.txt
+quakelabeler/__init__.py
+quakelabeler/classes.py
+quakelabeler.egg-info/PKG-INFO
+quakelabeler.egg-info/SOURCES.txt
+quakelabeler.egg-info/dependency_links.txt
+quakelabeler.egg-info/entry_points.txt
+quakelabeler.egg-info/requires.txt
+quakelabeler.egg-info/top_level.txt

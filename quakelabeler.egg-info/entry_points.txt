@@ -1,0 +1,4 @@
+[console_scripts]
+QuakeLabeler = quakelabeler.scripts.QuakeLabeler:main
+requests_isc = quakelabeler.scripts.requests_isc:main
+
