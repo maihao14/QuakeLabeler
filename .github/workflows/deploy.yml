@@ -42,7 +42,6 @@ jobs:
           conda install obspy
           pip install -e .
           
-          
       - name: Make docs
         if: matrix.python-version == '3.8'
         shell: bash -l {0}
