@@ -49,18 +49,36 @@ If you work in development mode, use the `-e` argument as `pip install -e .`
 
 ## Running the scripts
 
-Create a work folder where you will run the scripts that accompany `QuakeLabeler`. For example
+Create a work folder where you will run the scripts that accompany `QuakeLabeler`. For example:
 
 ```bash
 mkdir ~/WorkFolder
 cd WorkFolder
 ```
 
-Run the main script `QuakeLabeler` with default arguments
+Run `QuakeLabeler`. Input ``QuakeLabeler`` to `macOS terminal` or `Windows consoles`:
 
 ```bash
 QuakeLabeler
 ```
+
+Or input ``quakelabeler`` also works:
+
+```bash
+quakelabeler
+```
+
+A QuakeLabeler welcome interface will be loading:
+
+```bash
+(ql) hao@HaodeMacBook-Pro QuakeLabeler % QuakeLabeler
+Welcome to QuakeLabeler----Fast AI Earthquake Dataset Deployment Tool!
+QuakeLabeler provides multiple modes for different levels of Seismic AI researchers 
+
+[Beginner] mode -- well prepared case studies;
+[Advanced] mode -- produce earthquake samples based on Customized parameters.
+```
+
 
 ## Contributing
 

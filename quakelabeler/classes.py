@@ -1364,7 +1364,7 @@ class Interactive():
             options.
 
         """
-        print('QuakeLabeler provides multiple modes for different levels of Seismic AI researher \n ')
+        print('QuakeLabeler provides multiple modes for different levels of Seismic AI researchers \n ')
         print('[Beginner] mode -- well prepared case studies; \n' +\
                '[Advanced] mode -- produce earthquake samples based on Customized parameters. \n')
         mode = input("Please select a mode: [1/Beginner/2/Advanced] ")
