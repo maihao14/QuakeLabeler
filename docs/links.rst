@@ -1,8 +1,8 @@
 GitHub Repositories
 -------------------
 
-* `QuakeLabeler <https://github.com/maihao14/QuakeLabeler/>`_
-* `GitHub Pages <https://maihao14.github.io/QuakeLabeler/>`_
+* `QuakeLabeler repository <https://github.com/maihao14/QuakeLabeler/>`_
+* `Online documentation <https://maihao14.github.io/QuakeLabeler/>`_
 
 
 References
