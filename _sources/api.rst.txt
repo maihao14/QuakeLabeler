@@ -5,7 +5,7 @@
 Classes
 =======
 
-:mod:`~quakelabeler` defines the following classes:
+:mod:`~quakelabeler` defines the following base classes:
 
 - :class:`~quakelabeler.classes.QuakeLabeler`
 - :class:`~quakelabeler.classes.Interactive`
@@ -13,7 +13,7 @@ Classes
 - :class:`~quakelabeler.classes.QueryArrival`
 
 QuakeLabeler
-------------
+-----------
 
 .. autoclass:: quakelabeler.classes.QuakeLabeler
   :members:
