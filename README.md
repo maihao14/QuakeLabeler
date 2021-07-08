@@ -1,11 +1,10 @@
 ![](./docs/Images/QuakeLabeler.png)
 
 # QuakeLabeler
-
-QuakeLabeler is a Python package to create and manage your seismic training data, processes, and visualization in a single place — so you can focus on building the next big thing.
+Quake Labeler was born from the need for seismologists and developers who are not AI specialists to easily, quickly, and independently build and visualize their training data set.
 
 ## Introduction
-QuakeLabeler (QL) is a package containing Python tools for customizing your own earthquake datasets for machine learning applications. Current functionalities include retrieving waveforms from data centers, customizing seismic samples, auto-building datasets, preprocessing and augmenting for labels, and visualizing data distribution. The code helps all levels of AI developers and seismology researchers for querying and building their own earthquake datasets and can be used through an interactive command-line interface with little knowledge of Python.
+QuakeLabeler is a Python package to customize, build and manage your seismic training data, processes, and visualization in a single place — so you can focus on building the next big thing. Current functionalities include retrieving waveforms from data centers, customizing seismic samples, auto-building datasets, preprocessing and augmenting for labels, and visualizing data distribution. The code helps all levels of AI developers and seismology researchers for querying and building their own earthquake datasets and can be used through an interactive command-line interface with little knowledge of Python.
 
 Installation, Usage, documentation and scripts are described at
  https://maihao14.github.io/QuakeLabeler/
@@ -73,7 +72,7 @@ A QuakeLabeler welcome interface will be loading:
 ```bash
 (ql) hao@HaodeMacBook-Pro QuakeLabeler % QuakeLabeler
 Welcome to QuakeLabeler----Fast AI Earthquake Dataset Deployment Tool!
-QuakeLabeler provides multiple modes for different levels of Seismic AI researchers 
+QuakeLabeler provides multiple modes for different levels of Seismic AI researchers
 
 [Beginner] mode -- well prepared case studies;
 [Advanced] mode -- produce earthquake samples based on Customized parameters.
