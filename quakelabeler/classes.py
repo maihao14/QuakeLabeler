@@ -1353,6 +1353,194 @@ class Interactive():
         self.input_time()
         self.input_mag()
 
+    def benchmark_mode(self):
+        r"""Run benchmark mode
+        This method is to generate datasets by QuakeLabeler built-in benchmark.
+        """
+        print('Initialize Benchmark Mode...')
+        print('Alternative region options are provided. Please select your preferred input function: \n ')
+        # default params case[1] in Cascadia subduction zone
+        self.params = {
+            'out_format':'CSV',  #<QuakeML>|<CSV>|<IMS1.0>
+        #    """<request-type>"""
+            'request':'STNARRIVALS', #Specifies that the ISC Bulletin should be searched for arrivals.
+        #    """<arrivals-limits>"""
+            'ttime':'on', # arrivals will be only be output if they have an arrival-time.
+            'ttres':'on', #  they have a travel-time residual computed.
+            'tdef':'on', # if they are time-defining phases.
+            'iscreview':'on', # in the Reviewed ISC Bulletin
+        #    """station-region"""
+            'stnsearch':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
+            'stn_bot_lat':'31.78', #    -90 to 90   #Bottom latitude of rectangular region
+            'stn_top_lat':'46.48',  #-90 to 90  #Top latitude of rectangular region
+            'stn_left_lon': '-128.47',  #-180 to 180    Left longitude of rectangular region
+            'stn_right_lon':'-114.60',  #-180 to 180    Right longitude of rectangular region
+            'searchshape':'RECT',
+            'bot_lat':'31.78', #    -90 to 90   #Bottom latitude of rectangular region
+            'top_lat':'46.48',  #-90 to 90  #Top latitude of rectangular region
+            'left_lon': '-128.47',  #-180 to 180    Left longitude of rectangular region
+            'right_lon':'-114.60',  #-180 to 180    Right longitude of rectangular region
+            'start_year':'2010',
+            'start_month':'1',
+            'start_day':'7',
+            'start_time':'01:00:00',
+            'end_year':'2010',
+            'end_month':'1',
+            'end_day':'10',
+            'end_time':'03:00:00',
+            'min_mag':'3.0',
+            'req_mag_agcy':'Any',
+            'req_mag_type':'Any',
+            }
+
+        print('Initialize Beginner Mode...')
+        field = input('Select one of the following sample fields:  [1/2/3/4] \n \
+                      [1] 2010 Cascadia subduction zone earthquake activities \n \
+                      [2] 2011 Tōhoku earthquake and tsunami \n \
+                      [3] 2016 Oklahoma human activity-induced earthquakes \n \
+                      [4] 2018 Big quakes in Southern California \n \
+                      [0] Re-direct to Advanced mode. \n  '  )
+        # input default parameters for specific case
+        if field == '2':
+            # 2011 Tōhoku earthquake and tsunami, Japan
+            self.params = {
+            #    """<output-format>"""
+                'out_format':'CSV',  #<QuakeML>|<CSV>|<IMS1.0>
+            #    """<request-type>"""
+                'request':'STNARRIVALS', #Specifies that the ISC Bulletin should be searched for arrivals.
+            #    """<arrivals-limits>"""
+                'ttime':'on', # arrivals will be only be output if they have an arrival-time.
+                'ttres':'on', #  they have a travel-time residual computed.
+                'tdef':'on', # if they are time-defining phases.
+                'iscreview':'on', # in the Reviewed ISC Bulletin
+            #    """station-region"""
+                'stnsearch':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
+                'stn_bot_lat':'30.0', #  -90 to 90   #Bottom latitude of rectangular region
+                'stn_top_lat':'44.0',    #-90 to 90  #Top latitude of rectangular region
+                'stn_left_lon': '135.0', #-180 to 180    Left longitude of rectangular region
+                'stn_right_lon':'150.0',     #-180 to 180    Right longitude of rectangular region
+                'searchshape':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
+                'bot_lat':'30.0', #  -90 to 90   #Bottom latitude of rectangular region
+                'top_lat':'44.0',    #-90 to 90  #Top latitude of rectangular region
+                'left_lon': '135.0', #-180 to 180    Left longitude of rectangular region
+                'right_lon':'150.0',     #-180 to 180    Right longitude of rectangular region
+                'start_year':'2011',
+                'start_month':'3',
+                'start_day':'11',
+                'start_time':'08:00:00',
+                'end_year':'2011',
+                'end_month':'3',
+                'end_day':'11',
+                'end_time':'23:00:00',
+                'min_mag':'1.0',
+                'req_mag_agcy':'Any',
+                'req_mag_type':'Any',
+                }
+
+        if field == '3':
+            #2016 Oklahoma human activity-induced earthquakes
+            self.params = {
+            #    """<output-format>"""
+                'out_format':'CSV',  #<QuakeML>|<CSV>|<IMS1.0>
+            #    """<request-type>"""
+                'request':'STNARRIVALS', #Specifies that the ISC Bulletin should be searched for arrivals.
+            #    """<arrivals-limits>"""
+                'ttime':'on', # arrivals will be only be output if they have an arrival-time.
+                'ttres':'on', #  they have a travel-time residual computed.
+                'tdef':'on', # if they are time-defining phases.
+                'iscreview':'on', # in the Reviewed ISC Bulletin
+                'stnsearch':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
+                'stn_bot_lat':'30', #  -90 to 90   #Bottom latitude of rectangular region
+                'stn_top_lat':'40',    #-90 to 90  #Top latitude of rectangular region
+                'stn_left_lon': '-100', #-180 to 180    Left longitude of rectangular region
+                'stn_right_lon':'-95',     #-180 to 180    Right longitude of rectangular region
+                'searchshape':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
+                'bot_lat':'30', #  -90 to 90   #Bottom latitude of rectangular region
+                'top_lat':'40',    #-90 to 90  #Top latitude of rectangular region
+                'left_lon':'-100', #-180 to 180    Left longitude of rectangular region
+                'right_lon':'-95',     #-180 to 180    Right longitude of rectangular region
+                'start_month':'7',
+                'start_day':'1',
+                'start_time':'00:00:00',
+                'end_year':'2016',
+                'end_month':'7',
+                'end_day':'30',
+                'end_time':'00:00:00',
+#                'min_mag':'1.0',
+                'req_mag_agcy':'Any',
+                'req_mag_type':'Any',
+                }
+        if field == '1':
+            #2010 Cascadia subduction zone earthquake activities, NA
+            self.params= {
+            #    """<output-format>"""
+                'out_format':'CSV',  #<QuakeML>|<CSV>|<IMS1.0>
+            #    """<request-type>"""
+                'request':'STNARRIVALS', #Specifies that the ISC Bulletin should be searched for arrivals.
+            #    """<arrivals-limits>"""
+                'ttime':'on', # arrivals will be only be output if they have an arrival-time.
+                'ttres':'on', #  they have a travel-time residual computed.
+                'tdef':'on', # if they are time-defining phases.
+                'iscreview':'on', # in the Reviewed ISC Bulletin
+            #    """station-region"""
+                'stnsearch':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
+                'stn_bot_lat':'40.00', #    -90 to 90   #Bottom latitude of rectangular region
+                'stn_top_lat':'55.00',  #-90 to 90  #Top latitude of rectangular region
+                'stn_left_lon': '-130.00',  #-180 to 180    Left longitude of rectangular region
+                'stn_right_lon':'-120.00',  #-180 to 180    Right longitude of rectangular region
+                'searchshape':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
+                'bot_lat':'40.00', #    -90 to 90   #Bottom latitude of rectangular region
+                'top_lat':'55.00',  #-90 to 90  #Top latitude of rectangular region
+                'left_lon': '-130.00',  #-180 to 180    Left longitude of rectangular region
+                'right_lon':'-120.00',  #-180 to 180    Right longitude of rectangular region
+                'start_year':'2010',
+                'start_month':'9',
+                'start_day':'1',
+                'start_time':'01:00:00',
+                'end_year':'2010',
+                'end_month':'9',
+                'end_day':'30',
+                'end_time':'03:00:00',
+                'min_mag':'3.0',
+                'req_mag_agcy':'Any',
+                'req_mag_type':'Any',
+                }
+        if field == '4':
+            # 2018 Big quakes in Southern California
+            self.params= {
+            #    """<output-format>"""
+                'out_format':'CSV',  #<QuakeML>|<CSV>|<IMS1.0>
+            #    """<request-type>"""
+                'request':'STNARRIVALS', #Specifies that the ISC Bulletin should be searched for arrivals.
+            #    """<arrivals-limits>"""
+                'ttime':'on', # arrivals will be only be output if they have an arrival-time.
+                'ttres':'on', #  they have a travel-time residual computed.
+                'tdef':'on', # if they are time-defining phases.
+                'iscreview':'on', # in the Reviewed ISC Bulletin
+            #    """station-region"""
+                'stnsearch':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
+                'stn_bot_lat':'32.00', #    -90 to 90   #Bottom latitude of rectangular region
+                'stn_top_lat':'42.00',  #-90 to 90  #Top latitude of rectangular region
+                'stn_left_lon': '-124.00',  #-180 to 180    Left longitude of rectangular region
+                'stn_right_lon':'-114.00',  #-180 to 180    Right longitude of rectangular region
+#                'searchshape':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
+#                'bot_lat':'32.00', #    -90 to 90   #Bottom latitude of rectangular region
+#                'top_lat':'42.00',  #-90 to 90  #Top latitude of rectangular region
+#                'left_lon': '-124.00',  #-180 to 180    Left longitude of rectangular region
+#                'right_lon':'-114.00',  #-180 to 180    Right longitude of rectangular region
+                'start_year':'2018',
+                'start_month':'1',
+                'start_day':'1',
+                'start_time':'01:00:00',
+                'end_year':'2018',
+                'end_month':'12',
+                'end_day':'31',
+                'end_time':'00:00:00',
+                'min_mag':'6.5',
+                'req_mag_agcy':'Any',
+                'req_mag_type':'Any',
+                }
+
     def select_mode(self):
         r"""Mode selection
         Returns
@@ -1362,6 +1550,8 @@ class Interactive():
         advanced_mode : function
             Run advanced mode `self.advanced_mode()` with various customized
             options.
+        benchmark_mode : function
+            Run benchmark mode `self.benchmark_mode()` with default parameters.
 
         """
         print('QuakeLabeler provides multiple modes for different levels of Seismic AI researchers \n ')
@@ -1374,12 +1564,14 @@ class Interactive():
             if mode =='2' or mode.lower() == 'advanced':
                 return self.advanced_mode()
             else:
-                error = input('Invalid input, would you like restart choosing mode?  ([y]/n)')
-                if error == 'y':
-                    self.select_mode()
+                if mode == '3' or mode.lower() == 'benchmark':
+                    return self.benchmark_mode()
                 else:
-                    print('exit the process! ')
-
+                    error = input('Invalid input, would you like restart choosing mode?  ([y]/n)')
+                    if error == 'y':
+                        self.select_mode()
+                    else:
+                        print('exit the process! ')
 #%%
 class CustomSamples():
     r"""Command line interactive tool for custom dataset options
