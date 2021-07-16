@@ -37,6 +37,7 @@ from obspy.clients.fdsn import Client
 import warnings
 import random
 import numpy as np
+import time
 from scipy.io import savemat
 LOGGER = logging.getLogger(__name__)
 # terminal figure
@@ -49,6 +50,8 @@ import requests
 from progress.spinner import Spinner
 from progress.bar import Bar
 import matplotlib.pyplot as plt
+# art font
+from art import *
 
 class QuakeLabeler():
     r""" ``Quake Labeler`` class enables to automatically label ground truth.
@@ -774,7 +777,9 @@ class Interactive():
     def __init__(self):
         self.welcome() #brief introduction of this tool
         self.params = {} #save params as a dictionary; send to following classes
+        self.receipe_flag = False # True if enter: beginner mode
         self.select_mode()
+
 
     def welcome(self):
         print("Welcome to QuakeLabeler----Fast AI Earthquake Dataset Deployment Tool!")
@@ -1146,9 +1151,13 @@ class Interactive():
 
     def beginner_mode(self, field=1):
         r"""Run beginner mode
-        User can use this method to select one example region to create dataset
+        User can use this method to select one example region to create datasets
+        in different scales: small (1,000), middle (10,000), large (15,000).
+        Different recipes can be applied, i.e. PhaseNet recipe, EQTransformer recipe.
         """
+
         # default params case[1] in Cascadia subduction zone
+        # 16,838 events in total
         self.params = {
             'out_format':'CSV',  #<QuakeML>|<CSV>|<IMS1.0>
         #    """<request-type>"""
@@ -1171,12 +1180,12 @@ class Interactive():
             'right_lon':'-114.60',  #-180 to 180    Right longitude of rectangular region
             'start_year':'2010',
             'start_month':'1',
-            'start_day':'7',
-            'start_time':'01:00:00',
+            'start_day':'1',
+            'start_time':'00:00:00',
             'end_year':'2010',
-            'end_month':'1',
-            'end_day':'10',
-            'end_time':'03:00:00',
+            'end_month':'12',
+            'end_day':'30',
+            'end_time':'00:00:00',
             'min_mag':'3.0',
             'req_mag_agcy':'Any',
             'req_mag_type':'Any',
@@ -1184,11 +1193,11 @@ class Interactive():
 
         print('Initialize Beginner Mode...')
         field = input('Select one of the following sample fields:  [1/2/3/4] \n \
-                      [1] 2010 Cascadia subduction zone earthquake activities \n \
+                      [1] 2010 Cascadia subduction zone earthquake activities (M > 3.0) \n \
                       [2] 2011 Tōhoku earthquake and tsunami \n \
                       [3] 2016 Oklahoma human activity-induced earthquakes \n \
                       [4] 2018 Big quakes in Southern California \n \
-                      [0] Re-direct to Advanced mode. \n  '  )
+                      [0] Re-direct to Running Mode Selection. \n  '  )
         # input default parameters for specific case
         if field == '2':
             # 2011 Tōhoku earthquake and tsunami, Japan
@@ -1333,7 +1342,8 @@ class Interactive():
         if field == '0':
             # run advanced mode
             self.params = {}
-            self.advanced_mode()
+            #Re-direct to running mode selection
+            self.select_mode()
 
 
     def advanced_mode(self):
@@ -1542,37 +1552,50 @@ class Interactive():
                 }
 
     def select_mode(self):
-        r"""Mode selection
+        r"""Running mode selection
+        Runing Options for different levels of AI users.
+        Beginner mode : Quick start dataset recipe in small, middle, large scales
+        Advanced mode : Custom all details in your dataset.
+        Benchmark mode : Built-in standard seismic datasets in scales.
         Returns
         -------
         beginner_mode : function
-            Run beginner mode `self.beginner_mode()` with default parameters.
+            Run beginner mode `self.beginner_mode()` .
         advanced_mode : function
-            Run advanced mode `self.advanced_mode()` with various customized
-            options.
+            Run advanced mode `self.advanced_mode()` .
         benchmark_mode : function
-            Run benchmark mode `self.benchmark_mode()` with default parameters.
+            Run benchmark mode `self.benchmark_mode()`.
 
         """
+        print("""
+   ____              _        _           _          _
+  / __ \            | |      | |         | |        | |
+ | |  | |_   _  __ _| | _____| |     __ _| |__   ___| | ___ _ __
+ | |  | | | | |/ _` | |/ / _ \ |    / _` | '_ \ / _ \ |/ _ \ '__|
+ | |__| | |_| | (_| |   <  __/ |___| (_| | |_) |  __/ |  __/ |
+  \___\_\\__,_|\__,_|_|\_\___|______\__,_|_.__/ \___|_|\___|_|
+        """)
         print('QuakeLabeler provides multiple modes for different levels of Seismic AI researchers \n ')
-        print('[Beginner] mode -- well prepared case studies; \n' +\
-               '[Advanced] mode -- produce earthquake samples based on Customized parameters. \n')
-        mode = input("Please select a mode: [1/Beginner/2/Advanced] ")
+        print('[Beginner]  mode -- Quick start dataset recipes in small, middle, large scales. \n' +\
+               '[Advanced]  mode -- Custom all details in your dataset. \n'
+               '[Benchmark] mode -- Built-in standard seismic datasets in scales.')
+        mode = input("Please select a mode: [1/2/3/Beginner/Advanced/Benchmark] ")
         if (mode == '1') or (mode.lower() == 'beginner'):
-            return self.beginner_mode()
+            self.receipe_flag = True
+#            print(self.receipe_flag)
+            self.beginner_mode()
         else:
             if mode =='2' or mode.lower() == 'advanced':
-                return self.advanced_mode()
+                self.advanced_mode()
             else:
                 if mode == '3' or mode.lower() == 'benchmark':
-                    return self.benchmark_mode()
+                    self.benchmark_mode()
                 else:
                     error = input('Invalid input, would you like restart choosing mode?  ([y]/n)')
                     if error == 'y':
                         self.select_mode()
                     else:
                         print('exit the process! ')
-#%%
 class CustomSamples():
     r"""Command line interactive tool for custom dataset options
     Input paratemter to standardize retrived waveform.
@@ -1581,26 +1604,108 @@ class CustomSamples():
     default_option : bool
         if `default_option` is True, apply default options.
     """
-    def __init__(self, default_option = False):
+    def __init__(self, default_option = True):
+        # Query if run quick-start recipe
+        self.default_option = default_option
+        if self.default_option:
+            # set default options
+            # run quick-start recipe
 
-        print('Please define your own expection for Seismic labled samples: \n')
-        if default_option:
-            self.custom_dataset = {'volume': '10', 'fixed_length': True, 'sample_length': 5000}
-            self.custom_waveform = {'label_type': True, 'sample_rate': '', 'filter_type': '0', 'detrend': False, 'random_arrival': True, 'add_noise': 0}
-            self.custom_export = {'export_type': 'SAC', 'single_trace': True, 'export_inout': True, 'export_arrival_csv': True, 'export_filename': 'SampleDataset', 'export_stats': True}
+            print("=====================================================================================")
+            Art=text2art("quick-start recipe", font="small") # random font mode
+            print(Art)
+            print("""
+Quick-start recipe lists specific dataset structures of the
+current popular open-source AI/ML models on GitHub. Follow
+these recipes; users can generate the same forms of the datasets
+in QuakeLabeler with different scales (small, middle, large).
+                  """)
+            print("=====================================================================================")
+            print("Please select the recipe:")
+            #set default
+            self.custom_dataset = {'volume': '1000', 'fixed_length': True, 'sample_length': 5000}
+            self.custom_waveform = {'label_type': False, 'sample_rate': '', 'filter_type': '0', 'detrend': False, 'random_arrival': True, 'add_noise': 0}
+            self.custom_export = {'export_type': 'SAC', 'single_trace': True, 'export_inout': False, 'export_arrival_csv': True, 'export_filename': 'SimpleDataset', 'export_stats': True}
         else:
+            print('Please define your own expection for the dataset: \n')
             self.custom_dataset = {}
             self.custom_dataset = {}
             self.custom_waveform = {}
             self.custom_export = {}
 
-        self.default_option = default_option
-
     def init(self):
+        # print("Test, the default_option is: ")
+        # print(self.default_option)
         if not self.default_option:
             self.define_dataset()
             self.define_waveform()
             self.define_export()
+        else:
+            # with InteractiveTest beginner mode
+            # InteractiveTest.receipe_flag = True
+            # write quick-start recipe
+            self.quick_start_recipe()
+
+    def quick_start_recipe(self):
+        r"""Built-in dataset structure options
+
+        """
+        # list options
+        print('Initialize Quick-Start Recipe...')
+        field = input('Select one of the following recipe:  [1/2/3/4] \n \
+                      [1] QuakeLabeler Simple Version \n \
+                      [2] QuakeLabeler Delicate Version \n \
+                      [3] PhaseNet Version \n \
+                      [4] EQTransformer Version \n \
+                      [0] Re-direct to Custom Mode Selection. \n  '  )
+        if field == '0':
+            # Re-direct to custom mode selection
+            self.__init__(False)
+        # Simple verision without preprocess
+        if field == '1':
+            # write params
+            self.custom_dataset = {'volume': '1000', 'fixed_length': True, 'sample_length': 5000}
+            self.custom_waveform = {'label_type': False, 'sample_rate': '', 'filter_type': '0', 'detrend': False, 'random_arrival': True, 'add_noise': 0}
+            self.custom_export = {'export_type': 'SAC', 'single_trace': True, 'export_inout': False, 'export_arrival_csv': True, 'export_filename': 'SimpleDataset', 'export_stats': True}
+        # Delicate version
+        if field == '2':
+            self.custom_dataset = {'volume': '1000', 'fixed_length': True, 'sample_length': 5000}
+            self.custom_waveform = {'label_type': True, 'sample_rate': '50.0', 'filter_type': '0', 'detrend': True, 'random_arrival': True, 'add_noise': 0}
+            self.custom_export = {'export_type': 'SAC', 'single_trace': False, 'export_inout': True, 'export_arrival_csv': True, 'export_filename': 'DelicateDataset', 'export_stats': True}
+        # Phasenet verision
+        if field == '3':
+            self.custom_dataset = {'volume': '1000', 'fixed_length': True, 'sample_length': 5000}
+            self.custom_waveform = {'label_type': False, 'sample_rate': '100.0', 'filter_type': '0',
+                                    'detrend': False, 'random_arrival': False, 'add_noise': 0,
+                                    'start_arrival': 30.0, 'end_arrival': 90.0
+                                    }
+            self.custom_export = {'export_type': 'NPZ', 'single_trace': False, 'export_inout': True, 'export_arrival_csv': True, 'export_filename': 'PhaseNetDataset', 'export_stats': True}
+        # EQTransformer verision
+        if field == '4':
+            self.custom_dataset = {'volume': '1000', 'fixed_length': True, 'sample_length': 6000}
+            self.custom_waveform = {'label_type': False, 'sample_rate': '100.0', 'filter_type': '3',
+                                    'filter_freqmin': 1.0, 'filter_freqmax': 45.0,
+                                    'detrend': True, 'random_arrival': True, 'add_noise': 0
+                                    }
+            self.custom_export = {'export_type': 'SAC', 'single_trace': False, 'export_inout': True, 'export_arrival_csv': True, 'export_filename': 'PhaseNetDataset', 'export_stats': True}
+        if field != '0':
+            # ask dataset size
+            sizefield = input('Select one of the scale of datastet:  [1/2/3/4] \n \
+                          [1] Mini size (100) \n \
+                          [2] Small size(1,000) \n \
+                          [3] Middle size (5,000) \n \
+                          [4] Large size (10,000) \n \
+                          [0] Custom size \n  ')
+            if sizefield == '1':
+                self.custom_dataset['volume'] = 100
+            if sizefield == '2':
+                self.custom_dataset['volume'] = 1000
+            if sizefield == '3':
+                self.custom_dataset['volume'] = 5000
+            if sizefield == '4':
+                self.custom_dataset['volume'] = 10000
+            if sizefield == '0':
+                self.custom_dataset['volume'] = int(input('Please input how many samples you wish to generate ?'))
 
     def define_dataset(self):
         r"""Dataset options
@@ -1769,6 +1874,7 @@ class QueryArrival():
         URL = 'http://www.isc.ac.uk/cgi-bin/web-db-v4'
         # init params dict
         self.param = {}
+        self.starttime = time.time()
         # save params
         for k in kwargs:
             self.param[k] = kwargs[k]
@@ -1788,7 +1894,15 @@ class QueryArrival():
             print('Please try it later. Request failed.')
         else:
             print('Request completed！！！')
-            print("%d events have been found!"% len(self.arrival_recordings))
+            print("%d events have been found!" % len(self.arrival_recordings))
+            self.endtime = time.time()
+            runtime = self.endtime - self.starttime
+            if runtime > 60:
+                min = runtime // 60
+                sec = runtime % 60
+                print("Query time is %d minutes %d seconds." % (min, sec))
+            else:
+                print("Query time is %d seconds." % (runtime))
 
 
     def find_all_vars(self, text, *args):

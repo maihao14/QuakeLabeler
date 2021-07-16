@@ -60,8 +60,12 @@ def main():
 
     InteractiveTest = Interactive()
     query = QueryArrival(**InteractiveTest.params)
-    #use default options
-    custom = CustomSamples()
+    # query.plot use graph to show event distribution
+    # query.random random event catalog
+    # use default options
+    # print("InteractiveTest.receipe_flag: ")
+    # print(InteractiveTest.receipe_flag)
+    custom = CustomSamples(InteractiveTest.receipe_flag)
     custom.init()
     creatlabels = QuakeLabeler(query, custom)
     creatlabels.fetch_all_waveforms(creatlabels.recordings)
@@ -71,7 +75,6 @@ def main():
     creatlabels.subfolder()
     #Neither Basemap nor Cartopy could be imported.
 
-#%%
 if __name__ == '__main__':
 
     main()
