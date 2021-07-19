@@ -59,12 +59,17 @@ def main():
 
 
     InteractiveTest = Interactive()
-    query = QueryArrival(**InteractiveTest.params)
-    # query.plot use graph to show event distribution
-    # query.random random event catalog
-    # use default options
-    # print("InteractiveTest.receipe_flag: ")
-    # print(InteractiveTest.receipe_flag)
+    if not InteractiveTest.benchmark_flag:
+        query = QueryArrival(**InteractiveTest.params)
+        # query.plot use graph to show event distribution
+        # query.random random event catalog
+        # use default options
+        # print("InteractiveTest.receipe_flag: ")
+        # print(InteractiveTest.receipe_flag)
+
+    else:
+        # run benchmark mode
+        query = BuiltInCatalog(InteractiveTest)
     custom = CustomSamples(InteractiveTest.receipe_flag)
     custom.init()
     creatlabels = QuakeLabeler(query, custom)

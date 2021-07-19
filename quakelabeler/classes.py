@@ -778,6 +778,7 @@ class Interactive():
         self.welcome() #brief introduction of this tool
         self.params = {} #save params as a dictionary; send to following classes
         self.receipe_flag = False # True if enter: beginner mode
+        self.benchmark_flag = False # True if enter: benchmark mode
         self.select_mode()
 
 
@@ -1365,11 +1366,13 @@ class Interactive():
 
     def benchmark_mode(self):
         r"""Run benchmark mode
-        This method is to generate datasets by QuakeLabeler built-in benchmark.
+        This method is to generate well-done datasets by QuakeLabeler's built-in benchmark.
+        All options are set.
         """
         print('Initialize Benchmark Mode...')
         print('Alternative region options are provided. Please select your preferred input function: \n ')
         # default params case[1] in Cascadia subduction zone
+        self.benchmark_name = "Cascadia2010"
         self.params = {
             'out_format':'CSV',  #<QuakeML>|<CSV>|<IMS1.0>
         #    """<request-type>"""
@@ -1398,7 +1401,7 @@ class Interactive():
             'end_month':'1',
             'end_day':'10',
             'end_time':'03:00:00',
-            'min_mag':'3.0',
+            'min_mag':'1.0',
             'req_mag_agcy':'Any',
             'req_mag_type':'Any',
             }
@@ -1409,10 +1412,13 @@ class Interactive():
                       [2] 2011 Tōhoku earthquake and tsunami \n \
                       [3] 2016 Oklahoma human activity-induced earthquakes \n \
                       [4] 2018 Big quakes in Southern California \n \
+                      [5] 2019 Global big quakes M > 5.5 \n \
                       [0] Re-direct to Advanced mode. \n  '  )
         # input default parameters for specific case
         if field == '2':
             # 2011 Tōhoku earthquake and tsunami, Japan
+            # Date 3.1 - 3.30
+            self.benchmark_name = "Japan2011"
             self.params = {
             #    """<output-format>"""
                 'out_format':'CSV',  #<QuakeML>|<CSV>|<IMS1.0>
@@ -1424,11 +1430,11 @@ class Interactive():
                 'tdef':'on', # if they are time-defining phases.
                 'iscreview':'on', # in the Reviewed ISC Bulletin
             #    """station-region"""
-                'stnsearch':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
-                'stn_bot_lat':'30.0', #  -90 to 90   #Bottom latitude of rectangular region
-                'stn_top_lat':'44.0',    #-90 to 90  #Top latitude of rectangular region
-                'stn_left_lon': '135.0', #-180 to 180    Left longitude of rectangular region
-                'stn_right_lon':'150.0',     #-180 to 180    Right longitude of rectangular region
+            #     'stnsearch':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
+            #     'stn_bot_lat':'30.0', #  -90 to 90   #Bottom latitude of rectangular region
+            #     'stn_top_lat':'44.0',    #-90 to 90  #Top latitude of rectangular region
+            #     'stn_left_lon': '135.0', #-180 to 180    Left longitude of rectangular region
+            #     'stn_right_lon':'150.0',     #-180 to 180    Right longitude of rectangular region
                 'searchshape':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
                 'bot_lat':'30.0', #  -90 to 90   #Bottom latitude of rectangular region
                 'top_lat':'44.0',    #-90 to 90  #Top latitude of rectangular region
@@ -1436,11 +1442,11 @@ class Interactive():
                 'right_lon':'150.0',     #-180 to 180    Right longitude of rectangular region
                 'start_year':'2011',
                 'start_month':'3',
-                'start_day':'11',
+                'start_day':'1',
                 'start_time':'08:00:00',
                 'end_year':'2011',
                 'end_month':'3',
-                'end_day':'11',
+                'end_day':'30',
                 'end_time':'23:00:00',
                 'min_mag':'1.0',
                 'req_mag_agcy':'Any',
@@ -1449,6 +1455,7 @@ class Interactive():
 
         if field == '3':
             #2016 Oklahoma human activity-induced earthquakes
+            self.benchmark_name = "Oklahoma2016"
             self.params = {
             #    """<output-format>"""
                 'out_format':'CSV',  #<QuakeML>|<CSV>|<IMS1.0>
@@ -1459,29 +1466,28 @@ class Interactive():
                 'ttres':'on', #  they have a travel-time residual computed.
                 'tdef':'on', # if they are time-defining phases.
                 'iscreview':'on', # in the Reviewed ISC Bulletin
-                'stnsearch':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
-                'stn_bot_lat':'30', #  -90 to 90   #Bottom latitude of rectangular region
-                'stn_top_lat':'40',    #-90 to 90  #Top latitude of rectangular region
-                'stn_left_lon': '-100', #-180 to 180    Left longitude of rectangular region
-                'stn_right_lon':'-95',     #-180 to 180    Right longitude of rectangular region
+                # 'stnsearch':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
+                # 'stn_bot_lat':'30', #  -90 to 90   #Bottom latitude of rectangular region
+                # 'stn_top_lat':'40',    #-90 to 90  #Top latitude of rectangular region
+                # 'stn_left_lon': '-100', #-180 to 180    Left longitude of rectangular region
+                # 'stn_right_lon':'-95',     #-180 to 180    Right longitude of rectangular region
                 'searchshape':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
                 'bot_lat':'30', #  -90 to 90   #Bottom latitude of rectangular region
                 'top_lat':'40',    #-90 to 90  #Top latitude of rectangular region
                 'left_lon':'-100', #-180 to 180    Left longitude of rectangular region
                 'right_lon':'-95',     #-180 to 180    Right longitude of rectangular region
-                'start_month':'7',
+                'start_year': '2016',
+                'start_month':'1',
                 'start_day':'1',
                 'start_time':'00:00:00',
                 'end_year':'2016',
-                'end_month':'7',
-                'end_day':'30',
+                'end_month':'12',
+                'end_day':'31',
                 'end_time':'00:00:00',
-#                'min_mag':'1.0',
-                'req_mag_agcy':'Any',
-                'req_mag_type':'Any',
                 }
         if field == '1':
             #2010 Cascadia subduction zone earthquake activities, NA
+            self.benchmark_name = "Cascadia2010"
             self.params= {
             #    """<output-format>"""
                 'out_format':'CSV',  #<QuakeML>|<CSV>|<IMS1.0>
@@ -1504,19 +1510,20 @@ class Interactive():
                 'left_lon': '-130.00',  #-180 to 180    Left longitude of rectangular region
                 'right_lon':'-120.00',  #-180 to 180    Right longitude of rectangular region
                 'start_year':'2010',
-                'start_month':'9',
+                'start_month':'1',
                 'start_day':'1',
                 'start_time':'01:00:00',
                 'end_year':'2010',
-                'end_month':'9',
+                'end_month':'12',
                 'end_day':'30',
-                'end_time':'03:00:00',
-                'min_mag':'3.0',
+                'end_time':'00:00:00',
+                'min_mag':'0.0',
                 'req_mag_agcy':'Any',
                 'req_mag_type':'Any',
                 }
         if field == '4':
             # 2018 Big quakes in Southern California
+            self.benchmark_name = "California2000-2018"
             self.params= {
             #    """<output-format>"""
                 'out_format':'CSV',  #<QuakeML>|<CSV>|<IMS1.0>
@@ -1528,17 +1535,17 @@ class Interactive():
                 'tdef':'on', # if they are time-defining phases.
                 'iscreview':'on', # in the Reviewed ISC Bulletin
             #    """station-region"""
-                'stnsearch':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
-                'stn_bot_lat':'32.00', #    -90 to 90   #Bottom latitude of rectangular region
-                'stn_top_lat':'42.00',  #-90 to 90  #Top latitude of rectangular region
-                'stn_left_lon': '-124.00',  #-180 to 180    Left longitude of rectangular region
-                'stn_right_lon':'-114.00',  #-180 to 180    Right longitude of rectangular region
-#                'searchshape':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
-#                'bot_lat':'32.00', #    -90 to 90   #Bottom latitude of rectangular region
-#                'top_lat':'42.00',  #-90 to 90  #Top latitude of rectangular region
-#                'left_lon': '-124.00',  #-180 to 180    Left longitude of rectangular region
-#                'right_lon':'-114.00',  #-180 to 180    Right longitude of rectangular region
-                'start_year':'2018',
+            #     'stnsearch':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
+            #     'stn_bot_lat':'32.00', #    -90 to 90   #Bottom latitude of rectangular region
+            #     'stn_top_lat':'42.00',  #-90 to 90  #Top latitude of rectangular region
+            #     'stn_left_lon': '-124.00',  #-180 to 180    Left longitude of rectangular region
+            #     'stn_right_lon':'-114.00',  #-180 to 180    Right longitude of rectangular region
+                'searchshape':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
+                'bot_lat':'32.00', #    -90 to 90   #Bottom latitude of rectangular region
+                'top_lat':'42.00',  #-90 to 90  #Top latitude of rectangular region
+                'left_lon': '-124.00',  #-180 to 180    Left longitude of rectangular region
+                'right_lon':'-114.00',  #-180 to 180    Right longitude of rectangular region
+                'start_year':'2000',
                 'start_month':'1',
                 'start_day':'1',
                 'start_time':'01:00:00',
@@ -1546,10 +1553,51 @@ class Interactive():
                 'end_month':'12',
                 'end_day':'31',
                 'end_time':'00:00:00',
-                'min_mag':'6.5',
+                'min_mag':'5.5',
                 'req_mag_agcy':'Any',
                 'req_mag_type':'Any',
                 }
+        if field == '5':
+            # 2019 Big quakes M > 5.5
+            self.benchmark_name = "Bigquake2019"
+            self.params= {
+            #    """<output-format>"""
+                'out_format':'CSV',  #<QuakeML>|<CSV>|<IMS1.0>
+            #    """<request-type>"""
+                'request':'STNARRIVALS', #Specifies that the ISC Bulletin should be searched for arrivals.
+            #    """<arrivals-limits>"""
+                'ttime':'on', # arrivals will be only be output if they have an arrival-time.
+                'ttres':'on', #  they have a travel-time residual computed.
+                'tdef':'on', # if they are time-defining phases.
+                'iscreview':'on', # in the Reviewed ISC Bulletin
+            #    """station-region"""
+            #     'stnsearch':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
+            #     'stn_bot_lat':'32.00', #    -90 to 90   #Bottom latitude of rectangular region
+            #     'stn_top_lat':'42.00',  #-90 to 90  #Top latitude of rectangular region
+            #     'stn_left_lon': '-124.00',  #-180 to 180    Left longitude of rectangular region
+            #     'stn_right_lon':'-114.00',  #-180 to 180    Right longitude of rectangular region
+            #     'searchshape':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
+            #     'bot_lat':'32.00', #    -90 to 90   #Bottom latitude of rectangular region
+            #     'top_lat':'42.00',  #-90 to 90  #Top latitude of rectangular region
+            #     'left_lon': '-124.00',  #-180 to 180    Left longitude of rectangular region
+            #     'right_lon':'-114.00',  #-180 to 180    Right longitude of rectangular region
+                'start_year':'2019',
+                'start_month':'1',
+                'start_day':'1',
+                'start_time':'01:00:00',
+                'end_year':'2019',
+                'end_month':'12',
+                'end_day':'31',
+                'end_time':'00:00:00',
+                'min_mag':'5.5',
+                'req_mag_agcy':'Any',
+                'req_mag_type':'Any',
+                }
+        if field == '0':
+            # run advanced mode
+            self.params = {}
+            #Re-direct to running mode selection
+            self.select_mode()
 
     def select_mode(self):
         r"""Running mode selection
@@ -1590,6 +1638,7 @@ class Interactive():
             else:
                 if mode == '3' or mode.lower() == 'benchmark':
                     self.benchmark_mode()
+                    self.benchmark_flag = True
                 else:
                     error = input('Invalid input, would you like restart choosing mode?  ([y]/n)')
                     if error == 'y':
@@ -1657,7 +1706,7 @@ in QuakeLabeler with different scales (small, middle, large).
                       [2] QuakeLabeler Delicate Version \n \
                       [3] PhaseNet Version \n \
                       [4] EQTransformer Version \n \
-                      [0] Re-direct to Custom Mode Selection. \n  '  )
+                      [0] Re-direct to Custom Mode. \n  '  )
         if field == '0':
             # Re-direct to custom mode selection
             self.__init__(False)
@@ -1706,6 +1755,9 @@ in QuakeLabeler with different scales (small, middle, large).
                 self.custom_dataset['volume'] = 10000
             if sizefield == '0':
                 self.custom_dataset['volume'] = int(input('Please input how many samples you wish to generate ?'))
+        if field == '0':
+            self.default_option = False
+            self.init()
 
     def define_dataset(self):
         r"""Dataset options
@@ -1903,8 +1955,6 @@ class QueryArrival():
                 print("Query time is %d minutes %d seconds." % (min, sec))
             else:
                 print("Query time is %d seconds." % (runtime))
-
-
     def find_all_vars(self, text, *args):
         r"""Store all arrival information
         This method save all fetched information into `recordings`:
@@ -1978,3 +2028,127 @@ class QueryArrival():
                 tempdict[var] = recordings[var][i]
             self.arrival_recordings.append(tempdict)
         return self.arrival_recordings
+
+    
+class BuiltInCatalog():
+    def __init__(self, interactive):
+        # save params
+        self.param = interactive.params
+        self.benchmark_name = interactive.benchmark_name
+        # ISC Bulletin url
+        URL = 'http://www.isc.ac.uk/cgi-bin/web-db-v4'
+        self.starttime = time.time()
+        print("Loading time varies on your network connections, search region scale, time range, etc. Please be patient, estimated time: 3 mins ")
+        self.response = requests.get(url = URL, params=self.param)
+        self.page_text = self.response.text
+
+        if "No phase data was found." in self.page_text:
+            print("Error: No phase data was found. \n")
+            exit("Please change your parameters and restart of the tool ... \n")
+
+        try:
+            self.find_all_vars(self.page_text, 'EVENTID', 'STA', 'ISCPHASE',
+            'ARRIVAL_DATE', 'ARRIVAL_TIME', 'ORIGIN_DATE', 'ORIGIN_TIME',
+            'EVENT_TYPE', 'EVENT_MAG')
+        except IndexError:
+            print('Please try it later. Request failed.')
+        else:
+            print('Request completed！！！')
+            print("%d events have been found!" % len(self.arrival_recordings))
+            self.endtime = time.time()
+            runtime = self.endtime - self.starttime
+            if runtime > 60:
+                min = runtime // 60
+                sec = runtime % 60
+                print("Query time is %d minutes %d seconds." % (min, sec))
+            else:
+                print("Query time is %d seconds." % (runtime))
+            # save recordings
+            self.saverecord(self.benchmark_name)
+            self.retrievequery(self.benchmark_name)
+
+    def saverecord(self, name):
+        name = name + ".npy"
+        np.save(name, self.arrival_recordings)
+        print('benchmark recordings have been saved!')
+    def retrievequery(self, name):
+        self.arrival_recordings = {}
+        name = name+".npy"
+        self.arrival_recordings = np.load(name, allow_pickle='TRUE' )
+        print('benchmark recordings have been recovered!')
+
+    def find_all_vars(self, text, *args):
+        r"""Store all arrival information
+        This method save all fetched information into `recordings`:
+            #. EVENTID
+            #. STA
+            #. PHASE NAME
+            #. ARRIVAL DATE
+            #. ARRIVAL TIME
+            #. ORIGIN DATE
+            #. ORIGIN TIME
+            #. EVENT TYPE
+            #. EVENT MAG
+        """
+        ex = r'MAG (.*) '
+        all_variables = re.findall(ex, text, re.S)
+        all_vars = re.split(r',', all_variables[0])
+        #find last index
+        for index in range(len(all_vars) - 1, 0, -1):
+            if 'STOP' in all_vars[index]:
+                break
+        # initialization of recording, include all webset information
+        recordings = {
+        'EVENTID' : [] ,
+        'STA' : [],
+        'CHN' : [],
+        'ISCPHASE' : [],
+        'REPPHASE' : [],
+        'ARRIVAL_LAT' : [],
+        'ARRIVAL_LON' : [],
+        'ARRIVAL_ELEV' : [],
+        'ARRIVAL_DIST' : [],
+        'ARRIVAL_BAZ' : [],
+        'ARRIVAL_DATE' : [],
+        'ARRIVAL_TIME' : [],
+        'ORIGIN_LAT' : [],
+        'ORIGIN_LON' : [],
+        'ORIGINL_DEPTH' : [],
+        'ORIGIN_DATE' : [],
+        'ORIGIN_TIME' : [],
+        'EVENT_TYPE' :[],
+        'EVENT_MAG' : [] }
+
+        for i in range(0, index, 25):
+            recordings['EVENTID'].append(int(re.split('\n',all_vars[i])[1]))
+            recordings['STA'].append(str.strip(all_vars[i+2]))
+            recordings['CHN'].append(str.strip(all_vars[i+6]))
+            recordings['ISCPHASE'].append(str.strip(all_vars[i+9]))
+            recordings['REPPHASE'].append(str.strip(all_vars[i+10]))
+            recordings['ARRIVAL_LAT'].append(float(all_vars[i+3]))
+            recordings['ARRIVAL_LON'].append(float(all_vars[i+4]))
+            recordings['ARRIVAL_ELEV'].append(float(all_vars[i+5]))
+            recordings['ARRIVAL_DIST'].append(float(all_vars[i+7]))
+            recordings['ARRIVAL_BAZ'].append(float(all_vars[i+8]))
+            recordings['ARRIVAL_DATE'].append(str.strip(all_vars[i+11]))
+            recordings['ARRIVAL_TIME'].append(str.strip(all_vars[i+12]))
+            recordings['ORIGIN_LAT'].append(float(all_vars[i+20]))
+            recordings['ORIGIN_LON'].append(float(all_vars[i+21]))
+            recordings['ORIGINL_DEPTH'].append(float(all_vars[i+22]))
+            recordings['ORIGIN_DATE'].append(str.strip(all_vars[i+18]))
+            recordings['ORIGIN_TIME'].append(str.strip(all_vars[i+19]))
+            recordings['EVENT_TYPE'].append(str.strip(all_vars[i+24]))
+            if str.isspace(re.split('\n', all_vars[i+25])[0]):
+                recordings['EVENT_MAG'].append(float('NaN'))
+            else:
+                recordings['EVENT_MAG'].append(float(re.split('\n', all_vars[i+25])[0]))
+
+        self.arrival_recordings = []
+        for i in range(len(recordings['EVENTID'])):
+            tempdict = {}
+            for var in args:
+                tempdict[var] = recordings[var][i]
+            self.arrival_recordings.append(tempdict)
+    
+        return self.arrival_recordings
+    
