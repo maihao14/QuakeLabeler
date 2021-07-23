@@ -2142,7 +2142,8 @@ class BuiltInCatalog():
                 recordings['EVENT_MAG'].append(float('NaN'))
             else:
                 recordings['EVENT_MAG'].append(float(re.split('\n', all_vars[i+25])[0]))
-
+        # save ful list
+        # save as csv file
         self.arrival_recordings = []
         for i in range(len(recordings['EVENTID'])):
             tempdict = {}

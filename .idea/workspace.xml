@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a60b1299-f139-47bf-9d86-f7c9e5b250ea" name="Default Changelist" comment="Default Changelist">
-      <change beforePath="$PROJECT_DIR$/quakelabeler/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/quakelabeler/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/quakelabeler/classes.py" beforeDir="false" afterPath="$PROJECT_DIR$/quakelabeler/classes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/quakelabeler/scripts/QuakeLabeler.py" beforeDir="false" afterPath="$PROJECT_DIR$/quakelabeler/scripts/QuakeLabeler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,7 +59,7 @@
       <updated>1626427893037</updated>
       <workItem from="1626427896981" duration="97000" />
       <workItem from="1626485928247" duration="4062000" />
-      <workItem from="1626694201568" duration="3049000" />
+      <workItem from="1626694201568" duration="3503000" />
     </task>
     <servers />
   </component>
