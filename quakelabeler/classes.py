@@ -37,6 +37,7 @@ from obspy.clients.fdsn import Client
 import warnings
 import random
 import numpy as np
+import pandas as pd
 import time
 from scipy.io import savemat
 LOGGER = logging.getLogger(__name__)
@@ -1370,7 +1371,15 @@ class Interactive():
         All options are set.
         """
         print('Initialize Benchmark Mode...')
-        print('Alternative region options are provided. Please select your preferred input function: \n ')
+        print("=====================================================================================")
+        Art=text2art("Benchmark Bulletin", font="small") # random font mode
+        print(Art)
+        print("""
+Benchmark mode posts well-estabilished datasets of the current 
+hot research area. Follow these postings, users can generate the 
+same datasets in QuakeLabeler without extra options input.
+              """)
+        print("=====================================================================================")
         # default params case[1] in Cascadia subduction zone
         self.benchmark_name = "Cascadia2010"
         self.params = {
@@ -1406,7 +1415,6 @@ class Interactive():
             'req_mag_type':'Any',
             }
 
-        print('Initialize Beginner Mode...')
         field = input('Select one of the following sample fields:  [1/2/3/4] \n \
                       [1] 2010 Cascadia subduction zone earthquake activities \n \
                       [2] 2011 Tōhoku earthquake and tsunami \n \
@@ -2047,9 +2055,15 @@ class BuiltInCatalog():
             exit("Please change your parameters and restart of the tool ... \n")
 
         try:
-            self.find_all_vars(self.page_text, 'EVENTID', 'STA', 'ISCPHASE',
-            'ARRIVAL_DATE', 'ARRIVAL_TIME', 'ORIGIN_DATE', 'ORIGIN_TIME',
-            'EVENT_TYPE', 'EVENT_MAG')
+            # find all information
+            self.find_all_vars(self.page_text, 'EVENTID', 'STA','CHN',
+                               'ISCPHASE','REPPHASE', 
+                               'ARRIVAL_LAT', 'ARRIVAL_LON',
+                               'ARRIVAL_ELEV','ARRIVAL_DIST','ARRIVAL_BAZ',
+                               'ARRIVAL_DATE','ARRIVAL_TIME',
+                               'ORIGIN_LAT' ,'ORIGIN_LON','ORIGINL_DEPTH',
+                               'ORIGIN_DATE' ,'ORIGIN_TIME',
+                               'EVENT_TYPE','EVENT_MAG')
         except IndexError:
             print('Please try it later. Request failed.')
         else:
