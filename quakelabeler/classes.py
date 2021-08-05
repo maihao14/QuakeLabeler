@@ -589,6 +589,7 @@ class QuakeLabeler():
                     num = num+ len(st)
                     # split each stream as independent trace component
                     for tr in st:
+                        updatethread = thread.copy()
                         bar.next()
                         # detrend (optional)
                         if self.custom_waveform['detrend']:
@@ -597,16 +598,16 @@ class QuakeLabeler():
                         single_filename = self.creatsamplename(singlesample)
                         self.single_sample_export(singlesample, single_filename)
                         #add record to csv file
-                        thread['filename'] = single_filename
-                        thread['arr_point'] = self.arr_point
-                        thread['npts'] = self.npts
-                        thread['sampling_rate'] = self.sampling_rate
+                        updatethread['filename'] = single_filename
+                        updatethread['arr_point'] = self.arr_point
+                        updatethread['npts'] = self.npts
+                        updatethread['sampling_rate'] = self.sampling_rate
                         if not self.custom_waveform['label_type']:
-                            if 'S' in thread['ISCPHASE']:
-                                thread['ISCPHASE'] = 'S'
+                            if 'S' in updatethread['ISCPHASE']:
+                                updatethread['ISCPHASE'] = 'S'
                             else:
-                                thread['ISCPHASE'] = 'P'
-                        self.available_samples.append(thread)
+                                updatethread['ISCPHASE'] = 'P'
+                        self.available_samples.append(updatethread)
                 else:
                     num += 1
                     bar.next()
