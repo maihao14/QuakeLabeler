@@ -53,7 +53,7 @@ from progress.bar import Bar
 import matplotlib.pyplot as plt
 # art font
 from art import *
-
+from obspy import read
 class QuakeLabeler():
     r""" ``Quake Labeler`` class enables to automatically label ground truth.
     A ``QuakeLabeler`` object contains Class attributes that design and create
@@ -406,8 +406,8 @@ class QuakeLabeler():
     def single_sample_export(self, st, filename, pick_win=100, detect_win=200):
         r''' Export sample in single channel mode
         '''
-        it = int((self.eventtime - self.starttime) * self.sampling_rate)
-        self.arr_point = it
+        it = int((self.eventtime - st[0].stats.starttime) * st[0].stats.sampling_rate)
+        self.arr_point = (self.eventtime - st[0].stats.starttime) * st[0].stats.sampling_rate
 
         # if user need create independent output channel:
         if self.custom_export['export_inout']:
@@ -465,8 +465,8 @@ class QuakeLabeler():
     def multi_sample_export(self, st, filename,pick_win = 100, detect_win = 200):
         r''' Export sample in multiple channel mode
         '''
-        it = int((self.eventtime - self.starttime) * self.sampling_rate)
-        self.arr_point = it
+        it = int((self.eventtime - st[0].stats.starttime) * st[0].stats.sampling_rate)
+        self.arr_point = (self.eventtime - st[0].stats.starttime) * st[0].stats.sampling_rate
 
         # if user need create independent output channel:
         if self.custom_export['export_inout']:
@@ -610,6 +610,7 @@ class QuakeLabeler():
                         self.available_samples.append(updatethread)
                 else:
                     num += 1
+                    updatethread = thread.copy()
                     bar.next()
                     # detrend (optional)
                     if self.custom_waveform['detrend']:
@@ -618,16 +619,16 @@ class QuakeLabeler():
                     multi_filename = self.creatsamplename(st)
                     self.multi_sample_export(st, multi_filename)
                     #add record to csv file
-                    thread['filename'] = multi_filename
-                    thread['arr_point'] = self.arr_point
-                    thread['npts'] = self.npts
-                    thread['sampling_rate'] = self.sampling_rate
+                    updatethread['filename'] = multi_filename
+                    updatethread['arr_point'] = self.arr_point
+                    updatethread['npts'] = self.npts
+                    updatethread['sampling_rate'] = self.sampling_rate
                     if not self.custom_waveform['label_type']:
                         if 'S' in thread['ISCPHASE']:
-                            thread['ISCPHASE'] = 'S'
+                            updatethread['ISCPHASE'] = 'S'
                         else:
-                            thread['ISCPHASE'] = 'P'
-                    self.available_samples.append(thread)
+                            updatethread['ISCPHASE'] = 'P'
+                    self.available_samples.append(updatethread)
                 print("Save to target folder: {0}".format(FileName))
                 print(st)
                 if num >= maxnum:
@@ -638,6 +639,7 @@ class QuakeLabeler():
         print("{0} of event-based samples are successfully downloaded! ".format(num))
         os.chdir('../')
         self.FolderName = FileName
+        
         return self.available_samples
     def subfolder(self, trainratio=0.8):
         r"""Split dataset
@@ -719,38 +721,54 @@ class QuakeLabeler():
         #     color_per_network=True, size=20,
         #     outfile="stationpreview.png")
         os.chdir('../')
-    def waveform_display(self):
+    def waveform_display(self,samplenum = 10):
         r"""Plot generated seismic label.
         Method to display generated seismic label case to show how the label
         looks like.
         """
-        sample = self.available_samples[-1]
-        st = self.fetch_waveform(sample )
-        print(st)
-        plt.figure(figsize=(8, 7.5))
-        num = len(st)
-        arr = sample['arr_point']
-        for j in np.arange(num):
-            plt.subplot(num+2,1,j+1)
-            plt.plot(st[j].data, 'k')
-            plt.axvline(arr,label=sample['ISCPHASE'],color='blue',linestyle="-")
+        # create image folder
+        ImgFolder = 'Image'
+        if not os.path.exists(ImgFolder):
+            os.mkdir(ImgFolder)
+        imagepath = './Image/'
+        #enter datasets
+        FileName = self.custom_export['folder_name']
+        orgin_path = FileName
+        os.chdir(orgin_path)        
+        if len(self.available_samples) < samplenum:
+            samplenum = len(self.available_samples)
+        for i in range(samplenum):
+            
+            sample = self.available_samples[i]
+            singlefile = sample['filename']+'*.sac'
+            st = read(singlefile)
+            st = st.select(channel= st[0].stats.channel)
+            plt.figure(figsize=(8, 7.5))
+            num = len(st)
+            arr = sample['arr_point']
+            for j in np.arange(num):
+                plt.subplot(num+2,1,j+1)
+                plt.plot(st[j].data, 'k')
+                plt.axvline(arr,label=sample['ISCPHASE'],color='blue',linestyle="-")
+                plt.legend()
+                plt.ylabel(st[j].stats.channel)
+            bell_dist = self.output_bell_dist(st[j].stats.npts, int(arr), 100)
+            rect_dist = self.output_rect_dist(st[j].stats.npts, int(arr), 200)
+            plt.subplot(num+2,1,j+2)
+            plt.plot(bell_dist,label="Phase Probability",color='blue',linestyle="--")
+            plt.ylabel('Out: Phase Pick')
             plt.legend()
-            plt.ylabel(st[j].stats.channel)
-        bell_dist = self.output_bell_dist(st[j].stats.npts, arr, 100)
-        rect_dist = self.output_rect_dist(st[j].stats.npts, arr, 200)
-        plt.subplot(num+2,1,j+2)
-        plt.plot(bell_dist,label="Phase Probability",color='blue',linestyle="--")
-        plt.ylabel('Out: Phase Pick')
-        plt.legend()
-        plt.subplot(num+2,1,j+3)
-        plt.plot(rect_dist,label="Signal Probability",color='red',linestyle="--")
-        plt.legend()
-        plt.ylabel('Out: Signal Detection')
-        plt.suptitle("This is a Sample")
-        plt.xlabel('Points')
-        plt.savefig(sample['filename']+'.jpg', dpi=300)
-        plt.show()
-
+            plt.subplot(num+2,1,j+3)
+            plt.plot(rect_dist,label="Signal Probability",color='red',linestyle="--")
+            plt.legend()
+            plt.ylabel('Out: Signal Detection')
+            plt.suptitle("Sample: Station "+st[0].stats.station+' Mag '+str(sample['EVENT_MAG']))
+            plt.xlabel('Points')
+            os.chdir('../') 
+            plt.savefig(imagepath + sample['filename']+'.jpg', dpi=300)
+            os.chdir(orgin_path) 
+            plt.show()
+        os.chdir('../')        
 class Interactive():
     r""" Interactive tool for target stations and time range
     Receive user's interest search options from command line inteface (CLI).
@@ -1948,9 +1966,14 @@ class QueryArrival():
             exit("Please change your parameters and restart of the tool ... \n")
 
         try:
-            self.find_all_vars(self.page_text, 'EVENTID', 'STA', 'ISCPHASE',
-            'ARRIVAL_DATE', 'ARRIVAL_TIME', 'ORIGIN_DATE', 'ORIGIN_TIME',
-            'EVENT_TYPE', 'EVENT_MAG')
+            self.find_all_vars(self.page_text, 'EVENTID', 'STA','CHN',
+                               'ISCPHASE','REPPHASE', 
+                               'ARRIVAL_LAT', 'ARRIVAL_LON',
+                               'ARRIVAL_ELEV','ARRIVAL_DIST','ARRIVAL_BAZ',
+                               'ARRIVAL_DATE','ARRIVAL_TIME',
+                               'ORIGIN_LAT' ,'ORIGIN_LON','ORIGINL_DEPTH',
+                               'ORIGIN_DATE' ,'ORIGIN_TIME',
+                               'EVENT_TYPE','EVENT_MAG')
         except IndexError:
             print('Please try it later. Request failed.')
         else:

@@ -74,12 +74,14 @@ def main():
     custom.init()
     creatlabels = QuakeLabeler(query, custom)
     creatlabels.fetch_all_waveforms(creatlabels.recordings)
-    creatlabels.waveform_display()
     creatlabels.csv_writer()
+    creatlabels.waveform_display()
     creatlabels.stats_figure()
-    creatlabels.subfolder()
+    subfolder_option = input("Do you want to create training data and validation data: [y]/n?")
+    if subfolder_option.lower() == 'y':
+        creatlabels.subfolder()
     #Neither Basemap nor Cartopy could be imported.
-
+    
 if __name__ == '__main__':
 
     main()
