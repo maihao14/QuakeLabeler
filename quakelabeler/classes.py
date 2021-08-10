@@ -1686,7 +1686,6 @@ class CustomSamples():
         if self.default_option:
             # set default options
             # run quick-start recipe
-
             print("=====================================================================================")
             Art=text2art("quick-start recipe", font="small") # random font mode
             print(Art)
@@ -1703,6 +1702,7 @@ in QuakeLabeler with different scales (small, middle, large).
             self.custom_waveform = {'label_type': False, 'sample_rate': '', 'filter_type': '0', 'detrend': False, 'random_arrival': True, 'add_noise': 0}
             self.custom_export = {'export_type': 'SAC', 'single_trace': True, 'export_inout': False, 'export_arrival_csv': True, 'export_filename': 'SimpleDataset', 'export_stats': True}
         else:
+            # init dictionary
             print('Please define your own expection for the dataset: \n')
             self.custom_dataset = {}
             self.custom_dataset = {}
@@ -1713,6 +1713,7 @@ in QuakeLabeler with different scales (small, middle, large).
         # print("Test, the default_option is: ")
         # print(self.default_option)
         if not self.default_option:
+            # init user design interfce
             self.define_dataset()
             self.define_waveform()
             self.define_export()

@@ -31,9 +31,9 @@ Created on Sun Feb 21 20:22:25 2021
 from quakelabeler import *
 
 def main():
-    r"""command line QuakeLabeler(ql) tools
-    This is all command line modules for ql. Modules rely on previous command
-    line interactive parameters (data retrieved from users on command line). It
+    r"""QuakeLabeler toolbox
+    This is all functions for QuakeLabeler package. Running on command line 
+    interface. Follow user custom design to automatic generate datasets. It
     might raise errors if you skip some of the modules to direct use the later
     ones.
 
@@ -48,7 +48,7 @@ def main():
     region and time range.
     CustomSamples()
         Retrieve cutomized samples options by command line input.
-    SeisCreator(query, custom)
+    QuakeLabeler(query, custom)
         Calling sample production functions by above input options. All available
     samples will be automatically created and save as set format.
     Returns
@@ -58,25 +58,33 @@ def main():
     """
 
 
-    InteractiveTest = Interactive()
-    if not InteractiveTest.benchmark_flag:
-        query = QueryArrival(**InteractiveTest.params)
+    user_interface = Interactive()
+    if not user_interface.benchmark_flag:
+        # run normal mode: beginner / advanced
+        query = QueryArrival(**user_interface.params)
 
     else:
         # run benchmark mode
-        query = BuiltInCatalog(InteractiveTest)
-    custom = CustomSamples(InteractiveTest.receipe_flag)
+        query = BuiltInCatalog(user_interface)
+    # init custom options    
+    custom = CustomSamples(user_interface.receipe_flag)
+    # run custom of dataset structure
     custom.init()
-    creatlabels = QuakeLabeler(query, custom)
-    creatlabels.fetch_all_waveforms(creatlabels.recordings)
-    creatlabels.csv_writer()
-    creatlabels.waveform_display()
-    creatlabels.stats_figure()
+    # autp-production of dataset
+    auto_dataset = QuakeLabeler(query, custom)
+    # data collect and process
+    auto_dataset.fetch_all_waveforms(auto_dataset.recordings)
+    # save relevant seismic features
+    auto_dataset.csv_writer()
+    # waveform graph
+    auto_dataset.waveform_display()
+    # stats graph
+    auto_dataset.stats_figure()
+    # subfolder generator
     subfolder_option = input("Do you want to create training data and validation data: [y]/n?")
     if subfolder_option.lower() == 'y':
-        creatlabels.subfolder()
-    #Neither Basemap nor Cartopy could be imported.
+        auto_dataset.subfolder()
     
 if __name__ == '__main__':
-
+    # run QuakeLabler package
     main()
