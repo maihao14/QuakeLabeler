@@ -107,11 +107,13 @@ class QuakeLabeler():
         self.custom_waveform = custom.custom_waveform
         self.custom_export = custom.custom_export
         # target network and station names
-        self.inventory = self.search_stations()
+        #self.inventory = self.search_stations()
         # targe network names
         self.network = "*"
-        if not self.inventory == False:
-            self.network = self.search_network()
+# =============================================================================
+#         if not self.inventory == False:
+#             self.network = self.search_network()
+# =============================================================================
 
     def search_catalog(self, clientname="IRIS"):
         r''' Availble data source check for data centers.
@@ -564,9 +566,11 @@ class QuakeLabeler():
             FileName = self.custom_export['export_filename']
         # num: stream(samples) volume
         num = 0
+        # amount of the samples
         if not self.custom_dataset['volume'] == 'MAX':
             maxnum = int(self.custom_dataset['volume'])
         else:
+            #use every thread in records to produce samples
             maxnum = len(records)
         #create a dict save every sample information
         self.available_samples = []
@@ -577,13 +581,14 @@ class QuakeLabeler():
         #set progress bar
         bar = Bar('Processing', max=maxnum)
         for thread in records:
-            #check this step: one thread one stream, multiple traces
+            # request waveform from online clients
             st = self.fetch_waveform(thread, clientname )
             if st == "No data available for request.":
                 loopnum = loopnum+1
                 if loopnum>50:
                     warnings.warn('50+ continuous failed data requests, please quit process and check your parameters.')
             else:
+                # find available waveform
                 loopnum = 0
                 if self.custom_export['single_trace'] == True:
                     num = num+ len(st)
@@ -631,16 +636,133 @@ class QuakeLabeler():
                     self.available_samples.append(updatethread)
                 print("Save to target folder: {0}".format(FileName))
                 print(st)
-                if num >= maxnum:
-                    bar.finish()
+                if num >= maxnum and not self.custom_dataset['volume'] == 'MAX':
                     break
-
+        bar.finish()        
         print("All available waveforms are ready!")
-        print("{0} of event-based samples are successfully downloaded! ".format(num))
+        print("{0} of event-based samples are successfully generated! ".format(num))
         os.chdir('../')
+        # save dataset foldername
         self.FolderName = FileName
+    def fetch_noise_waveform(self,thread):
+        client = Client("IRIS")
+        # calculate startime and endtime, must consider trace length, sampling rate to satisfy custom parameters
+
+        (start_time, end_time) = self.waveform_timewindow(thread)
+        # find noise waveform
+        start_time = start_time - 60*60
+        end_time = end_time - 60*60
+        (network, station, location, channel) = self.related_station_info(thread['STA'])
+        try:
+            st = client.get_waveforms(network, station, location, channel, start_time, end_time+10)
+            # param attach_response  NEED UPDATE ONE INTERACTIVE PARAMTER HERE
+        except Exception:
+            return "No data available for request."
+        else:
+            # resample mode
+            try:
+                resample_rate = float(self.custom_waveform['sample_rate'])
+            except Exception:
+                pass
+            else:
+                st.resample(resample_rate)
+            # filter option
+            if self.custom_waveform['filter_type'] == '1':
+                st.filter('lowpass',freq = self.custom_waveform['filter_freqmin'], corners=2, zerophase = True)
+            if self.custom_waveform['filter_type'] == '2':
+                st.filter('highpass',freq = self.custom_waveform['filter_freqmax'], zerophase = True)
+            if self.custom_waveform['filter_type'] == '3':
+                st.filter('bandpass', freqmin = self.custom_waveform['filter_freqmin'], freqmax = self.custom_waveform['filter_freqmax'])
+            # add noise
+            # self.custom_waveform['add_noise'] = 1.0
+            if self.custom_waveform['add_noise'] != 0 :
+                # add noise to trace
+                for tr in st:
+                    length = len(tr.data)
+                    amplitude = max(tr.data)
+                    noise_arr = amplitude*self.custom_waveform['add_noise']*(-1+2*np.random.rand(length))
+                    tr.data = noise_arr + tr.data
+            st = self.check_export_stream(st)
+            if len(st) == 0:
+                return "No data available for request."
+            else:
+                #valid waveform as a new sample
+                self.starttime = st[0].stats.starttime
+                self.npts = st[0].stats.npts
+                self.sampling_rate = st[0].stats.sampling_rate
+                return st
         
-        return self.available_samples
+    def noisegenerator(self):
+        r"""Generate noise waveform in same amount
+        Returns
+        -------
+        None.
+
+        """
+        FileName = self.custom_export['folder_name']
+        orgin_path = FileName
+        os.chdir(orgin_path)     
+        print('Initialize noise waveform producer module...')
+        self.noise = []
+        maxmum = len(self.available_samples)
+        bar = Bar('Processing', num= maxmum)
+        num = 0
+        for thread in self.available_samples:
+            # request waveform from online clients
+            st = self.fetch_noise_waveform(thread)
+            if st == "No data available for request.":
+                pass
+            else:
+                # find available waveform
+                if self.custom_export['single_trace'] == True:
+                    num +=1
+                    # split each stream as independent trace component
+                    for tr in st:
+                        updatethread = thread.copy()
+                        
+                        # write phase type as noise
+                        updatethread['ISCPHASE'] = 'Noi'
+                        updatethread['REPPHASE'] = 'Noi'
+                        if self.custom_waveform['detrend']:
+                            tr.detrend()
+                        singlesample = st.select(channel=tr.stats.channel)
+                        single_filename = self.creatsamplename(singlesample) + "_Noise"
+                        self.single_sample_export(singlesample, single_filename)
+                        #add record to csv file
+                        updatethread['filename'] = single_filename
+                        updatethread['arr_point'] = self.arr_point
+                        updatethread['npts'] = self.npts
+                        updatethread['sampling_rate'] = self.sampling_rate
+                        self.available_samples.append(updatethread)
+                        self.noise.append(updatethread)
+                else:
+                    num += 1
+                    updatethread = thread.copy()
+                    # write phase type as noise
+                    updatethread['ISCPHASE'] = 'Noi'
+                    updatethread['REPPHASE'] = 'Noi'
+                    # detrend (optional)
+                    if self.custom_waveform['detrend']:
+                        for tr in st:
+                            tr.detrend()
+                    multi_filename = self.creatsamplename(st) +"_Noise"
+                    self.multi_sample_export(st, multi_filename)
+                    #add record to csv file
+                    updatethread['filename'] = multi_filename
+                    updatethread['arr_point'] = self.arr_point
+                    updatethread['npts'] = self.npts
+                    updatethread['sampling_rate'] = self.sampling_rate
+                    self.available_samples.append(updatethread)
+                    self.noise.append(updatethread)
+                print("Save to target folder: {0}".format(FileName))
+                print(st)
+                if num>=maxmum:
+                    break
+                bar.next()
+        bar.finish()        
+        print("All available waveforms are ready!")
+        print("{0} of event-based samples are successfully generated! ".format(num))            
+        os.chdir('../')
     def subfolder(self, trainratio=0.8):
         r"""Split dataset
         Divide dataset as a training dataset(80%) and a validation dataset(20%)
@@ -1597,17 +1719,6 @@ same datasets in QuakeLabeler without extra options input.
                 'ttres':'on', #  they have a travel-time residual computed.
                 'tdef':'on', # if they are time-defining phases.
                 'iscreview':'on', # in the Reviewed ISC Bulletin
-            #    """station-region"""
-            #     'stnsearch':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
-            #     'stn_bot_lat':'32.00', #    -90 to 90   #Bottom latitude of rectangular region
-            #     'stn_top_lat':'42.00',  #-90 to 90  #Top latitude of rectangular region
-            #     'stn_left_lon': '-124.00',  #-180 to 180    Left longitude of rectangular region
-            #     'stn_right_lon':'-114.00',  #-180 to 180    Right longitude of rectangular region
-            #     'searchshape':'RECT',  #<STN>|<GLOBAL>|<RECT>|<CIRC>|<FE>|<POLY>
-            #     'bot_lat':'32.00', #    -90 to 90   #Bottom latitude of rectangular region
-            #     'top_lat':'42.00',  #-90 to 90  #Top latitude of rectangular region
-            #     'left_lon': '-124.00',  #-180 to 180    Left longitude of rectangular region
-            #     'right_lon':'-114.00',  #-180 to 180    Right longitude of rectangular region
                 'start_year':'2019',
                 'start_month':'1',
                 'start_day':'1',
@@ -1700,7 +1811,7 @@ in QuakeLabeler with different scales (small, middle, large).
             #set default
             self.custom_dataset = {'volume': '1000', 'fixed_length': True, 'sample_length': 5000}
             self.custom_waveform = {'label_type': False, 'sample_rate': '', 'filter_type': '0', 'detrend': False, 'random_arrival': True, 'add_noise': 0}
-            self.custom_export = {'export_type': 'SAC', 'single_trace': True, 'export_inout': False, 'export_arrival_csv': True, 'export_filename': 'SimpleDataset', 'export_stats': True}
+            self.custom_export = {'export_type': 'SAC', 'single_trace': True,'noise_trace': False, 'export_inout': False, 'export_arrival_csv': True, 'export_filename': 'SimpleDataset', 'export_stats': True}
         else:
             # init dictionary
             print('Please define your own expection for the dataset: \n')
@@ -1743,12 +1854,12 @@ in QuakeLabeler with different scales (small, middle, large).
             # write params
             self.custom_dataset = {'volume': '1000', 'fixed_length': True, 'sample_length': 5000}
             self.custom_waveform = {'label_type': False, 'sample_rate': '', 'filter_type': '0', 'detrend': False, 'random_arrival': True, 'add_noise': 0}
-            self.custom_export = {'export_type': 'SAC', 'single_trace': True, 'export_inout': False, 'export_arrival_csv': True, 'export_filename': 'SimpleDataset', 'export_stats': True}
+            self.custom_export = {'export_type': 'SAC', 'single_trace': True,'noise_trace': True, 'export_inout': False, 'export_arrival_csv': True, 'export_filename': 'SimpleDataset', 'export_stats': True}
         # Delicate version
         if field == '2':
             self.custom_dataset = {'volume': '1000', 'fixed_length': True, 'sample_length': 5000}
             self.custom_waveform = {'label_type': True, 'sample_rate': '50.0', 'filter_type': '0', 'detrend': True, 'random_arrival': True, 'add_noise': 0}
-            self.custom_export = {'export_type': 'SAC', 'single_trace': False, 'export_inout': True, 'export_arrival_csv': True, 'export_filename': 'DelicateDataset', 'export_stats': True}
+            self.custom_export = {'export_type': 'SAC', 'single_trace': False, 'noise_trace': True,'export_inout': True, 'export_arrival_csv': True, 'export_filename': 'DelicateDataset', 'export_stats': True}
         # Phasenet verision
         if field == '3':
             self.custom_dataset = {'volume': '1000', 'fixed_length': True, 'sample_length': 5000}
@@ -1756,7 +1867,7 @@ in QuakeLabeler with different scales (small, middle, large).
                                     'detrend': False, 'random_arrival': False, 'add_noise': 0,
                                     'start_arrival': 30.0, 'end_arrival': 90.0
                                     }
-            self.custom_export = {'export_type': 'NPZ', 'single_trace': False, 'export_inout': True, 'export_arrival_csv': True, 'export_filename': 'PhaseNetDataset', 'export_stats': True}
+            self.custom_export = {'export_type': 'NPZ', 'single_trace': False,'noise_trace': True, 'export_inout': True, 'export_arrival_csv': True, 'export_filename': 'PhaseNetDataset', 'export_stats': True}
         # EQTransformer verision
         if field == '4':
             self.custom_dataset = {'volume': '1000', 'fixed_length': True, 'sample_length': 6000}
@@ -1764,7 +1875,7 @@ in QuakeLabeler with different scales (small, middle, large).
                                     'filter_freqmin': 1.0, 'filter_freqmax': 45.0,
                                     'detrend': True, 'random_arrival': True, 'add_noise': 0
                                     }
-            self.custom_export = {'export_type': 'SAC', 'single_trace': False, 'export_inout': True, 'export_arrival_csv': True, 'export_filename': 'PhaseNetDataset', 'export_stats': True}
+            self.custom_export = {'export_type': 'SAC', 'single_trace': False, 'noise_trace': True,'export_inout': True, 'export_arrival_csv': True, 'export_filename': 'PhaseNetDataset', 'export_stats': True}
         if field != '0':
             # ask dataset size
             sizefield = input('Select one of the scale of datastet:  [1/2/3/4] \n \
@@ -1912,6 +2023,12 @@ in QuakeLabeler with different scales (small, middle, large).
             self.custom_export['single_trace'] = True
         else:
             self.custom_export['single_trace'] = False
+        # generate noise waveform in same amount    
+        self.custom_export['noise_trace'] = input('Generate noise waveform in same amount? ([y]/n)')
+        if self.custom_export['noise_trace'].lower() == 'n':
+            self.custom_export['noise_trace'] = False
+        else:
+            self.custom_export['noise_trace'] = True            
         in_out = input('Do you want to separate save traces as input and output? (y/[n])')
         if in_out == 'y':
             self.custom_export['export_inout'] = True

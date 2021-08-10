@@ -74,12 +74,14 @@ def main():
     auto_dataset = QuakeLabeler(query, custom)
     # data collect and process
     auto_dataset.fetch_all_waveforms(auto_dataset.recordings)
-    # save relevant seismic features
-    auto_dataset.csv_writer()
     # waveform graph
     auto_dataset.waveform_display()
     # stats graph
     auto_dataset.stats_figure()
+    if auto_dataset.custom_export['noise_trace']:
+        auto_dataset.noisegenerator()
+    # save relevant seismic features
+    auto_dataset.csv_writer()        
     # subfolder generator
     subfolder_option = input("Do you want to create training data and validation data: [y]/n?")
     if subfolder_option.lower() == 'y':
