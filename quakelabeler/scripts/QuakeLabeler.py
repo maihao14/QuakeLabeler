@@ -61,11 +61,6 @@ def main():
     InteractiveTest = Interactive()
     if not InteractiveTest.benchmark_flag:
         query = QueryArrival(**InteractiveTest.params)
-        # query.plot use graph to show event distribution
-        # query.random random event catalog
-        # use default options
-        # print("InteractiveTest.receipe_flag: ")
-        # print(InteractiveTest.receipe_flag)
 
     else:
         # run benchmark mode

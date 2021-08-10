@@ -673,7 +673,7 @@ class QuakeLabeler():
         if not self.custom_export['export_arrival_csv']:
             return
         print('Save waveform information into CSV file...')
-        CSV_Name = self.FolderName + '.csv'
+        CSV_Name = self.FolderName+'_features' + '.csv'
         dict1 = self.available_samples[0]
         field_names = []
         for k, v in dict1.items():
@@ -1987,6 +1987,11 @@ class QueryArrival():
                 print("Query time is %d minutes %d seconds." % (min, sec))
             else:
                 print("Query time is %d seconds." % (runtime))
+            self.saverecord("recordings"+str(int(runtime)))
+
+    def saverecord(self, name):
+        name = name + ".npy"
+        np.save(name, self.arrival_recordings)                
     def find_all_vars(self, text, *args):
         r"""Store all arrival information
         This method save all fetched information into `recordings`:
