@@ -1339,7 +1339,7 @@ class Interactive():
                       [1] 2010 Cascadia subduction zone earthquake activities (M > 3.0) \n \
                       [2] 2011 Tōhoku earthquake and tsunami \n \
                       [3] 2016 Oklahoma human activity-induced earthquakes \n \
-                      [4] 2018 Big quakes in Southern California \n \
+                      [4] 2018 Big quakes in Southern California (M>6.5) \n \
                       [0] Re-direct to Running Mode Selection. \n  '  )
         # input default parameters for specific case
         if field == '2':
@@ -1562,7 +1562,7 @@ same datasets in QuakeLabeler without extra options input.
                       [3] 2016 Oklahoma human activity-induced earthquakes \n \
                       [4] 2018 Big quakes in Southern California \n \
                       [5] 2019 Global big quakes M > 5.5 \n \
-                      [0] Re-direct to Advanced mode. \n  '  )
+                      [0] Re-direct to Running Mode Selection. \n  '  )
         # input default parameters for specific case
         if field == '2':
             # 2011 Tōhoku earthquake and tsunami, Japan
