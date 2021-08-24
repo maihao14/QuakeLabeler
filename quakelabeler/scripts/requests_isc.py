@@ -34,7 +34,7 @@ Fetch EVENTID, STATION, ISCPHASE, REPPHASE, ARRIVALTIME, ORIGINALTIME
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from seiscreator import QueryArrival
+from quakelabeler import QueryArrival
 
 def main():
     param = {
