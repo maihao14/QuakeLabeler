@@ -54,6 +54,7 @@ import matplotlib.pyplot as plt
 # art font
 from art import *
 from obspy import read
+import pygmt
 class QuakeLabeler():
     r""" ``Quake Labeler`` class enables to automatically label ground truth.
     A ``QuakeLabeler`` object contains Class attributes that design and create
@@ -2108,8 +2109,15 @@ class QueryArrival():
             self.saverecord("recordings"+str(int(runtime)))
 
     def saverecord(self, name):
-        name = name + ".npy"
-        np.save(name, self.arrival_recordings)                
+        np.save(name + ".npy", self.arrival_recordings)
+        #save as pandas.DataFrame
+        data = pd.DataFrame(data=self.arrival_recordings)   
+        if not os.path.exists(name):
+            os.mkdir(name)
+        os.chdir(name)
+        data.to_csv(name+".csv")
+        self.record_folder = os.getcwd()+'/'
+        os.chdir('../')          
     def find_all_vars(self, text, *args):
         r"""Store all arrival information
         This method save all fetched information into `recordings`:
@@ -2229,8 +2237,15 @@ class BuiltInCatalog():
             self.retrievequery(self.benchmark_name)
 
     def saverecord(self, name):
-        name = name + ".npy"
-        np.save(name, self.arrival_recordings)
+        np.save(name + ".npy", self.arrival_recordings)
+        #save as pandas.DataFrame
+        data = pd.DataFrame(data=self.arrival_recordings)   
+        if not os.path.exists(name):
+            os.mkdir(name)
+        os.chdir(name)
+        data.to_csv(name+".csv")
+        self.record_folder = os.getcwd()+'/'
+        os.chdir('../') 
         print('benchmark recordings have been saved!')
     def retrievequery(self, name):
         self.arrival_recordings = {}
@@ -2313,4 +2328,193 @@ class BuiltInCatalog():
             self.arrival_recordings.append(tempdict)
     
         return self.arrival_recordings
+class MergeMetadata():
+    r''' This Class is to process the queries from online catalogues.
+    Fuctions to switch catalogues to Pandas.DataFrame objects:
+        data cleaning
+        merge arrivals
+        merge stations
+    '''
+    def __init__(self,folder):
+        # *.csv folder 
+        self.path = folder
+        self.filelist = self.select_folder()
+        self.station = pd.DataFrame()
+        self.event = pd.DataFrame()
+    # choose folder
+    def select_folder(self):
+        filelist = os.listdir(self.path)
+        return filelist
+    # merge each station's events
+    def merge_station(self,filelist):
+        #merge all station from a folder path(filelist)
+        sta_cat = self.load_metadata(filelist[0])
+        for file in filelist[1:]:
+            if file[-4:] != '.csv':
+                continue
+            temp_pd = self.load_metadata(file)
+            temp_pd = temp_pd.drop_duplicates(['STA'])
+            frame = [sta_cat,temp_pd ]
+            sta_cat = pd.concat(frame)
+            sta_cat = sta_cat.drop_duplicates(['STA'])
+        return sta_cat
+    def load_metadata(self,filename):
+         ''' Read Signle CSV files
+         '''
+         meta_pd = pd.read_csv(self.path+filename)
+         return meta_pd  
+    def merge_event(self,filelist):
+        # merge all event from a folder path(filelist)
+        sta_cat = self.load_metadata(filelist[0])
+        for file in filelist[1:]:
+            if file[-4:] != '.csv':
+                continue
+            temp_pd = self.load_metadata(file)
+            temp_pd = temp_pd.drop_duplicates(['EVENTID'])
+            frame = [sta_cat,temp_pd ]
+            sta_cat = pd.concat(frame)
+            sta_cat = sta_cat.drop_duplicates(['EVENTID'])
+        return sta_cat        
+    # Remove dulicates of events 
+    def event_clean(self,total_station):
+        # one event only reserve one time 
+        event_cat = total_station.drop_duplicates(['EVENTID'])
+        event_cat = event_cat.dropna(axis=0, how='any')
+        return event_cat
+        
+    # Remove dulicates of station, add network information 
+    def station_clean(self,stations):
+        global_sta = pd.read_table('gmap-stations.txt', sep='|')
+        # total_station = total_station.dropna(axis=0, how='any')
+        # stations = total_station.drop_duplicates(['STA'])
+        sta_cat = pd.DataFrame()
+    #    for sta in stations.iterrows():
+        temp_station =  global_sta[global_sta[' Station '].isin(stations['STA'])]
+        sta_cat = temp_station[temp_station[' Elevation '].isin(stations['ARRIVAL_ELEV'])]
+        return sta_cat
     
+class GlobalMaps():
+    r''' Export global graphs
+    Fuctions to plot:
+        global events map
+        global stations map
+        global event-station map
+        arrival example map
+    '''
+    def __init__(self,sta,event):
+        self.stations = sta 
+        self.events = event
+    def event_map(self,df_info, figname="global_event_map.png",
+                  clon=None, colormap='geo', topo_data = "@earth_relief_20m"):
+        res = "f"
+        if not colormap:
+            colormap = "hot"
+        
+        if not clon:
+            clon = df_info["ORIGIN_LON"].mean()
+        #proj = f"W{clon:.1f}/20c"
+        proj = "Cyl_stere/12c"
+        fig = pygmt.Figure()
+        fig.basemap(region="g", projection=proj, frame=True)
+        fig.grdimage(
+            grid=topo_data,
+            shading=True,
+            cmap=colormap,
+        )
+    
+        fig.coast(
+            resolution=res,
+            shorelines=["1/0.2p,black", "2/0.05p,gray"],
+            borders=1,
+        )
+        #colorbar colormap
+        pygmt.makecpt(cmap="hot", series=[
+                      0.0, 9.0])
+        fig.plot(
+            x=df_info["ORIGIN_LON"].values,
+            y=df_info["ORIGIN_LAT"].values,
+            sizes=0.02 * df_info["EVENT_MAG"].values,
+            color=df_info["EVENT_MAG"].values,
+            cmap=True,
+            style="cc",
+            pen="black"
+        )
+        fig.colorbar(frame='af+l"Magnitude"')     
+        fig.savefig(figname, dpi=300)
+        
+    def station_map(self,df,figname="global_station_map.png"):
+        '''Plot global station map
+        '''
+        # Create pygmt.Figure
+        fig = pygmt.Figure()
+        grid = pygmt.datasets.load_earth_relief(resolution="03m",region='g')
+        fig.grdimage(region='g',grid=grid, projection="Y35/30/12c", frame="a", cmap="geo")
+        
+        net_name = df['#Network '].unique()
+        net_name = [x for x in net_name if str(x) != 'nan']
+        # create colorlist
+        colorsList = {}
+        for i in net_name:
+        #for i in range(len(net_name)):
+            colorsList[i] = '#%06X' % np.random.randint(0, 0xFFFFFF)
+        # loop in network [This is an update]
+        for net in net_name:
+            fig.plot(
+                x=df[df['#Network '] == net][' Longitude '],
+                y=df[df['#Network '] == net][' Latitude '],
+                style="i3p",
+                color=colorsList[net],
+                pen="black"
+            )    
+        fig.savefig(figname, crop=True, dpi=300)
+    def event_station_map(self, df_info,df_info_sta, figname="global_event_station_map.png", 
+                          clon=None, colormap='geo', topo_data = "@earth_relief_20m"):
+        
+        res = "f"
+        if not colormap:
+            colormap = "hot"
+        
+        if not clon:
+            clon = df_info["ORIGIN_LON"].mean()
+        proj = "Cyl_stere/12c"
+        fig = pygmt.Figure()
+        fig.basemap(region="g", projection=proj, frame=True)
+        fig.grdimage(
+            grid=topo_data,
+            shading=True,
+            cmap=colormap,
+        )
+    
+        fig.coast(
+            resolution=res,
+            shorelines=["1/0.2p,black", "2/0.05p,gray"],
+            borders=1,
+        )
+        #colorbar colormap
+        pygmt.makecpt(cmap="hot", series=[
+                      0.0, 9.0])
+        fig.plot(
+            x=df_info["ORIGIN_LON"].values,
+            y=df_info["ORIGIN_LAT"].values,
+            sizes=0.02 * df_info["EVENT_MAG"].values,
+            color=df_info["EVENT_MAG"].values,
+            cmap=True,
+            style="cc",
+            pen="black"
+        )
+        fig.colorbar(frame='af+l"Magnitude"')    
+        # plot station
+        fig.plot(
+            x=df_info_sta["ARRIVAL_LON"].values,
+            y=df_info_sta["ARRIVAL_LAT"].values,
+            style="t3p",
+            color="dodgerblue",
+            pen="black",
+            label="Station",
+        )
+
+        fig.savefig(figname, dpi=300)
+    def hist_plot(self,eve_cat,filename="Global_Earthquakes_Mag_Distribution.jpg"):
+        fig_hist = eve_cat.EVENT_MAG.plot.hist()
+        fig_hist.figure.tight_layout()
+        fig_hist.figure.savefig(filename,dpi=300)    

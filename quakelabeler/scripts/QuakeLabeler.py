@@ -62,10 +62,29 @@ def main():
     if not user_interface.benchmark_flag:
         # run normal mode: beginner / advanced
         query = QueryArrival(**user_interface.params)
-
     else:
         # run benchmark mode
         query = BuiltInCatalog(user_interface)
+    # earthquake maps
+    map_option = input("Do you want to display query results: [y]/n?")
+    if not map_option.lower() == 'n':
+        MT = MergeMetadata(query.record_folder) 
+        filelist = MT.select_folder()
+        temp_pd = MT.merge_event(filelist)
+        event_pd = MT.event_clean(temp_pd)
+    #%% test station modules
+        total_station = MT.merge_station(filelist)
+        sta_cat = MT.station_clean(total_station)
+    #%%    
+        GM = GlobalMaps(sta_cat,event_pd)
+    #%%
+        GM.hist_plot(event_pd)
+    #%%
+        GM.event_station_map(event_pd,total_station)
+    #%% 
+        GM.event_map(event_pd)    
+    #%%
+        GM.station_map(sta_cat)
     # init custom options    
     custom = CustomSamples(user_interface.receipe_flag)
     # run custom of dataset structure
@@ -84,7 +103,7 @@ def main():
     auto_dataset.csv_writer()        
     # subfolder generator
     subfolder_option = input("Do you want to create training data and validation data: [y]/n?")
-    if subfolder_option.lower() == 'y':
+    if not subfolder_option.lower() == 'n':
         auto_dataset.subfolder()
     
 if __name__ == '__main__':
