@@ -2384,7 +2384,7 @@ class MergeMetadata():
         
     # Remove dulicates of station, add network information 
     def station_clean(self,stations):
-        global_sta = pd.read_table('gmap-stations.txt', sep='|')
+        global_sta = pd.read_table(os.path.dirname(__file__)+'/static/'+'gmap-stations.txt', sep='|')
         # total_station = total_station.dropna(axis=0, how='any')
         # stations = total_station.drop_duplicates(['STA'])
         sta_cat = pd.DataFrame()
