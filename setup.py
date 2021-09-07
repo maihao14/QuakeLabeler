@@ -41,7 +41,7 @@ setup(
     python_requires='>=3.7',
     packages=setuptools.find_packages(),
     include_package_data=True,
-    package_data={'': ['examples/*']},
+    package_data={'': ['static/*']},
     #    scripts=scripts)
     entry_points={
         'console_scripts':
