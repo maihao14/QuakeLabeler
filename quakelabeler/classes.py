@@ -2467,6 +2467,7 @@ class GlobalMaps():
                 color=colorsList[net],
                 pen="black"
             )
+        fig.show()
         fig.savefig(figname, crop=True, dpi=300)
     def event_station_map(self, df_info,df_info_sta, figname="global_event_station_map.png",
                           clon=None, colormap='geo', topo_data = "@earth_relief_20m"):
