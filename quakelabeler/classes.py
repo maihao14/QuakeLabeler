@@ -639,7 +639,7 @@ class QuakeLabeler():
                 print(st)
                 if num >= maxnum and not self.custom_dataset['volume'] == 'MAX':
                     break
-        bar.finish()        
+        bar.finish()
         print("All available waveforms are ready!")
         print("{0} of event-based samples are successfully generated! ".format(num))
         os.chdir('../')
@@ -692,7 +692,7 @@ class QuakeLabeler():
                 self.npts = st[0].stats.npts
                 self.sampling_rate = st[0].stats.sampling_rate
                 return st
-        
+
     def noisegenerator(self):
         r"""Generate noise waveform in same amount
         Returns
@@ -702,7 +702,7 @@ class QuakeLabeler():
         """
         FileName = self.custom_export['folder_name']
         orgin_path = FileName
-        os.chdir(orgin_path)     
+        os.chdir(orgin_path)
         print('Initialize noise waveform producer module...')
         self.noise = []
         maxmum = len(self.available_samples)
@@ -720,7 +720,7 @@ class QuakeLabeler():
                     # split each stream as independent trace component
                     for tr in st:
                         updatethread = thread.copy()
-                        
+
                         # write phase type as noise
                         updatethread['ISCPHASE'] = 'Noi'
                         updatethread['REPPHASE'] = 'Noi'
@@ -760,9 +760,9 @@ class QuakeLabeler():
                 if num>=maxmum:
                     break
                 bar.next()
-        bar.finish()        
+        bar.finish()
         print("All available waveforms are ready!")
-        print("{0} of event-based samples are successfully generated! ".format(num))            
+        print("{0} of event-based samples are successfully generated! ".format(num))
         os.chdir('../')
     def subfolder(self, trainratio=0.8):
         r"""Split dataset
@@ -857,11 +857,11 @@ class QuakeLabeler():
         #enter datasets
         FileName = self.custom_export['folder_name']
         orgin_path = FileName
-        os.chdir(orgin_path)        
+        os.chdir(orgin_path)
         if len(self.available_samples) < samplenum:
             samplenum = len(self.available_samples)
         for i in range(samplenum):
-            
+
             sample = self.available_samples[i]
             singlefile = sample['filename']+'*.sac'
             st = read(singlefile)
@@ -887,11 +887,11 @@ class QuakeLabeler():
             plt.ylabel('Out: Signal Detection')
             plt.suptitle("Sample: Station "+st[0].stats.station+' Mag '+str(sample['EVENT_MAG']))
             plt.xlabel('Points')
-            os.chdir('../') 
+            os.chdir('../')
             plt.savefig(imagepath + sample['filename']+'.jpg', dpi=300)
-            os.chdir(orgin_path) 
+            os.chdir(orgin_path)
             plt.show()
-        os.chdir('../')        
+        os.chdir('../')
 class Interactive():
     r""" Interactive tool for target stations and time range
     Receive user's interest search options from command line inteface (CLI).
@@ -1517,8 +1517,8 @@ class Interactive():
         Art=text2art("Benchmark Bulletin", font="small") # random font mode
         print(Art)
         print("""
-Benchmark mode posts well-estabilished datasets of the current 
-hot research area. Follow these postings, users can generate the 
+Benchmark mode posts well-estabilished datasets of the current
+hot research area. Follow these postings, users can generate the
 same datasets in QuakeLabeler without extra options input.
               """)
         print("=====================================================================================")
@@ -2024,12 +2024,12 @@ in QuakeLabeler with different scales (small, middle, large).
             self.custom_export['single_trace'] = True
         else:
             self.custom_export['single_trace'] = False
-        # generate noise waveform in same amount    
+        # generate noise waveform in same amount
         self.custom_export['noise_trace'] = input('Generate noise waveform in same amount? ([y]/n)')
         if self.custom_export['noise_trace'].lower() == 'n':
             self.custom_export['noise_trace'] = False
         else:
-            self.custom_export['noise_trace'] = True            
+            self.custom_export['noise_trace'] = True
         in_out = input('Do you want to separate save traces as input and output? (y/[n])')
         if in_out == 'y':
             self.custom_export['export_inout'] = True
@@ -2086,7 +2086,7 @@ class QueryArrival():
 
         try:
             self.find_all_vars(self.page_text, 'EVENTID', 'STA','CHN',
-                               'ISCPHASE','REPPHASE', 
+                               'ISCPHASE','REPPHASE',
                                'ARRIVAL_LAT', 'ARRIVAL_LON',
                                'ARRIVAL_ELEV','ARRIVAL_DIST','ARRIVAL_BAZ',
                                'ARRIVAL_DATE','ARRIVAL_TIME',
@@ -2111,13 +2111,13 @@ class QueryArrival():
     def saverecord(self, name):
         np.save(name + ".npy", self.arrival_recordings)
         #save as pandas.DataFrame
-        data = pd.DataFrame(data=self.arrival_recordings)   
+        data = pd.DataFrame(data=self.arrival_recordings)
         if not os.path.exists(name):
             os.mkdir(name)
         os.chdir(name)
         data.to_csv(name+".csv")
         self.record_folder = os.getcwd()+'/'
-        os.chdir('../')          
+        os.chdir('../')
     def find_all_vars(self, text, *args):
         r"""Store all arrival information
         This method save all fetched information into `recordings`:
@@ -2192,7 +2192,7 @@ class QueryArrival():
             self.arrival_recordings.append(tempdict)
         return self.arrival_recordings
 
-    
+
 class BuiltInCatalog():
     def __init__(self, interactive):
         # save params
@@ -2212,7 +2212,7 @@ class BuiltInCatalog():
         try:
             # find all information
             self.find_all_vars(self.page_text, 'EVENTID', 'STA','CHN',
-                               'ISCPHASE','REPPHASE', 
+                               'ISCPHASE','REPPHASE',
                                'ARRIVAL_LAT', 'ARRIVAL_LON',
                                'ARRIVAL_ELEV','ARRIVAL_DIST','ARRIVAL_BAZ',
                                'ARRIVAL_DATE','ARRIVAL_TIME',
@@ -2239,13 +2239,13 @@ class BuiltInCatalog():
     def saverecord(self, name):
         np.save(name + ".npy", self.arrival_recordings)
         #save as pandas.DataFrame
-        data = pd.DataFrame(data=self.arrival_recordings)   
+        data = pd.DataFrame(data=self.arrival_recordings)
         if not os.path.exists(name):
             os.mkdir(name)
         os.chdir(name)
         data.to_csv(name+".csv")
         self.record_folder = os.getcwd()+'/'
-        os.chdir('../') 
+        os.chdir('../')
         print('benchmark recordings have been saved!')
     def retrievequery(self, name):
         self.arrival_recordings = {}
@@ -2326,7 +2326,7 @@ class BuiltInCatalog():
             for var in args:
                 tempdict[var] = recordings[var][i]
             self.arrival_recordings.append(tempdict)
-    
+
         return self.arrival_recordings
 class MergeMetadata():
     r''' This Class is to process the queries from online catalogues.
@@ -2336,7 +2336,7 @@ class MergeMetadata():
         merge stations
     '''
     def __init__(self,folder):
-        # *.csv folder 
+        # *.csv folder
         self.path = folder
         self.filelist = self.select_folder()
         self.station = pd.DataFrame()
@@ -2362,7 +2362,7 @@ class MergeMetadata():
          ''' Read Signle CSV files
          '''
          meta_pd = pd.read_csv(self.path+filename)
-         return meta_pd  
+         return meta_pd
     def merge_event(self,filelist):
         # merge all event from a folder path(filelist)
         sta_cat = self.load_metadata(filelist[0])
@@ -2374,15 +2374,15 @@ class MergeMetadata():
             frame = [sta_cat,temp_pd ]
             sta_cat = pd.concat(frame)
             sta_cat = sta_cat.drop_duplicates(['EVENTID'])
-        return sta_cat        
-    # Remove dulicates of events 
+        return sta_cat
+    # Remove dulicates of events
     def event_clean(self,total_station):
-        # one event only reserve one time 
+        # one event only reserve one time
         event_cat = total_station.drop_duplicates(['EVENTID'])
         event_cat = event_cat.dropna(axis=0, how='any')
         return event_cat
-        
-    # Remove dulicates of station, add network information 
+
+    # Remove dulicates of station, add network information
     def station_clean(self,stations):
         global_sta = pd.read_table(os.path.dirname(__file__)+'/static/'+'gmap-stations.txt', sep='|')
         # total_station = total_station.dropna(axis=0, how='any')
@@ -2392,7 +2392,7 @@ class MergeMetadata():
         temp_station =  global_sta[global_sta[' Station '].isin(stations['STA'])]
         sta_cat = temp_station[temp_station[' Elevation '].isin(stations['ARRIVAL_ELEV'])]
         return sta_cat
-    
+
 class GlobalMaps():
     r''' Export global graphs
     Fuctions to plot:
@@ -2402,14 +2402,14 @@ class GlobalMaps():
         arrival example map
     '''
     def __init__(self,sta,event):
-        self.stations = sta 
+        self.stations = sta
         self.events = event
     def event_map(self,df_info, figname="global_event_map.png",
                   clon=None, colormap='geo', topo_data = "@earth_relief_20m"):
         res = "f"
         if not colormap:
             colormap = "hot"
-        
+
         if not clon:
             clon = df_info["ORIGIN_LON"].mean()
         #proj = f"W{clon:.1f}/20c"
@@ -2421,7 +2421,7 @@ class GlobalMaps():
             shading=True,
             cmap=colormap,
         )
-    
+
         fig.coast(
             resolution=res,
             shorelines=["1/0.2p,black", "2/0.05p,gray"],
@@ -2439,9 +2439,10 @@ class GlobalMaps():
             style="cc",
             pen="black"
         )
-        fig.colorbar(frame='af+l"Magnitude"')     
+        fig.colorbar(frame='af+l"Magnitude"')
+        fig.show()
         fig.savefig(figname, dpi=300)
-        
+
     def station_map(self,df,figname="global_station_map.png"):
         '''Plot global station map
         '''
@@ -2449,7 +2450,7 @@ class GlobalMaps():
         fig = pygmt.Figure()
         grid = pygmt.datasets.load_earth_relief(resolution="03m",region='g')
         fig.grdimage(region='g',grid=grid, projection="Y35/30/12c", frame="a", cmap="geo")
-        
+
         net_name = df['#Network '].unique()
         net_name = [x for x in net_name if str(x) != 'nan']
         # create colorlist
@@ -2465,15 +2466,15 @@ class GlobalMaps():
                 style="i3p",
                 color=colorsList[net],
                 pen="black"
-            )    
+            )
         fig.savefig(figname, crop=True, dpi=300)
-    def event_station_map(self, df_info,df_info_sta, figname="global_event_station_map.png", 
+    def event_station_map(self, df_info,df_info_sta, figname="global_event_station_map.png",
                           clon=None, colormap='geo', topo_data = "@earth_relief_20m"):
-        
+
         res = "f"
         if not colormap:
             colormap = "hot"
-        
+
         if not clon:
             clon = df_info["ORIGIN_LON"].mean()
         proj = "Cyl_stere/12c"
@@ -2484,7 +2485,7 @@ class GlobalMaps():
             shading=True,
             cmap=colormap,
         )
-    
+
         fig.coast(
             resolution=res,
             shorelines=["1/0.2p,black", "2/0.05p,gray"],
@@ -2502,7 +2503,7 @@ class GlobalMaps():
             style="cc",
             pen="black"
         )
-        fig.colorbar(frame='af+l"Magnitude"')    
+        fig.colorbar(frame='af+l"Magnitude"')
         # plot station
         fig.plot(
             x=df_info_sta["ARRIVAL_LON"].values,
@@ -2512,9 +2513,9 @@ class GlobalMaps():
             pen="black",
             label="Station",
         )
-
+        fig.show()
         fig.savefig(figname, dpi=300)
     def hist_plot(self,eve_cat,filename="Global_Earthquakes_Mag_Distribution.jpg"):
         fig_hist = eve_cat.EVENT_MAG.plot.hist()
         fig_hist.figure.tight_layout()
-        fig_hist.figure.savefig(filename,dpi=300)    
+        fig_hist.figure.savefig(filename,dpi=300)
