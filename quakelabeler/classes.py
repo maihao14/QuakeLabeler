@@ -2117,6 +2117,7 @@ class QueryArrival():
         os.chdir(name)
         data.to_csv(name+".csv")
         self.record_folder = os.getcwd()+'/'
+        self.record_filename = name+".csv"
         os.chdir('../')
     def find_all_vars(self, text, *args):
         r"""Store all arrival information
@@ -2246,6 +2247,7 @@ class BuiltInCatalog():
         data.to_csv(name+".csv")
         self.record_folder = os.getcwd()+'/'
         os.chdir('../')
+        self.record_filename = name+".csv"
         print('benchmark recordings have been saved!')
     def retrievequery(self, name):
         self.arrival_recordings = {}

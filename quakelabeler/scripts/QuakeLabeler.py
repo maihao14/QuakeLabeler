@@ -29,7 +29,7 @@ Created on Sun Feb 21 20:22:25 2021
 """
 
 from quakelabeler import *
-
+import logging
 def main():
     r"""QuakeLabeler toolbox
     This is all functions for QuakeLabeler package. Running on command line
@@ -59,12 +59,23 @@ def main():
 
 
     user_interface = Interactive()
+    # set logging 
+    logging.basicConfig(level=logging.INFO,
+                format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                datefmt='%a, %d %b %Y %H:%M:%S',
+                filename='myapp.log',
+                filemode='a')
+    # print user input params
+    logging.info(user_interface.params)
     if not user_interface.benchmark_flag:
         # run normal mode: beginner / advanced
         query = QueryArrival(**user_interface.params)
     else:
         # run benchmark mode
         query = BuiltInCatalog(user_interface)
+    # print query params
+    logging.info("Created dataset folder: "+query.record_folder)      
+    logging.info("Meta data filename: "+query.record_filename)
     # earthquake maps
     map_option = input("Do you want to display query results: [y]/n?")
     if not map_option.lower() == 'n':
@@ -84,6 +95,14 @@ def main():
     custom = CustomSamples(user_interface.receipe_flag)
     # run custom of dataset structure
     custom.init()
+    # print custom info
+    logging.info("custom_dataset options: \n")
+    logging.info(custom.custom_dataset)
+    logging.info("custom_waveform options: \n")
+    logging.info(custom.custom_waveform)    
+    logging.info("custom_export options: \n")
+    logging.info(custom.custom_export)    
+    
     # auto-production of dataset
     auto_dataset = QuakeLabeler(query, custom)
     # data collect and process
