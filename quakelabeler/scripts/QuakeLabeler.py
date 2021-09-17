@@ -78,13 +78,13 @@ def main():
         GM = GlobalMaps(sta_cat,event_pd)
         GM.hist_plot(event_pd)
         GM.event_station_map(event_pd,total_station)
-        GM.event_map(event_pd)    
+        GM.event_map(event_pd)
         GM.station_map(sta_cat)
     # init custom options
     custom = CustomSamples(user_interface.receipe_flag)
     # run custom of dataset structure
     custom.init()
-    # autp-production of dataset
+    # auto-production of dataset
     auto_dataset = QuakeLabeler(query, custom)
     # data collect and process
     auto_dataset.fetch_all_waveforms(auto_dataset.recordings)
