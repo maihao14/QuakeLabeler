@@ -1296,7 +1296,7 @@ class Interactive():
     def beginner_mode(self, field=1):
         r"""Run beginner mode
         User can use this method to select one example region to create datasets
-        in different scales: small (1,000), middle (10,000), large (15,000).
+        in different scales: small (1,000), medium (10,000), large (15,000).
         Different recipes can be applied, i.e. PhaseNet recipe, EQTransformer recipe.
         """
 
@@ -1741,7 +1741,7 @@ same datasets in QuakeLabeler without extra options input.
     def select_mode(self):
         r"""Running mode selection
         Runing Options for different levels of AI users.
-        Beginner mode : Quick start dataset recipe in small, middle, large scales
+        Beginner mode : Quick start dataset recipe in small, medium, large scales
         Advanced mode : Custom all details in your dataset.
         Benchmark mode : Built-in standard seismic datasets in scales.
         Returns
@@ -1763,7 +1763,7 @@ same datasets in QuakeLabeler without extra options input.
   \___\_\\__,_|\__,_|_|\_\___|______\__,_|_.__/ \___|_|\___|_|
         """)
         print('QuakeLabeler provides multiple modes for different levels of Seismic AI researchers \n ')
-        print('[Beginner]  mode -- Quick start dataset recipes in small, middle, large scales. \n' +\
+        print('[Beginner]  mode -- Quick start dataset recipes in small, medium, large scales. \n' +\
                '[Advanced]  mode -- Custom all details in your dataset. \n'
                '[Benchmark] mode -- Built-in standard seismic datasets in scales.')
         mode = input("Please select a mode: [1/2/3/Beginner/Advanced/Benchmark] ")
@@ -1805,7 +1805,7 @@ class CustomSamples():
 Quick-start recipe lists specific dataset structures of the
 current popular open-source AI/ML models on GitHub. Follow
 these recipes; users can generate the same forms of the datasets
-in QuakeLabeler with different scales (small, middle, large).
+in QuakeLabeler with different scales (small, medium, large).
                   """)
             print("=====================================================================================")
             print("Please select the recipe:")
@@ -1882,7 +1882,7 @@ in QuakeLabeler with different scales (small, middle, large).
             sizefield = input('Select one of the scale of datastet:  [1/2/3/4] \n \
                           [1] Mini size (100) \n \
                           [2] Small size(1,000) \n \
-                          [3] Middle size (5,000) \n \
+                          [3] Medium size (5,000) \n \
                           [4] Large size (10,000) \n \
                           [0] Custom size \n  ')
             if sizefield == '1':
