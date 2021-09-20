@@ -1863,7 +1863,7 @@ in QuakeLabeler with different scales (small, medium, large).
             self.custom_export = {'export_type': 'SAC', 'single_trace': False, 'noise_trace': True,'export_inout': True, 'export_arrival_csv': True, 'export_filename': 'DelicateDataset', 'export_stats': True}
         # Phasenet verision
         if field == '3':
-            self.custom_dataset = {'volume': '1000', 'fixed_length': True, 'sample_length': 5000}
+            self.custom_dataset = {'volume': '1000', 'fixed_length': True, 'sample_length': 9001}
             self.custom_waveform = {'label_type': False, 'sample_rate': '100.0', 'filter_type': '0',
                                     'detrend': False, 'random_arrival': False, 'add_noise': 0,
                                     'start_arrival': 30.0, 'end_arrival': 90.0
