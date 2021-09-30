@@ -1513,9 +1513,10 @@ class Interactive():
         Art=text2art("Benchmark Bulletin", font="small") # random font mode
         print(Art)
         print("""
-Benchmark mode posts well-estabilished datasets of the current
-hot research area. Follow these postings, users can generate the
-same datasets in QuakeLabeler without extra options input.
+Benchmark mode posts well-organized datasets of the current hot research areas.
+Follow these postings; users can reproduce the same datasets in QuakeLabeler 
+without extra options input. All relevant information, graphs, and documents 
+are generated simultaneously.
               """)
         print("=====================================================================================")
         # default params case[1] in Cascadia subduction zone
@@ -1554,12 +1555,12 @@ same datasets in QuakeLabeler without extra options input.
             }
 
         field = input('Select one of the following sample fields:  [1/2/3/4] \n \
-                      [1] 2010 Cascadia subduction zone earthquake activities \n \
-                      [2] 2011 Tōhoku earthquake and tsunami \n \
-                      [3] 2016 Oklahoma human activity-induced earthquakes \n \
-                      [4] 2018 Big quakes in Southern California \n \
-                      [5] 2019 Global big quakes M > 5.5 \n \
-                      [0] Re-direct to Running Mode Selection. \n  '  )
+                      [1] 2010 Cascadia subduction zone seismicity.\n \
+                      [2] 2011 Tōhoku earthquake and tsunami.\n \
+                      [3] 2016 Oklahoma induced seismicity.\n \
+                      [4] 2018 earthquakes in Southern California M > 5.5\n \
+                      [5] 2019 Global earthquakes M > 5.5\n \
+                      [0] Re-direct to Running Mode Selection.\n  '  )
         # input default parameters for specific case
         if field == '2':
             # 2011 Tōhoku earthquake and tsunami, Japan
