@@ -946,42 +946,38 @@ class Interactive():
         r"""Input station region in rectangular mode
         """
         self.params['stnsearch'] = 'RECT'
-        print('Please enter the latitudes(-90 ~ 90) at the bottom and top, the \
-                longitudes(-180 ~ 180) on the left and the right of \
-                the rectangular boundary. \n ')
-        print('Example: \n Default region (Cascadia subduction zone, NA): \n')
-        #set default params
+        print('Example: Cascadia subduction zone(default)\n')
         # set default params
         self.params['stn_bot_lat'] = '40.00'
         self.params['stn_top_lat'] = '55.00'
         self.params['stn_left_lon'] = '-130.00'
         self.params['stn_right_lon'] = '-120.00'
-        print('stnsearch: ' + self.params['stnsearch'] + '\n' +  \
-        'stn_bot_lat: '+ self.params['stn_bot_lat'] + '\n' + \
-        'stn_top_lat: '+ self.params['stn_top_lat'] + '\n' + \
-        'stn_left_lon: '+ self.params['stn_left_lon'] + '\n' + \
-        'stn_right_lon: '+ self.params['stn_right_lon'] +'\n'  )
-
+        print('Station search: ' + self.params['stnsearch'] + '\n' +  \
+        'Bottom latitude: '+ self.params['stn_bot_lat'] + '\n' + \
+        'Top latitude: '+ self.params['stn_top_lat'] + '\n' + \
+        'Left longitude: '+ self.params['stn_left_lon'] + '\n' + \
+        'Right longitude: '+ self.params['stn_right_lon'] +'\n'  )
+        print('Please define a rectangular search region.\n')
         # input from interative shell
-        self.params['stn_bot_lat'] = input('Input rectangular bottom latitude: ')
+        self.params['stn_bot_lat'] = input('Input bottom latitude (-90 to 90): ')
         if self.params['stn_bot_lat'] == '':
             self.params['stn_bot_lat'] = '40.00'
-        self.params['stn_top_lat'] = input('Input rectangular top latitude: ')
+        self.params['stn_top_lat'] = input('Input top latitude (-90 to 90): ')
         if self.params['stn_top_lat'] == '':
             self.params['stn_top_lat'] = '55.00'
-        self.params['stn_left_lon'] = input('Input rectangular left longitude: ')
+        self.params['stn_left_lon'] = input('Input left longitude (-180 to 180): ')
         if self.params['stn_left_lon'] == '':
             self.params['stn_left_lon'] = '-130.00'
-        self.params['stn_right_lon'] = input('Input rectangular right longitude: ')
+        self.params['stn_right_lon'] = input('Input right longitude (-180 to 180): ')
         print('The input region is:  \n ')
         if self.params['stn_right_lon'] == '':
             self.params['stn_right_lon'] = '-120.00'
         # print update params
-        print('stnsearch: ' + self.params['stnsearch'] + '\n' +  \
-        'stn_bot_lat: '+ self.params['stn_bot_lat'] + '\n' + \
-        'stn_top_lat: '+ self.params['stn_top_lat'] + '\n' + \
-        'stn_left_lon: '+ self.params['stn_left_lon'] + '\n' + \
-        'stn_right_lon: '+ self.params['stn_right_lon'] +'\n'  )
+        print('Station search: ' + self.params['stnsearch'] + '\n' +  \
+        'Bottom latitude: '+ self.params['stn_bot_lat'] + '\n' + \
+        'Top latitude: '+ self.params['stn_top_lat'] + '\n' + \
+        'Left longitude: '+ self.params['stn_left_lon'] + '\n' + \
+        'Right longitude: '+ self.params['stn_right_lon'] +'\n'  )
 
         confirm = input('Input parameters confirm?  ([y]/n) \n')
         if confirm.lower() == 'y':
@@ -1138,13 +1134,13 @@ class Interactive():
         self.params['iscreview'] = 'on'
         # set default
         mode = 'RECT'
-        mode = input('Please select one : \n[STN/GLOBAL/RECT/CIRC/FE/POLY] \n \
-                        [STN]: Stations are restricted to specific station code(s); \n \
-                        [GLOBAL]: Stations are not restricted by region (i.e. all available stations); \n \
-                        [RECT]: Rectangular search of stations (recommended ★); \n \
-                        [CIRC]: Circular search of stations; \n \
-                        [FE]: Flinn-Engdahl region search of stations; \n \
-                        [POLY]: Customised polygon search. \n  ')
+        print('Please specify stations to search for arrivals:\n \
+              [STN]:    Provide station code(comma separated list acccepted); \n \
+              [GLOBAL]: Global search; \n \
+              [RECT]:   Define a rectangular search region(default); \n \
+              [CIRC]:   Define a circular search region; \n \
+              [FE]:     Define a Flinn-Engdahl search region. \n')
+        mode = input('Input station search option:[STN/GLOBAL/RECT/CIRC/FE/POLY]')                
         if mode.lower() == 'stn':
             self.input_stn_stn()
         elif mode.lower() == 'global':
@@ -1496,7 +1492,7 @@ class Interactive():
         design their own research region and time range settings.
         """
         print('Initialize Advanced Mode...')
-        print('Alternative region options are provided. Please select your preferred input function: \n ')
+        #print('Alternative region options are provided. Please select your preferred input function: \n ')
 
         # 1.select stnsearch mode ;
         # 2.input <station-region> params;
@@ -1763,8 +1759,8 @@ same datasets in QuakeLabeler without extra options input.
   \___\_\\__,_|\__,_|_|\_\___|______\__,_|_.__/ \___|_|\___|_|
         """)
         print('QuakeLabeler provides multiple modes for different levels of Seismic AI researchers \n ')
-        print('[Beginner]  mode -- Quick start dataset recipes in small, medium, large scales. \n' +\
-               '[Advanced]  mode -- Custom all details in your dataset. \n'
+        print('[Beginner]  mode -- Quick-start dataset recipes in small, medium, large scales. \n' +\
+               '[Advanced]  mode -- Custom every detail within the dataset. \n'
                '[Benchmark] mode -- Built-in standard seismic datasets in scales.')
         mode = input("Please select a mode: [1/2/3/Beginner/Advanced/Benchmark] ")
         if (mode == '1') or (mode.lower() == 'beginner'):
@@ -1843,7 +1839,7 @@ in QuakeLabeler with different scales (small, medium, large).
         print('Initialize Quick-Start Recipe...')
         field = input('Select one of the following recipe:  [1/2/3/4] \n \
                       [1] QuakeLabeler Simple Version \n \
-                      [2] QuakeLabeler Delicate Version \n \
+                      [2] QuakeLabeler Versatile Version \n \
                       [3] PhaseNet Version \n \
                       [4] EQTransformer Version \n \
                       [0] Re-direct to Custom Mode. \n  '  )
@@ -1856,11 +1852,11 @@ in QuakeLabeler with different scales (small, medium, large).
             self.custom_dataset = {'volume': '1000', 'fixed_length': True, 'sample_length': 5000}
             self.custom_waveform = {'label_type': False, 'sample_rate': '', 'filter_type': '0', 'detrend': False, 'random_arrival': True, 'add_noise': 0}
             self.custom_export = {'export_type': 'SAC', 'single_trace': True,'noise_trace': True, 'export_inout': False, 'export_arrival_csv': True, 'export_filename': 'SimpleDataset', 'export_stats': True}
-        # Delicate version
+        # Versatile version
         if field == '2':
             self.custom_dataset = {'volume': '1000', 'fixed_length': True, 'sample_length': 5000}
             self.custom_waveform = {'label_type': True, 'sample_rate': '50.0', 'filter_type': '0', 'detrend': True, 'random_arrival': True, 'add_noise': 0}
-            self.custom_export = {'export_type': 'SAC', 'single_trace': False, 'noise_trace': True,'export_inout': True, 'export_arrival_csv': True, 'export_filename': 'DelicateDataset', 'export_stats': True}
+            self.custom_export = {'export_type': 'SAC', 'single_trace': False, 'noise_trace': True,'export_inout': True, 'export_arrival_csv': True, 'export_filename': 'VersatileDataset', 'export_stats': True}
         # Phasenet verision
         if field == '3':
             self.custom_dataset = {'volume': '1000', 'fixed_length': True, 'sample_length': 9001}
