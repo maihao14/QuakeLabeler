@@ -78,6 +78,6 @@ QuakeLabeler provides multiple modes for different levels of Seismic AI research
 
 
 ## Contributing
-In current version, waveforms resources from China is unavailable to access automatically. Any collaborators are welcome to help extend the data sources, develop the codes, etc.
+In current version, raw waveforms data from part of Chinese Earthquake stations are unavailable to access automatically (But you can still use QuakeLabeler in China). Any collaborators are welcome to help extend the data sources, develop the codes, etc.
 
 All constructive contributions are welcome, e.g. bug reports, discussions or suggestions for new features. You can either [open an issue on GitHub](https://github.com/maihao14/QuakeLabeler/issues) or make a pull request with your proposed changes. Before making a pull request, check if there is a corresponding issue opened and reference it in the pull request. If there isn't one, it is recommended to open one with your rationale for the change. New functionality or significant changes to the code that alter its behavior should come with corresponding tests and documentation. If you are new to contributing, you can open a work-in-progress pull request and have it iteratively reviewed. Suggestions for improvements (speed, accuracy, etc.) are also welcome.
