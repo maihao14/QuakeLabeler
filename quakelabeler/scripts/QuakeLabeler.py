@@ -30,6 +30,7 @@ Created on Sun Feb 21 20:22:25 2021
 
 from quakelabeler import *
 import logging
+
 def main():
     r"""QuakeLabeler toolbox
     This is all functions for QuakeLabeler package. Running on command line
@@ -56,7 +57,6 @@ def main():
     None.
 
     """
-
 
     user_interface = Interactive()
     # set logging 
@@ -108,7 +108,9 @@ def main():
     # data collect and process
     auto_dataset.fetch_all_waveforms(auto_dataset.recordings)
     # waveform graph
-    auto_dataset.waveform_display()
+    if custom.custom_export['export_type'] == 'SAC':
+        auto_dataset.waveform_display()
+        
     # stats graph
     auto_dataset.stats_figure()
     if auto_dataset.custom_export['noise_trace']:

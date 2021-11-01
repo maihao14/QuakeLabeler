@@ -55,6 +55,7 @@ import matplotlib.pyplot as plt
 from art import *
 from obspy import read
 import pygmt
+
 class QuakeLabeler():
     r""" ``Quake Labeler`` class enables to automatically label ground truth.
     A ``QuakeLabeler`` object contains Class attributes that design and create
@@ -583,7 +584,10 @@ class QuakeLabeler():
         bar = Bar('Processing', max=maxnum)
         for thread in records:
             # request waveform from online clients
-            st = self.fetch_waveform(thread, clientname )
+            try:
+                st = self.fetch_waveform(thread, clientname )
+            except KeyboardInterrupt:
+                print(thread)
             if st == "No data available for request.":
                 loopnum = loopnum+1
                 if loopnum>50:
@@ -863,6 +867,7 @@ class QuakeLabeler():
         for i in range(samplenum):
 
             sample = self.available_samples[i]
+            # raise error if it's not a sac file
             singlefile = sample['filename']+'*.sac'
             st = read(singlefile)
             st = st.select(channel= st[0].stats.channel)
