@@ -928,7 +928,7 @@ class Interactive():
         self.receipe_flag = False # True if enter: beginner mode
         self.benchmark_flag = False # True if enter: benchmark mode
         self.select_mode()
-
+        self.params['request'] = 'STNARRIVALS' 
 
     def welcome(self):
         print("Welcome to QuakeLabeler----Fast AI Earthquake Dataset Deployment Tool!")
@@ -1124,19 +1124,21 @@ class Interactive():
                         Availble input: \n \
                         <Any>|<MB>|<MS>|<MW>|<ML>|<MD> or blankspace for skip this set  \n')
         if not (default.isspace() or default == '\n'):
+            self.params['req_mag_agcy'] = 'prime'
             self.params['req_mag_type'] = default
+            
 
     def select_stnsearch(self):
         r"""Choose mode for station region search
         """
         # default <request-type> & <arrivals-limits>
         # (http://www.isc.ac.uk/iscbulletin/search/webservices/arrivals/)
-        self.params['out_format'] = 'CSV'
-        self.params['request'] = 'STNARRIVALS'
+        self.params['iscreview'] = 'on'
+        self.params['out_format'] = 'CSV'        
         self.params['ttime'] = 'on'
         self.params['ttres'] = 'on'
         self.params['tdef'] = 'on'
-        self.params['iscreview'] = 'on'
+        
         # set default
         mode = 'RECT'
         print('Please specify stations to search for arrivals:\n \
@@ -1164,7 +1166,7 @@ class Interactive():
             if error.lower() == 'y':
                 self.select_stnsearch
             else:
-                print('Exit process...')
+                print('Exit process...')       
         return self.params
 
 
@@ -2072,14 +2074,16 @@ class QueryArrival():
     def __init__(self, **kwargs ):
         # ISC Bulletin url
         URL = 'http://www.isc.ac.uk/cgi-bin/web-db-v4'
+        URL = 'http://www.isc.ac.uk/cgi-bin/web-db-run?'
         # init params dict
         self.param = {}
         self.starttime = time.time()
         # save params
         for k in kwargs:
-            self.param[k] = kwargs[k]
+            self.param[k] = kwargs[k]  
         print("Loading time varies on your network connections, search region scale, time range, etc. Please be patient, estimated time: 3 mins ")
         self.response = requests.get(url = URL, params=self.param)
+        self.response = requests.get(url = self.response.url)
         self.page_text = self.response.text
 
         if "No phase data was found." in self.page_text:
@@ -2139,7 +2143,7 @@ class QueryArrival():
         all_vars = re.split(r',', all_variables[0])
         #find last index
         for index in range(len(all_vars) - 1, 0, -1):
-            if 'STOP' in all_vars[index]:
+            if 'Agencies whose data' in all_vars[index]:
                 break
         # initialization of recording, include all webset information
         recordings = {
@@ -2163,29 +2167,29 @@ class QueryArrival():
         'EVENT_TYPE' :[],
         'EVENT_MAG' : [] }
 
-        for i in range(0, index, 25):
+        for i in range(0, index, 26):
             recordings['EVENTID'].append(int(re.split('\n',all_vars[i])[1]))
-            recordings['STA'].append(str.strip(all_vars[i+2]))
-            recordings['CHN'].append(str.strip(all_vars[i+6]))
-            recordings['ISCPHASE'].append(str.strip(all_vars[i+9]))
-            recordings['REPPHASE'].append(str.strip(all_vars[i+10]))
-            recordings['ARRIVAL_LAT'].append(float(all_vars[i+3]))
-            recordings['ARRIVAL_LON'].append(float(all_vars[i+4]))
-            recordings['ARRIVAL_ELEV'].append(float(all_vars[i+5]))
-            recordings['ARRIVAL_DIST'].append(float(all_vars[i+7]))
-            recordings['ARRIVAL_BAZ'].append(float(all_vars[i+8]))
-            recordings['ARRIVAL_DATE'].append(str.strip(all_vars[i+11]))
-            recordings['ARRIVAL_TIME'].append(str.strip(all_vars[i+12]))
-            recordings['ORIGIN_LAT'].append(float(all_vars[i+20]))
-            recordings['ORIGIN_LON'].append(float(all_vars[i+21]))
-            recordings['ORIGINL_DEPTH'].append(float(all_vars[i+22]) if not all_vars[i+22].isspace() else float("NaN"))
-            recordings['ORIGIN_DATE'].append(str.strip(all_vars[i+18]))
-            recordings['ORIGIN_TIME'].append(str.strip(all_vars[i+19]))
-            recordings['EVENT_TYPE'].append(str.strip(all_vars[i+24]))
-            if str.isspace(re.split('\n', all_vars[i+25])[0]):
+            recordings['STA'].append(str.strip(all_vars[i+3]))
+            recordings['CHN'].append(str.strip(all_vars[i+7]))
+            recordings['ISCPHASE'].append(str.strip(all_vars[i+10]))
+            recordings['REPPHASE'].append(str.strip(all_vars[i+11]))
+            recordings['ARRIVAL_LAT'].append(float(all_vars[i+4]))
+            recordings['ARRIVAL_LON'].append(float(all_vars[i+5]))
+            recordings['ARRIVAL_ELEV'].append(float(all_vars[i+6]))
+            recordings['ARRIVAL_DIST'].append(float(all_vars[i+8]))
+            recordings['ARRIVAL_BAZ'].append(float(all_vars[i+9]))
+            recordings['ARRIVAL_DATE'].append(str.strip(all_vars[i+12]))
+            recordings['ARRIVAL_TIME'].append(str.strip(all_vars[i+13]))
+            recordings['ORIGIN_LAT'].append(float(all_vars[i+21]))
+            recordings['ORIGIN_LON'].append(float(all_vars[i+22]))
+            recordings['ORIGINL_DEPTH'].append(float(all_vars[i+23]) if not all_vars[i+23].isspace() else float("NaN"))
+            recordings['ORIGIN_DATE'].append(str.strip(all_vars[i+19]))
+            recordings['ORIGIN_TIME'].append(str.strip(all_vars[i+20]))
+            recordings['EVENT_TYPE'].append(str.strip(all_vars[i+25]))
+            if str.isspace(re.split('\n', all_vars[i+26])[0]):
                 recordings['EVENT_MAG'].append(float('NaN'))
             else:
-                recordings['EVENT_MAG'].append(float(re.split('\n', all_vars[i+25])[0]))
+                recordings['EVENT_MAG'].append(float(re.split('\n', all_vars[i+26])[0]))
 
         self.arrival_recordings = []
         for i in range(len(recordings['EVENTID'])):
