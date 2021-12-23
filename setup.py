@@ -27,8 +27,8 @@ setup(
     maintainer='Hao Mai & Pascal Audet',
     maintainer_email='hmai090@uottawa.ca',
     url='https://github.com/maihao14/QuakeLabeler',
-    download_url='https://github.com/maihao14/QuakeLabeler/archive/refs/tags/v0.0.1.tar.gz',
-    keywords=['AI', 'seismic', 'label', 'dataset'],
+    download_url='https://github.com/maihao14/QuakeLabeler/archive/refs/tags/v1.0.1.tar.gz',
+    keywords=['AI', 'earthquake', 'labeler', 'dataset'],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
