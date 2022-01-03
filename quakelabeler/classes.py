@@ -48,13 +48,13 @@ import re
 # get arrival information from webpages
 import requests
 # command line progress
-from progress.spinner import Spinner
 from progress.bar import Bar
 import matplotlib.pyplot as plt
 # art font
 from art import *
 from obspy import read
 import pygmt
+import h5py
 
 class QuakeLabeler():
     r""" ``Quake Labeler`` class enables to automatically label ground truth.
@@ -374,14 +374,15 @@ class QuakeLabeler():
         '''
         st = str(stream[0].stats.starttime)
         st_name = st[0:13]+st[14:16]+st[17:19]
-
+        stend = str(stream[0].stats.endtime)
+        st_nameend = st[0:13]+st[14:16]+st[17:19]
         filename = stream[0].stats.network + '.' + stream[0].stats.station
         if self.custom_export['single_trace'] == True:
             filename = filename + '.' + stream[0].stats.channel + '.'+st_name
         else:
             for tr in stream:
                 filename = filename + '.' + tr.stats.channel
-            filename = filename + '.' + st_name
+            filename = filename + '.' + st_name + st_nameend
         return filename
 
     def output_bell_dist(self, npts, it, window):
@@ -471,7 +472,7 @@ class QuakeLabeler():
         '''
         it = int((self.eventtime - st[0].stats.starttime) * st[0].stats.sampling_rate)
         self.arr_point = (self.eventtime - st[0].stats.starttime) * st[0].stats.sampling_rate
-
+        
         # if user need create independent output channel:
         if self.custom_export['export_inout']:
             st1 = st
@@ -480,7 +481,48 @@ class QuakeLabeler():
             st2 = st
             for tr in st2:
                 tr.data = self.output_rect_dist(self.npts, it, detect_win)
-
+        if self.hdf:
+            data = np.array(st)
+            data = data.T
+            HDFr = h5py.File(self.output_merge, 'a')
+            dsF = HDFr.create_dataset("data/"+filename, data.shape, data=data, dtype=np.float64)   
+            dsF.attrs['network_code'] = st[0].stats.network
+            dsF.attrs['receiver_code'] = st[0].stats.station
+            dsF.attrs['receiver_type'] = st[0].stats.channel
+            # dsF.attrs['receiver_latitude'] = 
+            # dsF.attrs['receiver_longitude'] = x.attrs['receiver_longitude']
+            # dsF.attrs['receiver_elevation_m'] = x.attrs['receiver_elevation_m']
+            # dsF.attrs['p_arrival_sample'] = x.attrs['p_arrival_sample']
+            # dsF.attrs['p_status'] = x.attrs['p_status']
+            # dsF.attrs['p_weight'] = x.attrs['p_weight']
+            # dsF.attrs['p_travel_sec'] = x.attrs['p_travel_sec']
+            # dsF.attrs['s_arrival_sample'] = x.attrs['s_arrival_sample']
+            # dsF.attrs['s_status'] = x.attrs['s_status']
+            # dsF.attrs['s_weight'] = x.attrs['s_weight']
+            # dsF.attrs['source_id'] = x.attrs['source_id']
+            # dsF.attrs['source_origin_time'] = x.attrs['source_origin_time']
+            # dsF.attrs['source_origin_uncertainty_sec'] = x.attrs['source_origin_uncertainty_sec']
+            # dsF.attrs['source_latitude'] = x.attrs['source_latitude']
+            # dsF.attrs['source_longitude'] = x.attrs['source_longitude']
+            # dsF.attrs['source_error_sec'] = x.attrs['source_error_sec']
+            # dsF.attrs['source_gap_deg'] = x.attrs['source_gap_deg']
+            # dsF.attrs['source_horizontal_uncertainty_km'] = x.attrs['source_horizontal_uncertainty_km']
+            # dsF.attrs['source_depth_km'] = x.attrs['source_depth_km']
+            # dsF.attrs['source_depth_uncertainty_km'] = x.attrs['source_depth_uncertainty_km']
+            # dsF.attrs['source_magnitude'] = x.attrs['source_magnitude']
+            # dsF.attrs['source_magnitude_type'] = x.attrs['source_magnitude_type']
+            # dsF.attrs['source_magnitude_author'] = x.attrs['source_magnitude_author']
+            # dsF.attrs['source_mechanism_strike_dip_rake'] = x.attrs['source_mechanism_strike_dip_rake']
+            # dsF.attrs['source_distance_deg'] = x.attrs['source_distance_deg']
+            # dsF.attrs['source_distance_km'] = x.attrs['source_distance_km']
+            # dsF.attrs['back_azimuth_deg'] = x.attrs['back_azimuth_deg']
+            # dsF.attrs['snr_db'] = x.attrs['snr_db']
+            # dsF.attrs['coda_end_sample'] = x.attrs['coda_end_sample']
+            # dsF.attrs['trace_start_time'] = x.attrs['trace_start_time'] 
+            # dsF.attrs['trace_category'] = x.attrs['trace_category'] 
+            dsF.attrs['trace_name'] =   filename
+            HDFr.flush() 
+            HDFr.close()            
         if 'SAC' in self.custom_export['export_type']:
             st.write(filename + ".sac", format="SAC")
             if self.custom_export['export_inout']:
@@ -528,7 +570,11 @@ class QuakeLabeler():
                 for tr in st2:
                     mdic = {tr.stats.channel : tr.data}
                 savemat(filename +'out_rect'+ ".mat", mdic)
-
+    def openhdf5(self):
+        self.output_merge = 'merge.hdf5'
+        HDF0 = h5py.File(self.output_merge, 'a')
+        HDF0.create_group("data")
+        return HDF0            
     def fetch_all_waveforms(self, records, clientname="IRIS"):
         r"""Auto fetch seismograms to produce samples
         This module manage all potential waveforms as threads. Retrive waveform
@@ -580,6 +626,12 @@ class QuakeLabeler():
         if not os.path.exists(FileName):
             os.mkdir(FileName)
         os.chdir(FileName)
+        self.hdf = False
+        
+        if 'hdf5' in self.custom_export['export_type'].lower():
+            # create hdf5 file
+            HDF0 = self.openhdf5()
+            self.hdf = True           
         #set progress bar
         bar = Bar('Processing', max=maxnum)
         for thread in records:
@@ -768,31 +820,41 @@ class QuakeLabeler():
         print("All available waveforms are ready!")
         print("{0} of event-based samples are successfully generated! ".format(num))
         os.chdir('../')
-    def subfolder(self, trainratio=0.8):
+    def subfolder(self, trainratio=0.6,testratio=0.2):
         r"""Split dataset
         Divide dataset as a training dataset(80%) and a validation dataset(20%)
         """
         FileName = self.custom_export['folder_name']
         orgin_path = FileName
         os.chdir(orgin_path)
+        if self.hdf:
+            shutil.move(self.output_merge, os.path.pardir)
         if not os.path.exists('Training'):
             os.mkdir('Training')
         moved_path = "Training"
         dir_files = os.listdir()
         filessum = len(dir_files)
         trainnum = int(filessum * trainratio)
+        testnum = int(filessum * (trainratio+testratio))
         for file in dir_files[:trainnum]:
             #file_path = os.path.join(orgin_path, file)
             if os.path.isfile(file):
                 shutil.move(file, moved_path)
+        if not os.path.exists('Test'):
+            os.mkdir('Test')  
+        moved_path = "Test"  
+        for file in dir_files[trainnum:testnum]:
+            #file_path = os.path.join(orgin_path, file)
+            if os.path.isfile(file):
+                shutil.move(file, moved_path)        
         if not os.path.exists('Validation'):
             os.mkdir('Validation')
         moved_path = "Validation"
-        for file in dir_files[trainnum:]:
+        for file in dir_files[testnum:]:
             #file_path = os.path.join(orgin_path, file)
             if os.path.isfile(file):
                 shutil.move(file, moved_path)
-        print("Training set and validation set completed!")
+        print("Training, Test and Validation sub-sets are completed!")
         os.chdir('../')
     def csv_writer(self):
         r""" Method to export information of the dataset.
@@ -1993,7 +2055,7 @@ in QuakeLabeler with different scales (small, medium, large).
     def define_export(self):
         r""" Export options for dataset
             Receive interactive arguements to choose export format, include:
-                #. export_type: SAC, Mini-Seed, NPZ, MAT, etc.
+                #. export_type: SAC, Mini-Seed, NPZ, MAT, HDF5, etc.
                 #. export_inout: True/False separate input / output traces
                 #. export_out_form: gaussian / peak / rect
                 #. export_arrival_csv: True / False
@@ -2012,8 +2074,8 @@ in QuakeLabeler with different scales (small, medium, large).
         print('Enter export format: \n')
         print('Example: \n')
         print('    · Single export format: SAC (default) ')
-        print('    · Multiple export formats: SACMSEEDNPZ | SEGY/NPZ/MAT | npzsacmseed ')
-        self.custom_export['export_type'] = input('Select export file format: [SAC/MSEED/SEGY/NPZ/MAT]')
+        print('    · Multiple export formats: SACMSEEDNPZ | SEGY/NPZ/MAT/HDF5 | npzsacmseedhdf5 ')
+        self.custom_export['export_type'] = input('Select export file format: [SAC/MSEED/SEGY/NPZ/MAT/HDF5]')
         # default
         if self.custom_export['export_type'] == '':
              self.custom_export['export_type'] = 'SAC'

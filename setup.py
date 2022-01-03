@@ -37,7 +37,7 @@ setup(
         'Programming Language :: Python :: 3.9'],
     install_requires=[
         'numpy', 'obspy', 'scipy', 'requests',
-        'progress', 'matplotlib', 'termplotlib', 'art'],
+        'progress', 'matplotlib', 'termplotlib', 'art', 'h5py'],
     python_requires='>=3.7',
     packages=setuptools.find_packages(),
     include_package_data=True,

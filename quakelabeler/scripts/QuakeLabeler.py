@@ -118,7 +118,7 @@ def main():
     # save relevant seismic features
     auto_dataset.csv_writer()
     # subfolder generator
-    subfolder_option = input("Do you want to create training data and validation data: [y]/n?")
+    subfolder_option = input("Do you want to create training, test and validation sub-sets: [y]/n?")
     if not subfolder_option.lower() == 'n':
         auto_dataset.subfolder()
 
