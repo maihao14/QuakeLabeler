@@ -23,7 +23,7 @@ where `QuakeLabeler` can be installed along with its dependencies.
 - Create a environment called `ql` and install `pygmt`:
 
 ```bash
-conda create -n ql python=3.8 pygmt -c conda-forge
+conda create -n ql gmt python=3.8
 ```
 
 - Activate the newly created environment:
