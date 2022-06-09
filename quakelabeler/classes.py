@@ -117,6 +117,297 @@ class QuakeLabeler():
 #             self.network = self.search_network()
 # =============================================================================
 
+    def picktimewindow(self, total, windowtime, p_time, s_time, t0, te):
+        if total== windowtime:
+            return t0,te
+        interval = s_time - p_time
+        rest_time = windowtime - interval
+        start_p = np.random.uniform(0,np.min([rest_time,p_time-t0]))
+        while p_time -  start_p + windowtime > te:
+            start_p = np.random.uniform(0,np.min([rest_time,p_time-t0]))
+        starttime = p_time -  start_p
+        endtime = starttime + windowtime
+        return starttime, endtime
+    def sample_generator(self, st,starttime, endtime, p_time, s_time):
+        # crop trace as required
+        for tr in st:
+            tr.trim(starttime,endtime)
+            if len(tr.data) != self.custom_dataset['sample_length']:
+                tr.data = tr.data[:self.custom_dataset['sample_length']]                
+        return st
+    def local_sample_export(self, st, filename,thread):
+        r''' Export sample in local mode
+        '''
+        
+        # if user need create independent output channel:
+        # if self.custom_export['export_inout']:
+        #     st1 = st
+        #     for tr in st1:
+        #         tr.data = self.output_bell_dist(self.npts, it, pick_win)
+        #     st2 = st
+        #     for tr in st2:
+        #         tr.data = self.output_rect_dist(self.npts, it, detect_win)
+        if self.hdf:
+            data = np.array(st)
+            data = data.T
+            HDFr = h5py.File(self.output_merge, 'a')
+            dsF = HDFr.create_dataset("data/"+filename, data.shape, data=data, dtype=np.float64)   
+            dsF.attrs['network_code'] = st[0].stats.network
+            dsF.attrs['receiver_code'] = st[0].stats.station
+            dsF.attrs['receiver_type'] = st[0].stats.channel
+            dsF.attrs['receiver_latitude'] = np.nan
+            dsF.attrs['receiver_longitude'] = np.nan
+            dsF.attrs['receiver_elevation_m'] = np.nan
+            dsF.attrs['p_arrival_sample'] = thread['p_arrival_sample']
+            dsF.attrs['p_status'] = 'manual'
+            # dsF.attrs['p_weight'] = x.attrs['p_weight']
+            # dsF.attrs['p_travel_sec'] = x.attrs['p_travel_sec']
+            dsF.attrs['s_arrival_sample'] = thread['s_arrival_sample']
+            # dsF.attrs['s_status'] = x.attrs['s_status']
+            # dsF.attrs['s_weight'] = x.attrs['s_weight']
+            # dsF.attrs['source_id'] = x.attrs['source_id']
+            # dsF.attrs['source_origin_time'] = x.attrs['source_origin_time']
+            # dsF.attrs['source_origin_uncertainty_sec'] = x.attrs['source_origin_uncertainty_sec']
+            # dsF.attrs['source_latitude'] = x.attrs['source_latitude']
+            # dsF.attrs['source_longitude'] = x.attrs['source_longitude']
+            # dsF.attrs['source_error_sec'] = x.attrs['source_error_sec']
+            # dsF.attrs['source_gap_deg'] = x.attrs['source_gap_deg']
+            # dsF.attrs['source_horizontal_uncertainty_km'] = x.attrs['source_horizontal_uncertainty_km']
+            # dsF.attrs['source_depth_km'] = x.attrs['source_depth_km']
+            # dsF.attrs['source_depth_uncertainty_km'] = x.attrs['source_depth_uncertainty_km']
+            dsF.attrs['source_magnitude'] = thread['EVENT_MAG']
+            # dsF.attrs['source_magnitude_type'] = x.attrs['source_magnitude_type']
+            # dsF.attrs['source_magnitude_author'] = x.attrs['source_magnitude_author']
+            # dsF.attrs['source_mechanism_strike_dip_rake'] = x.attrs['source_mechanism_strike_dip_rake']
+            # dsF.attrs['source_distance_deg'] = x.attrs['source_distance_deg']
+            # dsF.attrs['source_distance_km'] = x.attrs['source_distance_km']
+            # dsF.attrs['back_azimuth_deg'] = x.attrs['back_azimuth_deg']
+            # dsF.attrs['snr_db'] = x.attrs['snr_db']
+            # dsF.attrs['coda_end_sample'] = x.attrs['coda_end_sample']
+            # dsF.attrs['trace_start_time'] = x.attrs['trace_start_time'] 
+            dsF.attrs['trace_category'] = thread['EVENT_TYPE']
+            dsF.attrs['trace_name'] =   filename
+            HDFr.flush() 
+            HDFr.close()            
+        if 'SAC' in self.custom_export['export_type']:
+            st.write(filename + ".sac", format="SAC")
+            # if self.custom_export['export_inout']:
+            #     st1.write(filename +'out_bell'+ ".sac", format="SAC")
+            #     st2.write(filename +'out_rect'+ ".sac", format="SAC")
+        if 'MSEED' in self.custom_export['export_type']:
+            st.write(filename + ".mseed", format="MSEED")
+            # if self.custom_export['export_inout']:
+            #     st1.write(filename +'out_bell'+ ".mseed", format="MSEED")
+            #     st2.write(filename +'out_rect'+ ".mseed", format="MSEED")
+        if 'SEGY' in self.custom_export['export_type']:
+            pass
+            # SEGY output is not stable
+            # require float32
+            # for tr in st:
+            #     tr.data = np.require(tr.data, dtype=np.float32)
+            # for tr in st1:
+            #     tr.data = np.require(tr.data, dtype=np.float32)
+            # for tr in st2:
+            #     tr.data = np.require(tr.data, dtype=np.float32)
+            # st.write(filename + ".sgy", format="SEGY")
+            # if self.custom_export['export_inout']:
+            #     st1.write(filename +'out_bell'+ ".sgy", format="SEGY")
+            #     st2.write(filename +'out_rect'+ ".sgy", format="SEGY")
+        if 'NPZ' in self.custom_export['export_type']:
+            npzdict = {}
+            for tr in st:
+                npzdict[tr.stats.channel] = tr.data
+            np.savez(filename + ".npz", **npzdict)
+            # if self.custom_export['export_inout']:
+            #     for tr in st1:
+            #         npzdict[tr.stats.channel] = tr.data
+            #     np.savez(filename +'out_bell' + ".npz", **npzdict)
+            #     for tr in st2:
+            #         npzdict[tr.stats.channel] = tr.data
+            #     np.savez(filename +'out_rect' + ".npz", **npzdict)
+        if 'MAT' in self.custom_export['export_type']:
+            for tr in st:
+                mdic = {tr.stats.channel : tr.data}
+            savemat(filename + ".mat", mdic)
+            # if self.custom_export['export_inout']:
+            #     for tr in st1:
+            #         mdic = {tr.stats.channel : tr.data}
+            #     savemat(filename +'out_bell'+ ".mat", mdic)
+            #     for tr in st2:
+            #         mdic = {tr.stats.channel : tr.data}
+                # savemat(filename +'out_rect'+ ".mat", mdic)    
+    def local_label(self, records):
+        r"""Auto process local data to produce samples
+        This module manage all potential waveforms as threads. Retrive waveform
+        from specific data centers, revise trace by customized parameters and
+        produce required samples continuous until reach the volume.
+
+        This function contains:
+            1. Load: Requests to local folder to find available data;
+            2. Custom: Use user's preferrence parameters to form the samples;
+            3. Process: (resample, filter, denoise, add noise);
+            4. Revise: fix trace format to satify datasets;
+            5. Label: Annotate arrival time and phase name;
+            6. Export: Save samples in certain file format.
+
+        Parameters
+        ----------
+        records : list
+            `records` saves all potential downloadable waveform.
+
+        Returns
+        -------
+        available_samples : list
+            Return every samples in the datasets.
+        """
+        print('Initialize samples producer module...')
+        # selet user preference
+
+        # count loop number, when loop>100 & no available waveform found, break the loop
+        loopnum = 0
+        if self.custom_export['export_filename'] == '':
+            # if user doesn;t have a preffered folder name:
+            today = UTCDateTime()
+            FileName = 'MyDataset' + str(today)[:-11]  #filename option —— custom class UPDATE
+        else:
+            FileName = self.custom_export['export_filename']
+        # num: stream(samples) volume
+        num = 0
+        # amount of the samples
+        if not self.custom_dataset['volume'] == 'MAX':
+            maxnum = int(self.custom_dataset['volume'])
+        else:
+            #use every thread in records to produce samples
+            maxnum = len(records)
+        #create a dict save every sample information
+        self.available_samples = []
+        self.custom_export['folder_name'] = FileName
+        if not os.path.exists(FileName):
+            os.mkdir(FileName)
+        os.chdir(FileName)
+        self.hdf = False
+        
+        if 'hdf5' in self.custom_export['export_type'].lower():
+            # create hdf5 file
+            HDF0 = self.openhdf5()
+            self.hdf = True           
+        #set progress bar
+        bar = Bar('Processing', max=maxnum)
+        for ind,thread in records.iterrows():
+            path = self.params['datafolder']
+            st = read(path+thread['FILENAME'])
+            sample_rate = st[0].stats.sampling_rate # 100.0
+            sample_length = self.custom_dataset['sample_length'] #3000
+            if self.custom_dataset['fixed_length'] == False:
+                sample_length = st[0].stats.npts
+                
+            if not self.custom_waveform['sample_rate'] =='':
+                sample_rate = float(self.custom_waveform['sample_rate'])
+
+            sample_time = sample_length / sample_rate
+            #resample option
+            if not sample_rate == st[0].stats.sampling_rate:
+                st = st.resample(sample_rate)                
+            npts = st[0].stats.npts#8000
+            # int32 option
+            # for i in range(len(st)):
+            #     st[i].data.dtype = 'int32'
+            # detred option
+            # if self.custom_waveform['detrend']:
+            #     st.detrend("demean")
+            # remove response option
+            # pre_filt = [0.8, 9.5, 40, 45] 
+            # st.remove_response(pre_filt=pre_filt,water_level=10,taper=True,taper_fraction=0.05)            
+            # filter option
+            if self.custom_waveform['filter_type'] == '1':
+                st.filter('lowpass',freq = self.custom_waveform['filter_freqmin'], corners=2, zerophase = True)
+            if self.custom_waveform['filter_type'] == '2':
+                st.filter('highpass',freq = self.custom_waveform['filter_freqmax'], zerophase = True)
+            if self.custom_waveform['filter_type'] == '3':
+                st.filter('bandpass', freqmin = self.custom_waveform['filter_freqmin'], freqmax = self.custom_waveform['filter_freqmax'],corners=2, zerophase=True)            
+            t0 = st[0].stats.starttime
+            te = st[0].stats.endtime
+            # init p s arrival time
+            p_time = None
+            s_time = None
+            # standardize sample
+            if thread['PHASE'] == 'P':
+                # pick a P event
+                p_phase = thread['ARRIVAL_DATE'] + 'T' + thread['ARRIVAL_TIME']
+                # check if S exists
+                s_thread = records.loc[(records['FILENAME']==thread['FILENAME'] )&( records['PHASE']=='S') ]
+                if not s_thread.empty:
+                    s_thread = s_thread.squeeze()
+                    s_phase = s_thread['ARRIVAL_DATE'] + 'T' + s_thread['ARRIVAL_TIME']
+                    # UTCDate
+                    p_time = UTCDateTime(p_phase)
+                    s_time = UTCDateTime(s_phase)
+                    if (s_time - p_time) < sample_time:
+                        # satisfy for make a paired sample
+                        starttime, endtime = self.picktimewindow(npts/sample_rate,sample_length/sample_rate, p_time, s_time, t0, te )
+                        st = self.sample_generator(st,starttime, endtime, p_time, s_time)
+                    else:
+                        starttime, endtime = self.picktimewindow(npts/sample_rate,sample_length/sample_rate, p_time, p_time, t0, te )
+                        # only P phase sample
+                        st = self.sample_generator(st,starttime, endtime, p_time, None)
+                else:
+                    # only P phase sample
+                    # UTCDate
+                    p_time = UTCDateTime(p_phase)
+                    starttime, endtime = self.picktimewindow(npts/sample_rate,sample_length/sample_rate, p_time, p_time, t0, te )
+                    st = self.sample_generator(st,starttime, endtime, p_time, None)
+            if thread['PHASE'] == 'S':
+                s_phase = thread['ARRIVAL_DATE'] + 'T' + thread['ARRIVAL_TIME']
+                p_thread = records.loc[(records['FILENAME']==thread['FILENAME'] )&( records['PHASE']=='P') ]
+                if not p_thread.empty:
+                    p_thread = p_thread.squeeze()
+                    p_phase = p_thread['ARRIVAL_DATE'] + 'T' + p_thread['ARRIVAL_TIME']
+                    # UTCDate
+                    p_time = UTCDateTime(p_phase)
+                    s_time = UTCDateTime(s_phase)
+                    if (s_time - p_time) < sample_time:
+                        # satisfy for make a paired sample
+                        continue
+                    else:
+                        # only S phase sample
+                        starttime, endtime = self.picktimewindow(npts/sample_rate,sample_length/sample_rate, s_time, s_time, t0, te )
+                        st = self.sample_generator(st,starttime, endtime, None, s_time)
+                else:
+                    # only S phase sample
+                    s_time = UTCDateTime(s_phase)
+                    starttime, endtime = self.picktimewindow(npts/sample_rate,sample_length/sample_rate, s_time, s_time, t0, te )
+                    st = self.sample_generator(st,starttime, endtime, None, s_time)
+            # bar proecess
+            num += 1
+            updatethread = thread.copy()
+            bar.next()
+            multi_filename = self.creatsamplename(st)
+            #add record to csv file
+            updatethread['filename'] = multi_filename
+            if p_time != None:
+                p_arr = (p_time-starttime) * st[0].stats.sampling_rate
+                updatethread['p_arrival_sample'] = round(p_arr)     
+            else:
+                updatethread['p_arrival_sample'] = np.nan
+            if s_time != None:
+                s_arr = (s_time-starttime) * st[0].stats.sampling_rate
+                updatethread['s_arrival_sample'] = round(s_arr)     
+            else:
+                updatethread['s_arrival_sample'] = np.nan
+            updatethread['npts'] = st[0].stats.npts
+            updatethread['sampling_rate'] = st[0].stats.sampling_rate
+            self.local_sample_export(st, multi_filename, thread)
+            self.available_samples.append(updatethread)
+            print("Save to target folder: {0}".format(FileName))
+            print(st)
+            if num >= maxnum and not self.custom_dataset['volume'] == 'MAX':
+                break
+        bar.finish()
+        print("All available waveforms are ready!")
+        print("{0} of event-based samples are successfully generated! ".format(num))
+        os.chdir('../')
+        # save dataset foldername
+        self.FolderName = FileName        
     def search_catalog(self, clientname="IRIS"):
         r''' Availble data source check for data centers.
         If the desired data center does not have available seismograms, this
@@ -231,7 +522,7 @@ class QuakeLabeler():
                         pass
                     else:
                         trace.stats.sampling_rate = resample_rate
-                    # loop: calculate a reasonal starttime
+                    # loop: calculate a reasonable starttime
                     while not trace.stats.sampling_rate*(UTCDateTime(eventTime) - starttime) < self.custom_dataset['sample_length']:
                         start = random.randint(1,int(self.custom_dataset['sample_length']/trace.stats.sampling_rate))
                         starttime = UTCDateTime(eventTime) - start
@@ -294,7 +585,28 @@ class QuakeLabeler():
                 if tr.stats.npts > self.custom_dataset['sample_length']:
                     tr.data = tr.data[:self.custom_dataset['sample_length']]
         return st
-
+    def fetch_local_waveform(self, thread):
+        r"""Retrieve a target stream of waveforms from specific data center.
+        This stream can includes multiple-component seismic traces
+        which from only one station with one event.  They can be spilt as
+        single trace mode or keep as a 3-C sample or multiple-component sample.
+        Note that for now we remove those low-sampling-rate (<1.0Hz) samples
+        which might not help our project.
+        Parameters
+        ----------
+        thread : dict
+            Waveform information recording.
+        clientname : str, optional
+            Name of data center. The default is "IRIS".
+        Returns
+        -------
+        st : Obspy Stream Object
+            Downloaded waveform which save as a obspy.stream object.
+        `No data available for request.` : str
+            Failed request message.
+        """        
+        
+        st = read(thraed['FILENAME'])
     def fetch_waveform(self, thread, clientname="IRIS"):
         r"""Retrieve a target stream of waveforms from specific data center.
         This stream can includes multiple-component seismic traces
@@ -340,7 +652,7 @@ class QuakeLabeler():
             if self.custom_waveform['filter_type'] == '2':
                 st.filter('highpass',freq = self.custom_waveform['filter_freqmax'], zerophase = True)
             if self.custom_waveform['filter_type'] == '3':
-                st.filter('bandpass', freqmin = self.custom_waveform['filter_freqmin'], freqmax = self.custom_waveform['filter_freqmax'])
+                st.filter('bandpass', freqmin = self.custom_waveform['filter_freqmin'], freqmax = self.custom_waveform['filter_freqmax'],corners=2, zerophase=True)
             # add noise
             # self.custom_waveform['add_noise'] = 1.0
             if self.custom_waveform['add_noise'] != 0 :
@@ -467,6 +779,106 @@ class QuakeLabeler():
                 savemat(filename +'out_bell'+ ".mat", mdic)
                 mdic = {st2[0].stats.channel : st2[0].data}
                 savemat(filename +'out_rect'+ ".mat", mdic)
+    def local_sample_export(self, st, filename,pick_win = 100, detect_win = 200):
+        r''' Export sample in multiple channel mode
+        '''        
+        # if user need create independent output channel:
+        if self.custom_export['export_inout']:
+            st1 = st
+            for tr in st1:
+                tr.data = self.output_bell_dist(self.npts, it, pick_win)
+            st2 = st
+            for tr in st2:
+                tr.data = self.output_rect_dist(self.npts, it, detect_win)
+        if self.hdf:
+            data = np.array(st)
+            data = data.T
+            HDFr = h5py.File(self.output_merge, 'a')
+            dsF = HDFr.create_dataset("data/"+filename, data.shape, data=data, dtype=np.float64)   
+            dsF.attrs['network_code'] = st[0].stats.network
+            dsF.attrs['receiver_code'] = st[0].stats.station
+            dsF.attrs['receiver_type'] = st[0].stats.channel
+            # dsF.attrs['receiver_latitude'] = 
+            # dsF.attrs['receiver_longitude'] = x.attrs['receiver_longitude']
+            # dsF.attrs['receiver_elevation_m'] = x.attrs['receiver_elevation_m']
+            # dsF.attrs['p_arrival_sample'] = x.attrs['p_arrival_sample']
+            # dsF.attrs['p_status'] = x.attrs['p_status']
+            # dsF.attrs['p_weight'] = x.attrs['p_weight']
+            # dsF.attrs['p_travel_sec'] = x.attrs['p_travel_sec']
+            # dsF.attrs['s_arrival_sample'] = x.attrs['s_arrival_sample']
+            # dsF.attrs['s_status'] = x.attrs['s_status']
+            # dsF.attrs['s_weight'] = x.attrs['s_weight']
+            # dsF.attrs['source_id'] = x.attrs['source_id']
+            # dsF.attrs['source_origin_time'] = x.attrs['source_origin_time']
+            # dsF.attrs['source_origin_uncertainty_sec'] = x.attrs['source_origin_uncertainty_sec']
+            # dsF.attrs['source_latitude'] = x.attrs['source_latitude']
+            # dsF.attrs['source_longitude'] = x.attrs['source_longitude']
+            # dsF.attrs['source_error_sec'] = x.attrs['source_error_sec']
+            # dsF.attrs['source_gap_deg'] = x.attrs['source_gap_deg']
+            # dsF.attrs['source_horizontal_uncertainty_km'] = x.attrs['source_horizontal_uncertainty_km']
+            # dsF.attrs['source_depth_km'] = x.attrs['source_depth_km']
+            # dsF.attrs['source_depth_uncertainty_km'] = x.attrs['source_depth_uncertainty_km']
+            # dsF.attrs['source_magnitude'] = x.attrs['source_magnitude']
+            # dsF.attrs['source_magnitude_type'] = x.attrs['source_magnitude_type']
+            # dsF.attrs['source_magnitude_author'] = x.attrs['source_magnitude_author']
+            # dsF.attrs['source_mechanism_strike_dip_rake'] = x.attrs['source_mechanism_strike_dip_rake']
+            # dsF.attrs['source_distance_deg'] = x.attrs['source_distance_deg']
+            # dsF.attrs['source_distance_km'] = x.attrs['source_distance_km']
+            # dsF.attrs['back_azimuth_deg'] = x.attrs['back_azimuth_deg']
+            # dsF.attrs['snr_db'] = x.attrs['snr_db']
+            # dsF.attrs['coda_end_sample'] = x.attrs['coda_end_sample']
+            # dsF.attrs['trace_start_time'] = x.attrs['trace_start_time'] 
+            # dsF.attrs['trace_category'] = x.attrs['trace_category'] 
+            dsF.attrs['trace_name'] =   filename
+            HDFr.flush() 
+            HDFr.close()            
+        if 'SAC' in self.custom_export['export_type']:
+            st.write(filename + ".sac", format="SAC")
+            if self.custom_export['export_inout']:
+                st1.write(filename +'out_bell'+ ".sac", format="SAC")
+                st2.write(filename +'out_rect'+ ".sac", format="SAC")
+        if 'MSEED' in self.custom_export['export_type']:
+            st.write(filename + ".mseed", format="MSEED")
+            if self.custom_export['export_inout']:
+                st1.write(filename +'out_bell'+ ".mseed", format="MSEED")
+                st2.write(filename +'out_rect'+ ".mseed", format="MSEED")
+        if 'SEGY' in self.custom_export['export_type']:
+            pass
+            # SEGY output is not stable
+            # require float32
+            # for tr in st:
+            #     tr.data = np.require(tr.data, dtype=np.float32)
+            # for tr in st1:
+            #     tr.data = np.require(tr.data, dtype=np.float32)
+            # for tr in st2:
+            #     tr.data = np.require(tr.data, dtype=np.float32)
+            # st.write(filename + ".sgy", format="SEGY")
+            # if self.custom_export['export_inout']:
+            #     st1.write(filename +'out_bell'+ ".sgy", format="SEGY")
+            #     st2.write(filename +'out_rect'+ ".sgy", format="SEGY")
+        if 'NPZ' in self.custom_export['export_type']:
+            npzdict = {}
+            for tr in st:
+                npzdict[tr.stats.channel] = tr.data
+            np.savez(filename + ".npz", **npzdict)
+            if self.custom_export['export_inout']:
+                for tr in st1:
+                    npzdict[tr.stats.channel] = tr.data
+                np.savez(filename +'out_bell' + ".npz", **npzdict)
+                for tr in st2:
+                    npzdict[tr.stats.channel] = tr.data
+                np.savez(filename +'out_rect' + ".npz", **npzdict)
+        if 'MAT' in self.custom_export['export_type']:
+            for tr in st:
+                mdic = {tr.stats.channel : tr.data}
+            savemat(filename + ".mat", mdic)
+            if self.custom_export['export_inout']:
+                for tr in st1:
+                    mdic = {tr.stats.channel : tr.data}
+                savemat(filename +'out_bell'+ ".mat", mdic)
+                for tr in st2:
+                    mdic = {tr.stats.channel : tr.data}
+                savemat(filename +'out_rect'+ ".mat", mdic)                
     def multi_sample_export(self, st, filename,pick_win = 100, detect_win = 200):
         r''' Export sample in multiple channel mode
         '''
@@ -863,14 +1275,18 @@ class QuakeLabeler():
             return
         print('Save waveform information into CSV file...')
         CSV_Name = self.FolderName+'_features' + '.csv'
-        dict1 = self.available_samples[0]
-        field_names = []
-        for k, v in dict1.items():
-            field_names.append(k)
-        with open(CSV_Name, 'w') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=field_names)
-            writer.writeheader()
-            writer.writerows(self.available_samples)
+        
+        df = pd.DataFrame(self.available_samples)
+        df.to_csv(CSV_Name)
+        
+        # dict1 = self.available_samples[0]
+        # field_names = []
+        # for k, v in dict1.items():
+        #     field_names.append(k)
+        # with open(CSV_Name, 'w') as csvfile:
+        #     writer = csv.DictWriter(csvfile, fieldnames=field_names)
+        #     writer.writeheader()
+        #     writer.writerows(self.available_samples)
 
     def stats_figure(self):
         r""" Output statistical figures.
@@ -1398,6 +1814,7 @@ class Interactive():
             'min_mag':'3.0',
             'req_mag_agcy':'Any',
             'req_mag_type':'Any',
+            'local':False
             }
 
         print('Initialize Beginner Mode...')
@@ -1621,6 +2038,7 @@ are generated simultaneously.
             'min_mag':'1.0',
             'req_mag_agcy':'Any',
             'req_mag_type':'Any',
+            'local':False
             }
 
         field = input('Select one of the following sample fields:  [1/2/3/4] \n \
@@ -1803,7 +2221,30 @@ are generated simultaneously.
             self.params = {}
             #Re-direct to running mode selection
             self.select_mode()
+    def local_mode(self):
+        r"""Local mode
+        This method is to run a command line interactive module to let user to
+        load their own data source and related catalog for labeling use.
+        
+        Returns
+        -------
+        None.
 
+        """
+        print('Initialize Local Mode...')
+        print("=====================================================================================")
+        Art=text2art("Local Data Source Loading", font="small") # random font mode
+        print(Art)
+        print("""
+Local mode receive well-organized data source and related catalog from local folder.
+Please input the path to your local data folder and the name of its related catalog (currenlty only support *.csv format). 
+              """)
+        print("=====================================================================================") 
+        datafolder = input("Enter the path of your data folder: ") 
+        csv_path = input("Enter the path and name of your catalog: ")
+        self.params['local'] = True     
+        self.params['datafolder'] = datafolder
+        self.params['csv_path'] = csv_path          
     def select_mode(self):
         r"""Running mode selection
         Runing Options for different levels of AI users.
@@ -1830,9 +2271,10 @@ are generated simultaneously.
         """)
         print('QuakeLabeler provides multiple modes for different levels of Seismic AI researchers \n ')
         print('[Beginner]  mode -- Quick-start dataset recipes in small, medium, large scales. \n' +\
-               '[Advanced]  mode -- Custom every detail within the dataset. \n'
-               '[Benchmark] mode -- Built-in standard seismic datasets in scales.')
-        mode = input("Please select a mode: [1/2/3/Beginner/Advanced/Benchmark] ")
+               '[Advanced]  mode -- Custom every detail within the dataset. \n'+\
+               '[Benchmark] mode -- Built-in standard seismic datasets in scales.'+\
+               '[Local] mode -- Based on local end data and catalog.')
+        mode = input("Please select a mode: [1/2/3/4/Beginner/Advanced/Benchmark/Local] ")
         if (mode == '1') or (mode.lower() == 'beginner'):
             self.receipe_flag = True
 #            print(self.receipe_flag)
@@ -1845,11 +2287,14 @@ are generated simultaneously.
                     self.benchmark_mode()
                     self.benchmark_flag = True
                 else:
-                    error = input('Invalid input, would you like restart choosing mode?  ([y]/n)')
-                    if error == 'y':
-                        self.select_mode()
+                    if mode == '4' or mode.lower() == 'local':
+                        self.local_mode()
                     else:
-                        print('exit the process! ')
+                        error = input('Invalid input, would you like restart choosing mode?  ([y]/n)')
+                        if error == 'y':
+                            self.select_mode()
+                        else:
+                            print('exit the process! ')
 class CustomSamples():
     r"""Command line interactive tool for custom dataset options
     Input paratemter to standardize retrived waveform.
@@ -2143,6 +2588,14 @@ class QueryArrival():
         # save params
         for k in kwargs:
             self.param[k] = kwargs[k]  
+        # local model
+        if self.param['local']:
+            self.record_folder = os.getcwd()+'/'
+            self.arrival_recordings = pd.read_csv(self.param['csv_path'])
+            self.record_filename = self.param['csv_path']
+            return
+            
+            
         print("Loading time varies on your network connections, search region scale, time range, etc. Please be patient, estimated time: 3 mins ")
         self.response = requests.get(url = URL, params=self.param)
         self.response = requests.get(url = self.response.url)
@@ -2158,7 +2611,7 @@ class QueryArrival():
                                'ARRIVAL_LAT', 'ARRIVAL_LON',
                                'ARRIVAL_ELEV','ARRIVAL_DIST','ARRIVAL_BAZ',
                                'ARRIVAL_DATE','ARRIVAL_TIME',
-                               'ORIGIN_LAT' ,'ORIGIN_LON','ORIGINL_DEPTH',
+                               'ORIGIN_LAT' ,'ORIGIN_LON','ORIGIN_DEPTH',
                                'ORIGIN_DATE' ,'ORIGIN_TIME',
                                'EVENT_TYPE','EVENT_MAG')
         except IndexError:
@@ -2223,7 +2676,7 @@ class QueryArrival():
         'ARRIVAL_TIME' : [],
         'ORIGIN_LAT' : [],
         'ORIGIN_LON' : [],
-        'ORIGINL_DEPTH' : [],
+        'ORIGIN_DEPTH' : [],
         'ORIGIN_DATE' : [],
         'ORIGIN_TIME' : [],
         'EVENT_TYPE' :[],
@@ -2244,7 +2697,7 @@ class QueryArrival():
             recordings['ARRIVAL_TIME'].append(str.strip(all_vars[i+13]))
             recordings['ORIGIN_LAT'].append(float(all_vars[i+21]))
             recordings['ORIGIN_LON'].append(float(all_vars[i+22]))
-            recordings['ORIGINL_DEPTH'].append(float(all_vars[i+23]) if not all_vars[i+23].isspace() else float("NaN"))
+            recordings['ORIGIN_DEPTH'].append(float(all_vars[i+23]) if not all_vars[i+23].isspace() else float("NaN"))
             recordings['ORIGIN_DATE'].append(str.strip(all_vars[i+19]))
             recordings['ORIGIN_TIME'].append(str.strip(all_vars[i+20]))
             recordings['EVENT_TYPE'].append(str.strip(all_vars[i+25]))
@@ -2285,7 +2738,7 @@ class BuiltInCatalog():
                                'ARRIVAL_LAT', 'ARRIVAL_LON',
                                'ARRIVAL_ELEV','ARRIVAL_DIST','ARRIVAL_BAZ',
                                'ARRIVAL_DATE','ARRIVAL_TIME',
-                               'ORIGIN_LAT' ,'ORIGIN_LON','ORIGINL_DEPTH',
+                               'ORIGIN_LAT' ,'ORIGIN_LON','ORIGIN_DEPTH',
                                'ORIGIN_DATE' ,'ORIGIN_TIME',
                                'EVENT_TYPE','EVENT_MAG')
         except IndexError:
@@ -2359,7 +2812,7 @@ class BuiltInCatalog():
         'ARRIVAL_TIME' : [],
         'ORIGIN_LAT' : [],
         'ORIGIN_LON' : [],
-        'ORIGINL_DEPTH' : [],
+        'ORIGIN_DEPTH' : [],
         'ORIGIN_DATE' : [],
         'ORIGIN_TIME' : [],
         'EVENT_TYPE' :[],
@@ -2380,7 +2833,7 @@ class BuiltInCatalog():
             recordings['ARRIVAL_TIME'].append(str.strip(all_vars[i+12]))
             recordings['ORIGIN_LAT'].append(float(all_vars[i+20]))
             recordings['ORIGIN_LON'].append(float(all_vars[i+21]))
-            recordings['ORIGINL_DEPTH'].append(float(all_vars[i+22]) if not all_vars[i+22].isspace() else float("NaN"))
+            recordings['ORIGIN_DEPTH'].append(float(all_vars[i+22]) if not all_vars[i+22].isspace() else float("NaN"))
             recordings['ORIGIN_DATE'].append(str.strip(all_vars[i+18]))
             recordings['ORIGIN_TIME'].append(str.strip(all_vars[i+19]))
             recordings['EVENT_TYPE'].append(str.strip(all_vars[i+24]))

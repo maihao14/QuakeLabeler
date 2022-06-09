@@ -83,7 +83,7 @@ def main():
         filelist = MT.select_folder()
         temp_pd = MT.merge_event(filelist)
         event_pd = MT.event_clean(temp_pd)
-    #%% test station modules
+    # test station modules
         total_station = MT.merge_station(filelist)
         sta_cat = MT.station_clean(total_station)
         GM = GlobalMaps(sta_cat,event_pd)
@@ -106,7 +106,12 @@ def main():
     # auto-production of dataset
     auto_dataset = QuakeLabeler(query, custom)
     # data collect and process
-    auto_dataset.fetch_all_waveforms(auto_dataset.recordings)
+    if auto_dataset.params['local']:
+        # local mode
+        auto_dataset.local_label(auto_dataset.recordings)
+    else:
+        # normal mode    
+        auto_dataset.fetch_all_waveforms(auto_dataset.recordings)
     # waveform graph
     if custom.custom_export['export_type'] == 'SAC':
         auto_dataset.waveform_display()
