@@ -9,6 +9,8 @@ QuakeLabeler is a Python package to customize, build and manage your seismic tra
 Installation, Usage, documentation and scripts are described at
  https://maihao14.github.io/QuakeLabeler/
 
+If your data is on local end, please switch to [`localmode`](https://github.com/maihao14/QuakeLabeler/tree/localmode).   
+
 Author: [`Hao Mai`](https://www.uogeophysics.com/authors/mai/)(Developer and Maintainer)
  & [`Pascal Audet`](https://www.uogeophysics.com/authors/admin/) (Developer and Maintainer)
 
@@ -76,6 +78,21 @@ QuakeLabeler provides multiple modes for different levels of Seismic AI research
 [Advanced] mode -- produce earthquake samples based on Customized parameters.
 ```
 
+## Reference
+
+Mai, H., & Audet, P. (2022). QuakeLabeler: A Fast Seismic Data Set Creation and Annotation Toolbox for AI Applications. Seismological Society of America, 93(2A), 997-1010. https://doi.org/10.1785/0220210290
+
+BibTeX:
+
+    @article{mai2022quakelabeler,
+      title={QuakeLabeler: A Fast Seismic Data Set Creation and Annotation Toolbox for AI Applications},
+      author={Mai, Hao and Audet, Pascal},
+      journal={Seismological Society of America},
+      volume={93},
+      number={2A},
+      pages={997--1010},
+      year={2022}
+    }
 
 ## Contributing
 In current version, raw waveforms data from part of Chinese Earthquake stations are unavailable to access automatically (But you can still use QuakeLabeler in China). Any collaborators are welcome to help extend the data sources, develop the codes, etc.
