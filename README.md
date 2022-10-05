@@ -77,6 +77,8 @@ QuakeLabeler provides multiple modes for different levels of Seismic AI research
 [Beginner] mode -- well prepared case studies;
 [Advanced] mode -- produce earthquake samples based on Customized parameters.
 ```
+## Example to build a dataset in STEAD format
+Here's a brief introduction of how to convert USGS dataset into STEAD format.
 
 ## Reference
 
