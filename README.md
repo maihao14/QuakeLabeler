@@ -79,7 +79,7 @@ QuakeLabeler provides multiple modes for different levels of Seismic AI research
 ```
 ## Example to build a dataset in STEAD format
 Here's a brief introduction of how to convert USGS dataset into STEAD format.
-
+[https://github.com/maihao14/QuakeLabeler/blob/main/quakelabeler/examples/GenerateSTEADformat.ipynb](https://github.com/maihao14/QuakeLabeler/blob/main/quakelabeler/examples/GenerateSTEADformat.ipynb)
 ## Reference
 
 Mai, H., & Audet, P. (2022). QuakeLabeler: A Fast Seismic Data Set Creation and Annotation Toolbox for AI Applications. Seismological Society of America, 93(2A), 997-1010. https://doi.org/10.1785/0220210290
